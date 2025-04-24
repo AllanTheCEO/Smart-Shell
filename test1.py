@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 model = OllamaLLM(model='shortbot:latest')
 
-filepath = 'linux_info/linux-commands/man_text/linuxcommand.org/lc3_man_pages'
+filepath = 'linux-commands/man_text/linuxcommand.org/lc3_man_pages'
 
 loader = DirectoryLoader(
     filepath,
