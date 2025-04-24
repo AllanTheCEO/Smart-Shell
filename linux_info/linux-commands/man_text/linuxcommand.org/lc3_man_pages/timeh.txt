@@ -1,0 +1,30 @@
+  
+NAME
+    time - Report time consumed by pipeline's execution.
+
+SYNOPSIS
+    time [-p] pipeline
+
+DESCRIPTION
+    Report time consumed by pipeline's execution.
+    
+    Execute PIPELINE and print a summary of the real time, user CPU time,
+    and system CPU time spent executing PIPELINE when it terminates.
+    
+    Options:
+      -p	print the timing summary in the portable Posix format
+    
+    The value of the TIMEFORMAT variable is used as the output format.
+    
+    Exit Status:
+    The return status is the return status of PIPELINE.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

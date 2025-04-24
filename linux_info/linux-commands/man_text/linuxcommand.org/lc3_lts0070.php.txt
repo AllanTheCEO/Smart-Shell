@@ -1,0 +1,43 @@
+cat poorly_formatted_report.txt | fmt | pr | lpr
+
+cat unsorted_list_with_dupes.txt | sort | uniq | pr | lpr</pre>
+<pre>tar tzvf name_of_file.tar.gz | less</pre>
+  </li>
+</ol>
+</div>
+
+<h2>Further Reading</h2>
+
+<ul>
+  <li>Chapter 6 of <a href="tlcl.php.html"><i>The Linux Command Line</i></a> covers
+  this topic in more detail.</li>
+
+  <li>Chapters 19 through 21 of <i>The Linux Command Line</i> provide an in-depth look
+  at the text processing tools available in Linux.</li>
+
+  <li>To learn more about the AWK programming language, consider the <a
+  href="lc3_adv_awk.php.html">AWK adventure</a>.</li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_lts0070.php.html#top">Top</a> | <a
+      href="lc3_lts0060.php.html">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="lc3_lts0080.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

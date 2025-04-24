@@ -1,0 +1,127 @@
+<code>XTerm.vt100.geometry: 80x35
+XTerm.vt100.faceName: Liberation Mono:size=11
+XTerm.vt100.cursorBlink: true</code></pre>
+<pre><code>me@linuxbox ~ $ echo $TERM</code></pre>
+<p>Even if we are using a modern terminal, such as <code>gnome-terminal</code>, we will notice that the <code>TERM</code> variable is often set to “xterm” or “xterm-color”. That’s how much influence <code>xterm</code> had. We still use it as the standard.</p>
+<h3 id="rxvt">rxvt</h3>
+<p>By the standards of the time, <code>xterm</code> was a heavyweight program but, as time went by, some of its features were rarely used such as the Tektronix emulation. Around 1990, in an attempt to create a simpler, lighter terminal emulator, Robert Nation wrote <code>rxvt</code> as part of the FVWM window manager, an early desktop environment for Unix-like systems.</p>
+<p><code>rxvt</code> has a smaller feature set than <code>xterm</code> and emulates the DEC VT 102 terminal rather than the more advanced VT 220. <code>rxvt</code> sets the <code>TERM</code> variable to “rxvt”, which is widely supported. Like <code>xterm</code>, <code>rxvt</code> has menus that are displayed by holding the <code>Ctrl</code> key and pressing different mouse buttons.</p>
+<p><code>rxvt</code> is still under active maintenance, and there is a popular modern implementation forked from the original called <code>urxvt</code> (rxvt-Unicode) by Mark Lehmann, which supports Unicode (multi-byte characters used to express a wider range of written languages than ASCII). One interesting feature in <code>urxvt</code> is a daemon mode that allows launching multiple terminal windows all sharing the same instance of the program- a potential memory saver.</p>
+<figure>
+<img src="images/adventure_powerterm_rxvt_default.png" alt="urxvt with default configuration" ><figcaption>urxvt with default configuration</figcaption>
+</figure>
+<p>Like <code>xterm</code>, <code>rxvt</code> uses Xresources to control its configuration. The default <code>rxvt</code> configuration is very spare. Adding the following settings to our Xresources file will make it more palatable (<code>urxvt</code> shown):</p>
+<pre><code>URxvt.geometry: 80x35
+URxvt.saveLines: 10000
+URxvt.scrollBar: false
+URxvt.foreground: white
+URxvt.background: black
+URxvt.secondaryScroll: true
+URxvt.font: xft:liberation mono:size=11
+URxvt.cursorBlink: true</code></pre>
+<pre><code>terminator --maximise --layout=2x2</code></pre>
+<p>to get our layout instantly.</p>
+<h2 id="terminals-for-other-platforms">Terminals for Other Platforms</h2>
+<h3 id="android">Android</h3>
+<p>While we might not think of an Android phone or tablet as a Linux computer, it actually is, and we can get terminal apps for it which are useful for administering remote systems.</p>
+<h4 id="connectbot">Connectbot</h4>
+<p>Connectbot is a secure shell client for Android. With it, we can log into any system running an SSH server. To the remote system, Connectbot looks like a terminal using the GNU Screen terminal type.</p>
+<p>One problem with using a terminal emulator on Android is the limitations of the native Google keyboard. It does not have all the keys required to make full use of a terminal session. Fortunately, there are alternate keyboards that we can use on Android. A really good one is Hacker’s Keyboard by Klaus Weidner. It supports all the normal keys, <code>Ctrl</code>, <code>Alt</code>, <code>F1-F10</code>, arrows, <code>PgUp</code>, <code>PgDn</code>, etc. Very handy when working with <code>vi</code> on a phone.</p>
+<figure>
+<img src="images/adventure_powerterm_connectbot-C.png" alt="Connectbot with Hacker’s Keyboard on Android" ><figcaption>Connectbot with Hacker’s Keyboard on Android</figcaption>
+</figure>
+<h4 id="termux">Termux</h4>
+<p>The Termux app for Android is unexpectedly amazing. It goes beyond being merely an SSH client; it provides a full shell environment on Android without having to root the device.</p>
+<p>After installation, there is a minimal base system with a shell (<code>bash</code>) and many of the most common utilities. Initially, these utilities are the ones built into <code>busybox</code> (a compact set of utilities joined into a single program that is often used in embedded systems to save space), but the <code>apt</code> package management program (like on Debian/Ubuntu) is provided to allow installation of a wide variety of Linux programs.</p>
+<figure>
+<img src="images/adventure_powerterm_termux-C.png" alt="Termux displaying builtin shell commands" ><figcaption>Termux displaying builtin shell commands</figcaption>
+</figure>
+<p>We can have dot files (like <code>.bashrc</code>) and even write shell scripts and compile and debug programs in Termux. Pretty neat.</p>
+<p>When executing <code>ssh</code>, Termux looks like an “xterm-256color” terminal to remote systems.</p>
+<h3 id="chromechrome-os">Chrome/Chrome OS</h3>
+<p>Google makes a decent SSH client for Chrome and Chrome OS (which is Linux, too, after all) that allows logging on to remote systems. Called Secure Shell, it uses hterm (HTML Terminal, a terminal emulator written in JavaScript) combined with an SSH client. To remote systems, it looks like a “xterm-256color” terminal. It works pretty well, but lacks some features that advanced SSH users may need.</p>
+<p>Secure Shell is available at the Chrome Web Store.</p>
+<figure>
+<img src="images/adventure_powerterm_chromeos_ssh-C.png" alt="Secure Shell running on Chrome OS" ><figcaption>Secure Shell running on Chrome OS</figcaption>
+</figure>
+<h2 id="summing-up">Summing Up</h2>
+<p>Given that our terminal emulators are among our most vital tools, they should command more of our attention. There are many different terminal programs with potentially interesting and helpful features, many of which, most users rarely, if ever, use. This is a shame since many of these features are truly <em>useful</em> to the busy command line user. We have looked at a few of the ways these features can be applied to our daily routine, but there are certainly many more.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li>“The Grumpy Editor’s guide to terminal emulators” by Jonathan Corbet: <a href="https://lwn.net/Articles/88161/" class="uri">https://lwn.net/Articles/88161/</a></li>
+</ul>
+<h3 id="xterm-1">xterm:</h3>
+<ul>
+<li><p>xterm on Wikipedia: <a href="https://en.wikipedia.org/wiki/Xterm" class="uri">https://en.wikipedia.org/wiki/Xterm</a></p></li>
+<li><p>Homepage for the current maintainer of xterm, Thomas Dickey: <a href="https://invisible-island.net/xterm/" class="uri">https://invisible-island.net/xterm/</a></p></li>
+</ul>
+<h3 id="tektronix-4014">Tektronix 4014:</h3>
+<ul>
+<li><p>Tektronix 4014 on Wikipedia: <a href="https://en.wikipedia.org/wiki/Tektronix_4010" class="uri">https://en.wikipedia.org/wiki/Tektronix_4010</a></p></li>
+<li><p>Some background on the 4014 at Chilton Computing: <a href="http://www.chilton-computing.org.uk/acd/icf/terminals/p005.htm" class="uri">http://www.chilton-computing.org.uk/acd/icf/terminals/p005.htm</a></p></li>
+</ul>
+<h3 id="rxvt-1">rxvt:</h3>
+<ul>
+<li>Home page for rxvt: <a href="http://rxvt.sourceforge.net/" class="uri">http://rxvt.sourceforge.net/</a></li>
+</ul>
+<h3 id="urxvt-rxvt-unicode">urxvt (rxvt-Unicode):</h3>
+<ul>
+<li>Home page for the rxvt-Unicode project: <a href="http://software.schmorp.de/pkg/rxvt-unicode.html" class="uri">http://software.schmorp.de/pkg/rxvt-unicode.html</a></li>
+</ul>
+<h3 id="gnome-terminal-1">gnome-terminal:</h3>
+<ul>
+<li>Help pages for gnome-terminal: <a href="https://help.gnome.org/users/gnome-terminal/stable/" class="uri">https://help.gnome.org/users/gnome-terminal/stable/</a></li>
+</ul>
+<h3 id="konsole-1">konsole:</h3>
+<ul>
+<li>The Konsole Manual at the KDE Project: <a href="https://docs.kde.org/stable5/en/applications/konsole/index.html" class="uri">https://docs.kde.org/stable5/en/applications/konsole/index.html</a></li>
+</ul>
+<h3 id="guake-1">guake:</h3>
+<ul>
+<li><p>The home page for the guake project: <a href="http://guake-project.org/" class="uri">http://guake-project.org/</a></p></li>
+<li><p>The Arch Wiki entry for guake (contains a lot of useful information but some is Arch Linux specific): <a href="https://wiki.archlinux.org/index.php/Guake" class="uri">https://wiki.archlinux.org/index.php/Guake</a></p></li>
+</ul>
+<h3 id="terminator-1">terminator:</h3>
+<ul>
+<li>The home page for the terminator project: <a href="https://gnometerminator.blogspot.com/p/introduction.html" class="uri">https://gnometerminator.blogspot.com/p/introduction.html</a></li>
+</ul>
+<h3 id="connectbot-1">Connectbot:</h3>
+<ul>
+<li>Connectbot at the Google Play Store: <a href="https://play.google.com/store/apps/details?id=org.connectbot&amp;hl=en" class="uri">https://play.google.com/store/apps/details?id=org.connectbot&amp;hl=en</a></li>
+</ul>
+<h3 id="hackers-keyboard">Hacker’s Keyboard:</h3>
+<ul>
+<li>Hacker’s Keyboard at the Google Play Store: <a href="https://play.google.com/store/apps/details?id=org.pocketworkstation.pckeyboard&amp;hl=en" class="uri">https://play.google.com/store/apps/details?id=org.pocketworkstation.pckeyboard&amp;hl=en</a></li>
+</ul>
+<h3 id="termux-1">Termux:</h3>
+<ul>
+<li>Termux at the Google Play Store: <a href="https://play.google.com/store/apps/details?id=com.termux&amp;hl=en" class="uri">https://play.google.com/store/apps/details?id=com.termux&amp;hl=en</a></li>
+</ul>
+<h3 id="secure-shell">Secure Shell</h3>
+<ul>
+<li><p>Secure Shell at the Chrome Web Store: <a href="https://chrome.google.com/webstore/detail/secure-shell-app/pnhechapfaindjhompbnflcldabbghjo" class="uri">https://chrome.google.com/webstore/detail/secure-shell-app/pnhechapfaindjhompbnflcldabbghjo</a></p></li>
+<li><p>Secure Shell FAQ: <a href="https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md" class="uri">https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md</a></p></li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_adv_powerterm.php.html#top">Top</a> | <a
+      href="lc3_adv_othershells.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_vimvigor.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

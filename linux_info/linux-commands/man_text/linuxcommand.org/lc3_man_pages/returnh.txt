@@ -1,0 +1,26 @@
+  
+NAME
+    return - Return from a shell function.
+
+SYNOPSIS
+    return [n]
+
+DESCRIPTION
+    Return from a shell function.
+    
+    Causes a function or sourced script to exit with the return value
+    specified by N.  If N is omitted, the return status is that of the
+    last command executed within the function or script.
+    
+    Exit Status:
+    Returns N, or failure if the shell is not executing a function or script.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

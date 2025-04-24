@@ -1,0 +1,89 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>readlink man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for readlink">
+  <meta name="keywords" content="Manual page, readlink command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#shell" style="color: white;">Back to Contents</a>
+  <pre>
+READLINK(1)                   User Commands                   READLINK(1)
+
+NAME
+       readlink - print resolved symbolic links or canonical file names
+
+SYNOPSIS
+       readlink [OPTION]... FILE...
+
+DESCRIPTION
+       Note realpath(1) is the preferred command to use for canonicaliza‐
+       tion functionality.
+
+       Print value of a symbolic link or canonical file name
+
+       -f, --canonicalize
+              canonicalize by following every symlink in every  component
+              of  the  given name recursively; all but the last component
+              must exist
+
+       -e, --canonicalize-existing
+              canonicalize by following every symlink in every  component
+              of the given name recursively, all components must exist
+
+       -m, --canonicalize-missing
+              canonicalize  by following every symlink in every component
+              of the given name recursively, without requirements on com‐
+              ponents existence
+
+       -n, --no-newline
+              do not output the trailing delimiter
+
+       -q, --quiet
+
+       -s, --silent
+              suppress most error messages (on by default)
+
+       -v, --verbose
+              report error messages
+
+       -z, --zero
+              end each output line with NUL, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by Dmitry V. Levin.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report   any   translation   bugs   to    &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright  ©  2020 Free Software Foundation, Inc.  License GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       readlink(2), realpath(1), realpath(3)
+
+       Full  documentation  &lt;https://www.gnu.org/software/coreutils/read‐
+       link&gt;
+       or available locally via: info '(coreutils) readlink invocation'
+
+GNU coreutils 8.32              April 2020                    READLINK(1)
+</pre></body></html>

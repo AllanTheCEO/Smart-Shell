@@ -1,0 +1,41 @@
+  
+NAME
+    complete - Specify how arguments are to be completed by Readline.
+
+SYNOPSIS
+    complete [-abcdefgjksuv] [-pr] [-DEI] [-o option] [-A action] [-G globpat] [-W wordlist]  [-F function] [-C command] [-X filterpat] [-P prefix] [-S suffix] [name ...]
+
+DESCRIPTION
+    Specify how arguments are to be completed by Readline.
+    
+    For each NAME, specify how arguments are to be completed.  If no options
+    are supplied, existing completion specifications are printed in a way that
+    allows them to be reused as input.
+    
+    Options:
+      -p	print existing completion specifications in a reusable format
+      -r	remove a completion specification for each NAME, or, if no
+    		NAMEs are supplied, all completion specifications
+      -D	apply the completions and actions as the default for commands
+    		without any specific completion defined
+      -E	apply the completions and actions to "empty" commands --
+    		completion attempted on a blank line
+      -I	apply the completions and actions to the initial (usually the
+    		command) word
+    
+    When completion is attempted, the actions are applied in the order the
+    uppercase-letter options are listed above.  If multiple options are supplied,
+    the -D option takes precedence over -E, and both take precedence over -I.
+    
+    Exit Status:
+    Returns success unless an invalid option is supplied or an error occurs.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

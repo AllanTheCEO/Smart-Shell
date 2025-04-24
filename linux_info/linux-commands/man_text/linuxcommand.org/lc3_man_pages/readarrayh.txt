@@ -1,0 +1,21 @@
+  
+NAME
+    readarray - Read lines from a file into an array variable.
+
+SYNOPSIS
+    readarray [-d delim] [-n count] [-O origin] [-s count] [-t] [-u fd] [-C callback] [-c quantum] [array]
+
+DESCRIPTION
+    Read lines from a file into an array variable.
+    
+    A synonym for `mapfile'.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

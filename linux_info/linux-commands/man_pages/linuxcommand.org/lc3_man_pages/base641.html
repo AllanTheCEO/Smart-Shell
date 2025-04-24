@@ -1,0 +1,77 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>base64 man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for base64">
+  <meta name="keywords" content="Manual page, base64 command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#text" style="color: white;">Back to Contents</a>
+  <pre>
+BASE64(1)                     User Commands                     BASE64(1)
+
+NAME
+       base64 - base64 encode/decode data and print to standard output
+
+SYNOPSIS
+       base64 [OPTION]... [FILE]
+
+DESCRIPTION
+       Base64  encode or decode FILE, or standard input, to standard out‐
+       put.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments  to  long  options  are  mandatory  for  short
+       options too.
+
+       -d, --decode
+              decode data
+
+       -i, --ignore-garbage
+              when decoding, ignore non-alphabet characters
+
+       -w, --wrap=COLS
+              wrap  encoded lines after COLS character (default 76).  Use
+              0 to disable line wrapping
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       The data are encoded as described for the base64 alphabet  in  RFC
+       4648.   When  decoding, the input may contain newlines in addition
+       to the bytes of the formal base64 alphabet.  Use  --ignore-garbage
+       to  attempt  to  recover  from any other non-alphabet bytes in the
+       encoded stream.
+
+AUTHOR
+       Written by Simon Josefsson.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report    any   translation   bugs   to   &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright © 2020 Free Software Foundation, Inc.   License  GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       Full documentation &lt;https://www.gnu.org/software/coreutils/base64&gt;
+       or available locally via: info '(coreutils) base64 invocation'
+
+GNU coreutils 8.32              April 2020                      BASE64(1)
+</pre></body></html>

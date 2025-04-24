@@ -1,0 +1,10 @@
+
+Application:    Are you ready?
+Interface:  Device not ready.
+
+Application:    Are you ready?
+Interface:  Device not ready.
+
+Application:    Are you ready?
+Interface:  Device not ready.
+

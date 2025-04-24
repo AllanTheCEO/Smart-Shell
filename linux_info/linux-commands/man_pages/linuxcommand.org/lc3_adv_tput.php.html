@@ -1,0 +1,657 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Linux Command Line Adventure: tput</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Tput Introduction and Tutorial">
+    <meta name="keywords" content="tput, tutorial, console, screen effects, text colors, terminal control, terminfo, termcap, ncurses, cursor control">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_adv_redirection.php.html">
+    <link rel="next" href="lc3_adv_dialog.php.html">
+    <link rel="contents" href="lc3_adventures.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_adv_redirection.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_dialog.php.html">Next</a>
+    </div>
+<h1 id="tput">tput</h1>
+<p>While our command line environment is certainly powerful, it can be be somewhat lacking when it comes to visual appeal. Our terminals cannot create the rich environment of the graphical user interface, but it doesn’t mean we are doomed to always look at plain characters on a plain background.</p>
+<p>In this adventure, we will look at <code>tput</code>, a command used to manipulate our terminal. With it, we can change the color of text, apply effects, and generally brighten things up. More importantly, we can use <code>tput</code> to improve the human factors of our scripts. For example, we can use color and text effects to better present information to our users.</p>
+<h2 id="availability">Availability</h2>
+<p><code>tput</code> is part of the <code>ncurses</code> package and is supplied with most Linux distributions.</p>
+<h2 id="what-it-doeshow-it-works">What it Does/How it Works</h2>
+<p>Long ago, when computers were centralized, interactive computer users communicated with remote systems by using a physical terminal or a terminal emulator program running on some other system. In their heyday, there were many kinds of terminals and they all used different sequences of control characters to manage their screens and keyboards.</p>
+<p>When we start a terminal session on our Linux system, the terminal emulator sets the <code>TERM</code> environment variable with the name of a <em>terminal type</em>. If we examine <code>TERM</code>, we can see this:</p>
+<pre><code>[me@linuxbox ~]$ echo $TERM
+xterm</code></pre>
+<p>In this example, we see that our terminal type is named “xterm” suggesting that our terminal behaves like the classic X terminal emulator program <code>xterm</code>. Other common terminal types are “linux” for the Linux console, and “screen” used by terminal multiplexers such as <code>screen</code> and <code>tmux</code>. While we will encounter these 3 types most often, there are, in fact, thousands of different terminal types. Our Linux system contains a database called <em>terminfo</em> that describes them. We can examine a typical terminfo entry using the <code>infocmp</code> command followed by a terminal type name:</p>
+<pre><code>[me@linuxbox ~]$ infocmp screen
+#   Reconstructed via infocmp from file: /lib/terminfo/s/screen
+screen|VT 100/ANSI X3.64 virtual terminal,
+    am, km, mir, msgr, xenl,
+    colors#8, cols#80, it#8, lines#24, ncv@, pairs#64,
+    acsc=++\,\,--..00``aaffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~,
+    bel=^G, blink=\E[5m, bold=\E[1m, cbt=\E[Z, civis=\E[?25l,
+    clear=\E[H\E[J, cnorm=\E[34h\E[?25h, cr=^M,
+    csr=\E[%i%p1%d;%p2%dr, cub=\E[%p1%dD, cub1=^H,
+    cud=\E[%p1%dB, cud1=^J, cuf=\E[%p1%dC, cuf1=\E[C,
+    cup=\E[%i%p1%d;%p2%dH, cuu=\E[%p1%dA, cuu1=\EM,
+    cvvis=\E[34l, dch=\E[%p1%dP, dch1=\E[P, dl=\E[%p1%dM,
+    dl1=\E[M, ed=\E[J, el=\E[K, el1=\E[1K, enacs=\E(B\E)0,
+    flash=\Eg, home=\E[H, ht=^I, hts=\EH, ich=\E[%p1%d@,
+    il=\E[%p1%dL, il1=\E[L, ind=^J, is2=\E)0, kbs=\177,
+    kcbt=\E[Z, kcub1=\EOD, kcud1=\EOB, kcuf1=\EOC, kcuu1=\EOA,
+    kdch1=\E[3~, kend=\E[4~, kf1=\EOP, kf10=\E[21~,
+    kf11=\E[23~, kf12=\E[24~, kf2=\EOQ, kf3=\EOR, kf4=\EOS,
+    kf5=\E[15~, kf6=\E[17~, kf7=\E[18~, kf8=\E[19~, kf9=\E[20~,
+    khome=\E[1~, kich1=\E[2~, kmous=\E[M, knp=\E[6~, kpp=\E[5~,
+    nel=\EE, op=\E[39;49m, rc=\E8, rev=\E[7m, ri=\EM, rmacs=^O,
+    rmcup=\E[?1049l, rmir=\E[4l, rmkx=\E[?1l\E&gt;, rmso=\E[23m,
+    rmul=\E[24m, rs2=\Ec\E[?1000l\E[?25h, sc=\E7,
+    setab=\E[4%p1%dm, setaf=\E[3%p1%dm,
+    sgr=\E[0%?%p6%t;1%;%?%p1%t;3%;%?%p2%t;4%;%?%p3%t;7%;%?%p4%t;5%;m%?%p9%t\016%e\017%;,
+    sgr0=\E[m\017, smacs=^N, smcup=\E[?1049h, smir=\E[4h,
+    smkx=\E[?1h\E=, smso=\E[3m, smul=\E[4m, tbc=\E[3g,</code></pre>
+<p>The example above is the terminfo entry for the terminal type “screen”. What we see in the output of <code>infocmp</code> is a comma-separated list of <em>terminal capability names</em> or <em>capnames</em>. Some of the capabilities are standalone - like the first few in the list - while others are assigned cryptic values. Standalone terminal capabilities indicate something the terminal can do. For example, the capability “am” indicates the terminal has an automatic right margin. Terminal capabilities with assigned values contain strings, which are interpreted as commands by the terminal. The values starting with “\E” (which represents the escape character) are sequences of control codes that cause the terminal to perform an action such as moving the cursor to a specified location, or setting the text color.</p>
+<p>The <code>tput</code> command can be used to test for a particular capability or to output the assigned value. Here are some examples:</p>
+<pre><code>tput longname</code></pre>
+<p>This outputs the full name of the current terminal type. We can specify another terminal type by including the <code>-T</code> option. Here, we will ask for the full name of the terminal type named “screen”:</p>
+<pre><code>tput -T screen longname</code></pre>
+<p>We can inquire values from the terminfo database, like the number of supported colors and the number of columns in the current terminal:</p>
+<pre><code>tput colors
+tput cols</code></pre>
+<p>We can test for particular capability. For example, to see if the current terminal supports “bce” (background color erase - meaning that clearing or erasing text will be done using the currently defined background color) we type:</p>
+<pre><code>tput bce &amp;&amp; echo &quot;True&quot;</code></pre>
+<p>We can send instructions to the terminal. For example, to move the cursor to the position 20 characters to the right and 5 rows down:</p>
+<pre><code>tput cup 5 20</code></pre>
+<p>There are many different terminal types defined in the terminfo database and there are many terminal capnames. The terminfo man page contains a complete list. Note, however, that in general practice, there are only a relative handful of capnames supported by all of the terminal types we are likely to encounter on Linux systems.</p>
+<h2 id="reading-terminal-attributes">Reading Terminal Attributes</h2>
+<p>For the following capnames, <code>tput</code> outputs a value to stdout:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Capability names</caption>
+<colgroup>
+<col style="width: 16%" >
+<col style="width: 81%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th>Capname</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>longname</code></td>
+<td style="text-align: left;">Full name of the terminal type</td>
+</tr>
+<tr class="even">
+<td><code>lines</code></td>
+<td style="text-align: left;">Number of lines in the terminal</td>
+</tr>
+<tr class="odd">
+<td><code>cols</code></td>
+<td style="text-align: left;">Number of columns in the terminal</td>
+</tr>
+<tr class="even">
+<td><code>colors</code></td>
+<td style="text-align: left;">Number of colors available</td>
+</tr>
+</tbody>
+</table></div>
+<p>The <code>lines</code> and <code>cols</code> values are dynamic. That is, they are updated as the size of the terminal window changes. Here is a handy alias that creates a command to view the current size of our terminal window:</p>
+<pre><code>alias term_size=`echo &quot;Rows=$(tput lines) Cols=$(tput cols)&quot;&#39;</code></pre>
+<p>If we define this alias and execute it, we will see the size of the current terminal displayed. If we then change the size of the terminal window and execute the alias a second time, we will see the values have been updated.</p>
+<p>One interesting feature we can use in our scripts is the SIGWINCH signal. This signal is sent each time the terminal window is resized. We can include a signal handler (i.e., a trap) in our scripts to detect this signal and act upon it:</p>
+<div class="sourceCode" id="term_size2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="term_size2-1" title="1">    <span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="term_size2-2" title="2">    <span class="co"># term_size2 - Dynamically display terminal window size</span></a>
+<a class="sourceLine" id="term_size2-3" title="3"></a>
+<a class="sourceLine" id="term_size2-4" title="4">    <span class="fu">redraw()</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="term_size2-5" title="5">        <span class="fu">clear</span></a>
+<a class="sourceLine" id="term_size2-6" title="6">        <span class="bu">echo</span> <span class="st">&quot;Width = </span><span class="va">$(</span><span class="ex">tput</span> cols<span class="va">)</span><span class="st"> Height = </span><span class="va">$(</span><span class="ex">tput</span> lines<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="term_size2-7" title="7">    <span class="kw">}</span></a>
+<a class="sourceLine" id="term_size2-8" title="8"></a>
+<a class="sourceLine" id="term_size2-9" title="9">    <span class="bu">trap</span> redraw WINCH</a>
+<a class="sourceLine" id="term_size2-10" title="10"></a>
+<a class="sourceLine" id="term_size2-11" title="11">    <span class="ex">redraw</span></a>
+<a class="sourceLine" id="term_size2-12" title="12">    <span class="kw">while</span> <span class="fu">true</span><span class="kw">;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="term_size2-13" title="13">        <span class="bu">:</span></a>
+<a class="sourceLine" id="term_size2-14" title="14">    <span class="kw">done</span></a></code></pre></div>
+<p>With this script, we start an empty infinite loop, but since we set a trap for the SIGWINCH signal, each time the terminal window is resized the trap is triggered and the new terminal size is displayed. To exit this script, we type <code>Ctrl-c</code>.</p>
+<figure>
+<img src="images/adventure_tput_term_size2.png" alt="term_size2" ><figcaption>term_size2</figcaption>
+</figure>
+<h2 id="controlling-the-cursor">Controlling the Cursor</h2>
+<p>The capnames below output strings containing control codes that instruct the terminal to manipulate the cursor:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Cursor control capnames</caption>
+<colgroup>
+<col style="width: 27%" >
+<col style="width: 70%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th>Capname</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>sc</code></td>
+<td style="text-align: left;">Save the cursor position</td>
+</tr>
+<tr class="even">
+<td><code>rc</code></td>
+<td style="text-align: left;">Restore the cursor position</td>
+</tr>
+<tr class="odd">
+<td><code>home</code></td>
+<td style="text-align: left;">Move the cursor to upper left corner (0,0)</td>
+</tr>
+<tr class="even">
+<td><code>cup &lt;row&gt; &lt;col&gt;</code></td>
+<td style="text-align: left;">Move the cursor to position row, col</td>
+</tr>
+<tr class="odd">
+<td><code>cud1</code></td>
+<td style="text-align: left;">Move the cursor down 1 line</td>
+</tr>
+<tr class="even">
+<td><code>cuu1</code></td>
+<td style="text-align: left;">Move the cursor up 1 line</td>
+</tr>
+<tr class="odd">
+<td><code>civis</code></td>
+<td style="text-align: left;">Set to cursor to be invisible</td>
+</tr>
+<tr class="even">
+<td><code>cnorm</code></td>
+<td style="text-align: left;">Set the cursor to its normal state</td>
+</tr>
+</tbody>
+</table></div>
+<p>We can modify our previous script to use cursor positioning and to place the window dimensions in the center as the terminal is resized:</p>
+<div class="sourceCode" id="term_size3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="term_size3-1" title="1">    <span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="term_size3-2" title="2">    <span class="co"># term_size3 - Dynamically display terminal window size</span></a>
+<a class="sourceLine" id="term_size3-3" title="3">    <span class="co">#              with text centering</span></a>
+<a class="sourceLine" id="term_size3-4" title="4"></a>
+<a class="sourceLine" id="term_size3-5" title="5">    <span class="fu">redraw()</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="term_size3-6" title="6">        <span class="bu">local</span> <span class="va">str</span> <span class="va">width</span> <span class="va">height</span> <span class="va">length</span></a>
+<a class="sourceLine" id="term_size3-7" title="7">        </a>
+<a class="sourceLine" id="term_size3-8" title="8">        <span class="va">width=$(</span><span class="ex">tput</span> cols<span class="va">)</span></a>
+<a class="sourceLine" id="term_size3-9" title="9">        <span class="va">height=$(</span><span class="ex">tput</span> lines<span class="va">)</span></a>
+<a class="sourceLine" id="term_size3-10" title="10">        <span class="va">str=</span><span class="st">&quot;Width = </span><span class="va">$width</span><span class="st"> Height = </span><span class="va">$height</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="term_size3-11" title="11">        <span class="va">length=${#str}</span></a>
+<a class="sourceLine" id="term_size3-12" title="12">        <span class="fu">clear</span></a>
+<a class="sourceLine" id="term_size3-13" title="13">        <span class="ex">tput</span> cup <span class="va">$((</span>height / 2<span class="va">))</span> <span class="va">$((</span>(width / 2) - (length / 2)<span class="va">))</span></a>
+<a class="sourceLine" id="term_size3-14" title="14">        <span class="bu">echo</span> <span class="st">&quot;</span><span class="va">$str</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="term_size3-15" title="15">    <span class="kw">}</span></a>
+<a class="sourceLine" id="term_size3-16" title="16"></a>
+<a class="sourceLine" id="term_size3-17" title="17">    <span class="bu">trap</span> redraw WINCH</a>
+<a class="sourceLine" id="term_size3-18" title="18"></a>
+<a class="sourceLine" id="term_size3-19" title="19">    <span class="ex">redraw</span></a>
+<a class="sourceLine" id="term_size3-20" title="20">    <span class="kw">while</span> <span class="fu">true</span><span class="kw">;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="term_size3-21" title="21">        <span class="bu">:</span></a>
+<a class="sourceLine" id="term_size3-22" title="22">    <span class="kw">done</span></a></code></pre></div>
+<p>As in the previous script, we set a trap for the SIGWINCH signal and start an infinite loop. The redraw function in this script is a bit more complicated, since it has to calculate the center of the terminal window each time its size changes.</p>
+<figure>
+<img src="images/adventure_tput_term_size3.png" alt="term_size3" ><figcaption>term_size3</figcaption>
+</figure>
+<h2 id="text-effects">Text Effects</h2>
+<p>Like the capnames used for cursor manipulation, the following capnames output strings of control codes that affect the way our terminal displays text characters:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Text effects capnames</caption>
+<colgroup>
+<col style="width: 22%" >
+<col style="width: 76%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th>Capname</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>bold</code></td>
+<td style="text-align: left;">Start bold text</td>
+</tr>
+<tr class="even">
+<td><code>smul</code></td>
+<td style="text-align: left;">Start underlined text</td>
+</tr>
+<tr class="odd">
+<td><code>rmul</code></td>
+<td style="text-align: left;">End underlined text</td>
+</tr>
+<tr class="even">
+<td><code>rev</code></td>
+<td style="text-align: left;">Start reverse video</td>
+</tr>
+<tr class="odd">
+<td><code>blink</code></td>
+<td style="text-align: left;">Start blinking text</td>
+</tr>
+<tr class="even">
+<td><code>invis</code></td>
+<td style="text-align: left;">Start invisible text</td>
+</tr>
+<tr class="odd">
+<td><code>smso</code></td>
+<td style="text-align: left;">Start “standout” mode</td>
+</tr>
+<tr class="even">
+<td><code>rmso</code></td>
+<td style="text-align: left;">End “standout” mode</td>
+</tr>
+<tr class="odd">
+<td><code>sgr0</code></td>
+<td style="text-align: left;">Turn off all attributes</td>
+</tr>
+<tr class="even">
+<td><code>setaf &lt;value&gt;</code></td>
+<td style="text-align: left;">Set foreground color</td>
+</tr>
+<tr class="odd">
+<td><code>setab &lt;value&gt;</code></td>
+<td style="text-align: left;">Set background color</td>
+</tr>
+</tbody>
+</table></div>
+<p>Some capabilities, such as underline and standout, have capnames to turn the attribute both on and off while others only have a capname to turn the attribute on. In these cases, the <code>sgr0</code> capname can be used to return the text rendering to a “normal” state. Here is a simple script that demonstrates the common text effects:</p>
+<div class="sourceCode" id="tput_characters"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="tput_characters-1" title="1">    <span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="tput_characters-2" title="2"></a>
+<a class="sourceLine" id="tput_characters-3" title="3">    <span class="co"># tput_characters - Test various character attributes</span></a>
+<a class="sourceLine" id="tput_characters-4" title="4"></a>
+<a class="sourceLine" id="tput_characters-5" title="5">    <span class="fu">clear</span></a>
+<a class="sourceLine" id="tput_characters-6" title="6"></a>
+<a class="sourceLine" id="tput_characters-7" title="7">    <span class="bu">echo</span> <span class="st">&quot;tput character test&quot;</span></a>
+<a class="sourceLine" id="tput_characters-8" title="8">    <span class="bu">echo</span> <span class="st">&quot;===================&quot;</span></a>
+<a class="sourceLine" id="tput_characters-9" title="9">    <span class="bu">echo</span></a>
+<a class="sourceLine" id="tput_characters-10" title="10"></a>
+<a class="sourceLine" id="tput_characters-11" title="11">    <span class="ex">tput</span> bold<span class="kw">;</span>  <span class="bu">echo</span> <span class="st">&quot;This text has the bold attribute.&quot;</span><span class="kw">;</span>     <span class="ex">tput</span> sgr0</a>
+<a class="sourceLine" id="tput_characters-12" title="12"></a>
+<a class="sourceLine" id="tput_characters-13" title="13">    <span class="ex">tput</span> smul<span class="kw">;</span>  <span class="bu">echo</span> <span class="st">&quot;This text is underlined (smul).&quot;</span><span class="kw">;</span>       <span class="ex">tput</span> rmul</a>
+<a class="sourceLine" id="tput_characters-14" title="14"></a>
+<a class="sourceLine" id="tput_characters-15" title="15">    <span class="co"># Most terminal emulators do not support blinking text (though xterm</span></a>
+<a class="sourceLine" id="tput_characters-16" title="16">    <span class="co"># does) because blinking text is considered to be in bad taste ;-)</span></a>
+<a class="sourceLine" id="tput_characters-17" title="17">    <span class="ex">tput</span> blink<span class="kw">;</span> <span class="bu">echo</span> <span class="st">&quot;This text is blinking (blink).&quot;</span><span class="kw">;</span>        <span class="ex">tput</span> sgr0</a>
+<a class="sourceLine" id="tput_characters-18" title="18"></a>
+<a class="sourceLine" id="tput_characters-19" title="19">    <span class="ex">tput</span> rev<span class="kw">;</span>   <span class="bu">echo</span> <span class="st">&quot;This text has the reverse attribute&quot;</span><span class="kw">;</span>   <span class="ex">tput</span> sgr0</a>
+<a class="sourceLine" id="tput_characters-20" title="20"></a>
+<a class="sourceLine" id="tput_characters-21" title="21">    <span class="co"># Standout mode is reverse on many terminals, bold on others. </span></a>
+<a class="sourceLine" id="tput_characters-22" title="22">    <span class="ex">tput</span> smso<span class="kw">;</span>  <span class="bu">echo</span> <span class="st">&quot;This text is in standout mode (smso).&quot;</span><span class="kw">;</span> <span class="ex">tput</span> rmso</a>
+<a class="sourceLine" id="tput_characters-23" title="23"></a>
+<a class="sourceLine" id="tput_characters-24" title="24">    <span class="ex">tput</span> sgr0</a>
+<a class="sourceLine" id="tput_characters-25" title="25">    <span class="bu">echo</span></a></code></pre></div>
+<figure>
+<img src="images/adventure_tput_tput_characters.png" alt="tput_characters" ><figcaption>tput_characters</figcaption>
+</figure>
+<h3 id="text-color">Text Color</h3>
+<p>Most terminals support 8 foreground text colors and 8 background colors (though some support as many as 256). Using the <code>setaf</code> and <code>setab</code> capabilities, we can set the foreground and background colors. The exact rendering of colors is a little hard to predict. Many desktop managers impose “system colors” on terminal windows, thereby modifying foreground and background colors from the standard. Despite this, here are what the colors should be:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Text colors</caption>
+<colgroup>
+<col style="width: 11%" >
+<col style="width: 87%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th>Value</th>
+<th style="text-align: left;">Color</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td style="text-align: left;">Black</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td style="text-align: left;">Red</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td style="text-align: left;">Green</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td style="text-align: left;">Yellow</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td style="text-align: left;">Blue</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td style="text-align: left;">Magenta</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td style="text-align: left;">Cyan</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td style="text-align: left;">White</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td style="text-align: left;">Not used</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td style="text-align: left;">Reset to default color</td>
+</tr>
+</tbody>
+</table></div>
+<p>The following script uses the <code>setaf</code> and <code>setab</code> capabilities to display the available foreground/background color combinations:</p>
+<div class="sourceCode" id="tput_colors"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="tput_colors-1" title="1">    <span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="tput_colors-2" title="2"></a>
+<a class="sourceLine" id="tput_colors-3" title="3">    <span class="co"># tput_colors - Demonstrate color combinations.</span></a>
+<a class="sourceLine" id="tput_colors-4" title="4"></a>
+<a class="sourceLine" id="tput_colors-5" title="5">    <span class="kw">for</span> <span class="ex">fg_color</span> in <span class="dt">{0..7}</span><span class="kw">;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="tput_colors-6" title="6">        <span class="va">set_foreground=$(</span><span class="ex">tput</span> setaf <span class="va">$fg_color)</span></a>
+<a class="sourceLine" id="tput_colors-7" title="7">        <span class="kw">for</span> <span class="ex">bg_color</span> in <span class="dt">{0..7}</span><span class="kw">;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="tput_colors-8" title="8">            <span class="va">set_background=$(</span><span class="ex">tput</span> setab <span class="va">$bg_color)</span></a>
+<a class="sourceLine" id="tput_colors-9" title="9">            <span class="bu">echo</span> -n <span class="va">$set_background$set_foreground</span></a>
+<a class="sourceLine" id="tput_colors-10" title="10">            <span class="bu">printf</span> <span class="st">&#39; F:%s B:%s &#39;</span> <span class="va">$fg_color</span> <span class="va">$bg_color</span></a>
+<a class="sourceLine" id="tput_colors-11" title="11">        <span class="kw">done</span></a>
+<a class="sourceLine" id="tput_colors-12" title="12">        <span class="bu">echo</span> <span class="va">$(</span><span class="ex">tput</span> sgr0<span class="va">)</span></a>
+<a class="sourceLine" id="tput_colors-13" title="13">    <span class="kw">done</span></a></code></pre></div>
+<figure>
+<img src="images/adventure_tput_tput_colors.png" alt="tput_colors" ><figcaption>tput_colors</figcaption>
+</figure>
+<h2 id="clearing-the-screen">Clearing the Screen</h2>
+<p>These capnames allow us to selectively clear portions of the terminal display:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Screen erasure capnames</caption>
+<colgroup>
+<col style="width: 11%" >
+<col style="width: 87%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th>Capname</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>smcup</code></td>
+<td style="text-align: left;">Save screen contents</td>
+</tr>
+<tr class="even">
+<td><code>rmcup</code></td>
+<td style="text-align: left;">Restore screen contents</td>
+</tr>
+<tr class="odd">
+<td><code>el</code></td>
+<td style="text-align: left;">Clear from the cursor to the end of the line</td>
+</tr>
+<tr class="even">
+<td><code>el1</code></td>
+<td style="text-align: left;">Clear from the cursor to the beginning of the line</td>
+</tr>
+<tr class="odd">
+<td><code>ed</code></td>
+<td style="text-align: left;">Clear from the cursor to the end of the screen</td>
+</tr>
+<tr class="even">
+<td><code>clear</code></td>
+<td style="text-align: left;">Clear the entire screen and home the cursor</td>
+</tr>
+</tbody>
+</table></div>
+<p>Using some of these terminal capabilities, we can construct a script with a menu and a separate output area to display some system information:</p>
+<div class="sourceCode" id="tput_menu"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="tput_menu-1" title="1">    <span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="tput_menu-2" title="2"></a>
+<a class="sourceLine" id="tput_menu-3" title="3">    <span class="co"># tput_menu: a menu driven system information program</span></a>
+<a class="sourceLine" id="tput_menu-4" title="4"></a>
+<a class="sourceLine" id="tput_menu-5" title="5">    <span class="va">BG_BLUE=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> setab 4<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tput_menu-6" title="6">    <span class="va">BG_BLACK=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> setab 0<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tput_menu-7" title="7">    <span class="va">FG_GREEN=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> setaf 2<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tput_menu-8" title="8">    <span class="va">FG_WHITE=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> setaf 7<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tput_menu-9" title="9"></a>
+<a class="sourceLine" id="tput_menu-10" title="10">    <span class="co"># Save screen</span></a>
+<a class="sourceLine" id="tput_menu-11" title="11">    <span class="ex">tput</span> smcup</a>
+<a class="sourceLine" id="tput_menu-12" title="12"></a>
+<a class="sourceLine" id="tput_menu-13" title="13">    <span class="co"># Display menu until selection == 0</span></a>
+<a class="sourceLine" id="tput_menu-14" title="14">    <span class="kw">while [[</span> <span class="va">$REPLY</span> <span class="ot">!=</span> 0<span class="kw"> ]]</span>; <span class="kw">do</span></a>
+<a class="sourceLine" id="tput_menu-15" title="15">      <span class="bu">echo</span> -n <span class="va">${BG_BLUE}${FG_WHITE}</span></a>
+<a class="sourceLine" id="tput_menu-16" title="16">      <span class="fu">clear</span></a>
+<a class="sourceLine" id="tput_menu-17" title="17">      <span class="fu">cat</span> <span class="op">&lt;&lt;- _EOF_</span></a>
+<a class="sourceLine" id="tput_menu-18" title="18">        Please Select:</a>
+<a class="sourceLine" id="tput_menu-19" title="19"></a>
+<a class="sourceLine" id="tput_menu-20" title="20">        1. Display Hostname and Uptime</a>
+<a class="sourceLine" id="tput_menu-21" title="21">        2. Display Disk Space</a>
+<a class="sourceLine" id="tput_menu-22" title="22">        3. Display Home Space Utilization</a>
+<a class="sourceLine" id="tput_menu-23" title="23">        0. Quit</a>
+<a class="sourceLine" id="tput_menu-24" title="24"></a>
+<a class="sourceLine" id="tput_menu-25" title="25">    _EOF_</a>
+<a class="sourceLine" id="tput_menu-26" title="26"></a>
+<a class="sourceLine" id="tput_menu-27" title="27">      read -p &quot;Enter selection [0-3] &gt; &quot; selection</a>
+<a class="sourceLine" id="tput_menu-28" title="28">      </a>
+<a class="sourceLine" id="tput_menu-29" title="29">      # Clear area beneath menu</a>
+<a class="sourceLine" id="tput_menu-30" title="30">      tput cup 10 0</a>
+<a class="sourceLine" id="tput_menu-31" title="31">      echo -n <span class="va">${BG_BLACK}${FG_GREEN}</span></a>
+<a class="sourceLine" id="tput_menu-32" title="32">      tput ed</a>
+<a class="sourceLine" id="tput_menu-33" title="33">      tput cup 11 0</a>
+<a class="sourceLine" id="tput_menu-34" title="34"></a>
+<a class="sourceLine" id="tput_menu-35" title="35">      # Act on selection</a>
+<a class="sourceLine" id="tput_menu-36" title="36">      case <span class="va">$selection</span> in</a>
+<a class="sourceLine" id="tput_menu-37" title="37">        1)  echo &quot;Hostname: <span class="va">$HOSTNAME</span>&quot;</a>
+<a class="sourceLine" id="tput_menu-38" title="38">            uptime</a>
+<a class="sourceLine" id="tput_menu-39" title="39">            ;;</a>
+<a class="sourceLine" id="tput_menu-40" title="40">        2)  df -h</a>
+<a class="sourceLine" id="tput_menu-41" title="41">            ;;</a>
+<a class="sourceLine" id="tput_menu-42" title="42">        3)  if [[ <span class="va">$(</span><span class="fu">id</span> -u<span class="va">)</span> -eq 0 ]]; then</a>
+<a class="sourceLine" id="tput_menu-43" title="43">              echo &quot;Home Space Utilization (All Users)&quot;</a>
+<a class="sourceLine" id="tput_menu-44" title="44">              du -sh /home/* 2&gt; /dev/null</a>
+<a class="sourceLine" id="tput_menu-45" title="45">            else</a>
+<a class="sourceLine" id="tput_menu-46" title="46">              echo &quot;Home Space Utilization (<span class="va">$USER</span>)&quot;</a>
+<a class="sourceLine" id="tput_menu-47" title="47">              du -s <span class="va">$HOME</span>/* 2&gt; /dev/null | sort -nr</a>
+<a class="sourceLine" id="tput_menu-48" title="48">            fi</a>
+<a class="sourceLine" id="tput_menu-49" title="49">            ;;</a>
+<a class="sourceLine" id="tput_menu-50" title="50">        0)  break</a>
+<a class="sourceLine" id="tput_menu-51" title="51">            ;;</a>
+<a class="sourceLine" id="tput_menu-52" title="52">        *)  echo &quot;Invalid entry.&quot;</a>
+<a class="sourceLine" id="tput_menu-53" title="53">            ;;</a>
+<a class="sourceLine" id="tput_menu-54" title="54">      esac</a>
+<a class="sourceLine" id="tput_menu-55" title="55">      printf &quot;\n\nPress any key to continue.&quot;</a>
+<a class="sourceLine" id="tput_menu-56" title="56">      read -n 1</a>
+<a class="sourceLine" id="tput_menu-57" title="57">    done</a>
+<a class="sourceLine" id="tput_menu-58" title="58"></a>
+<a class="sourceLine" id="tput_menu-59" title="59">    # Restore screen</a>
+<a class="sourceLine" id="tput_menu-60" title="60">    tput rmcup</a>
+<a class="sourceLine" id="tput_menu-61" title="61">    echo &quot;Program terminated.&quot;</a></code></pre></div>
+<figure>
+<img src="images/adventure_tput_tput_menu-2.png" alt="tput_menu" ><figcaption>tput_menu</figcaption>
+</figure>
+<h2 id="making-time">Making Time</h2>
+<p>For our final exercise, we will make something useful; a large character clock. To do this, we first need to install a program called <code>banner</code>. The <code>banner</code> program accepts one or more words as arguments and displays them like so:</p>
+<pre><code>[me@linuxbox ~]$ banner &quot;BIG TEXT&quot;
+######    ###    #####          ####### ####### #     # #######
+#     #    #    #     #            #    #        #   #     #
+#     #    #    #                  #    #         # #      #
+######     #    #  ####            #    #####      #       #
+#     #    #    #     #            #    #         # #      #
+#     #    #    #     #            #    #        #   #     #
+######    ###    #####             #    ####### #     #    #</code></pre>
+<p>This program has been around for a long time and there are several different implementations. On Debian-based systems (such as Ubuntu) the package is called “sysvbanner”, on Red Hat-based systems the package is called simply “banner”. Once we have <code>banner</code> installed we can run this script to display our clock:</p>
+<div class="sourceCode" id="tclock"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="tclock-1" title="1">    <span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="tclock-2" title="2"></a>
+<a class="sourceLine" id="tclock-3" title="3">    <span class="co"># tclock - Display a clock in a terminal</span></a>
+<a class="sourceLine" id="tclock-4" title="4"></a>
+<a class="sourceLine" id="tclock-5" title="5">    <span class="va">BG_BLUE=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> setab 4<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tclock-6" title="6">    <span class="va">FG_BLACK=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> setaf 0<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tclock-7" title="7">    <span class="va">FG_WHITE=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> setaf 7<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tclock-8" title="8"></a>
+<a class="sourceLine" id="tclock-9" title="9">    <span class="fu">terminal_size()</span> <span class="kw">{</span> <span class="co"># Calculate the size of the terminal</span></a>
+<a class="sourceLine" id="tclock-10" title="10">      </a>
+<a class="sourceLine" id="tclock-11" title="11">      <span class="va">terminal_cols=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> cols<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tclock-12" title="12">      <span class="va">terminal_rows=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">tput</span> lines<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tclock-13" title="13">    <span class="kw">}</span></a>
+<a class="sourceLine" id="tclock-14" title="14"></a>
+<a class="sourceLine" id="tclock-15" title="15">    <span class="fu">banner_size()</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="tclock-16" title="16"></a>
+<a class="sourceLine" id="tclock-17" title="17">      <span class="co"># Because there are different versions of banner, we need to</span></a>
+<a class="sourceLine" id="tclock-18" title="18">      <span class="co"># calculate the size of our banner&#39;s output</span></a>
+<a class="sourceLine" id="tclock-19" title="19"></a>
+<a class="sourceLine" id="tclock-20" title="20">      <span class="va">banner_cols=</span>0</a>
+<a class="sourceLine" id="tclock-21" title="21">      <span class="va">banner_rows=</span>0</a>
+<a class="sourceLine" id="tclock-22" title="22">      </a>
+<a class="sourceLine" id="tclock-23" title="23">      <span class="kw">while</span> <span class="bu">read</span>; <span class="kw">do</span></a>
+<a class="sourceLine" id="tclock-24" title="24">        [[ <span class="va">${#REPLY}</span> <span class="ex">-gt</span> <span class="va">$banner_cols</span> ]] <span class="kw">&amp;&amp;</span> <span class="va">banner_cols=${#REPLY}</span></a>
+<a class="sourceLine" id="tclock-25" title="25">        <span class="kw">((</span>++banner_rows<span class="kw">))</span></a>
+<a class="sourceLine" id="tclock-26" title="26">      <span class="kw">done</span> <span class="op">&lt;</span> <span class="op">&lt;(</span><span class="ex">banner</span> <span class="st">&quot;12:34 PM&quot;</span><span class="op">)</span></a>
+<a class="sourceLine" id="tclock-27" title="27">    <span class="kw">}</span></a>
+<a class="sourceLine" id="tclock-28" title="28"></a>
+<a class="sourceLine" id="tclock-29" title="29">    <span class="fu">display_clock()</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="tclock-30" title="30">      </a>
+<a class="sourceLine" id="tclock-31" title="31">      <span class="co"># Since we are putting the clock in the center of the terminal,</span></a>
+<a class="sourceLine" id="tclock-32" title="32">      <span class="co"># we need to read each line of banner&#39;s output and place it in the</span></a>
+<a class="sourceLine" id="tclock-33" title="33">      <span class="co"># right spot.</span></a>
+<a class="sourceLine" id="tclock-34" title="34">      </a>
+<a class="sourceLine" id="tclock-35" title="35">      <span class="bu">local</span> <span class="va">row=$clock_row</span></a>
+<a class="sourceLine" id="tclock-36" title="36">      </a>
+<a class="sourceLine" id="tclock-37" title="37">      <span class="kw">while</span> <span class="bu">read</span>; <span class="kw">do</span></a>
+<a class="sourceLine" id="tclock-38" title="38">        <span class="ex">tput</span> cup <span class="va">$row</span> <span class="va">$clock_col</span></a>
+<a class="sourceLine" id="tclock-39" title="39">        <span class="bu">echo</span> -n <span class="st">&quot;</span><span class="va">$REPLY</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tclock-40" title="40">        <span class="kw">((</span>++row<span class="kw">))</span></a>
+<a class="sourceLine" id="tclock-41" title="41">      <span class="kw">done</span> <span class="op">&lt;</span> <span class="op">&lt;(</span><span class="ex">banner</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">date</span> +<span class="st">&#39;%I:%M %p&#39;</span><span class="va">)</span><span class="st">&quot;</span><span class="op">)</span></a>
+<a class="sourceLine" id="tclock-42" title="42">    <span class="kw">}</span></a>
+<a class="sourceLine" id="tclock-43" title="43"></a>
+<a class="sourceLine" id="tclock-44" title="44">    <span class="co"># Set a trap to restore terminal on Ctrl-c (exit).</span></a>
+<a class="sourceLine" id="tclock-45" title="45">    <span class="co"># Reset character attributes, make cursor visible, and restore</span></a>
+<a class="sourceLine" id="tclock-46" title="46">    <span class="co"># previous screen contents (if possible).</span></a>
+<a class="sourceLine" id="tclock-47" title="47"></a>
+<a class="sourceLine" id="tclock-48" title="48">    <span class="bu">trap</span> <span class="st">&#39;tput sgr0; tput cnorm; tput rmcup || clear; exit 0&#39;</span> SIGINT</a>
+<a class="sourceLine" id="tclock-49" title="49"></a>
+<a class="sourceLine" id="tclock-50" title="50">    <span class="co"># Save screen contents and make cursor invisible</span></a>
+<a class="sourceLine" id="tclock-51" title="51">    <span class="ex">tput</span> smcup<span class="kw">;</span> <span class="ex">tput</span> civis</a>
+<a class="sourceLine" id="tclock-52" title="52"></a>
+<a class="sourceLine" id="tclock-53" title="53">    <span class="co"># Calculate sizes and positions</span></a>
+<a class="sourceLine" id="tclock-54" title="54">    <span class="ex">terminal_size</span></a>
+<a class="sourceLine" id="tclock-55" title="55">    <span class="ex">banner_size</span></a>
+<a class="sourceLine" id="tclock-56" title="56">    <span class="va">clock_row=$((</span>(terminal_rows - banner_rows) / 2<span class="va">))</span></a>
+<a class="sourceLine" id="tclock-57" title="57">    <span class="va">clock_col=$((</span>(terminal_cols - banner_cols) / 2<span class="va">))</span></a>
+<a class="sourceLine" id="tclock-58" title="58">    <span class="va">progress_row=$((</span>clock_row + banner_rows + 1<span class="va">))</span></a>
+<a class="sourceLine" id="tclock-59" title="59">    <span class="va">progress_col=$((</span>(terminal_cols - 60) / 2<span class="va">))</span></a>
+<a class="sourceLine" id="tclock-60" title="60"></a>
+<a class="sourceLine" id="tclock-61" title="61">    <span class="co"># In case the terminal cannot paint the screen with a background</span></a>
+<a class="sourceLine" id="tclock-62" title="62">    <span class="co"># color (tmux has this problem), create a screen-size string of </span></a>
+<a class="sourceLine" id="tclock-63" title="63">    <span class="co"># spaces so we can paint the screen the hard way.</span></a>
+<a class="sourceLine" id="tclock-64" title="64"></a>
+<a class="sourceLine" id="tclock-65" title="65">    <span class="va">blank_screen=</span></a>
+<a class="sourceLine" id="tclock-66" title="66">    <span class="kw">for</span> <span class="kw">((</span>i=0; i &lt; (terminal_cols * terminal_rows); ++i<span class="kw">))</span>; <span class="kw">do</span></a>
+<a class="sourceLine" id="tclock-67" title="67">      <span class="va">blank_screen=</span><span class="st">&quot;</span><span class="va">${blank_screen}</span><span class="st"> &quot;</span></a>
+<a class="sourceLine" id="tclock-68" title="68">    <span class="kw">done</span></a>
+<a class="sourceLine" id="tclock-69" title="69"></a>
+<a class="sourceLine" id="tclock-70" title="70">    <span class="co"># Set the foreground and background colors and go!</span></a>
+<a class="sourceLine" id="tclock-71" title="71">    <span class="bu">echo</span> -n <span class="va">${BG_BLUE}${FG_WHITE}</span></a>
+<a class="sourceLine" id="tclock-72" title="72">    <span class="kw">while</span> <span class="fu">true</span><span class="kw">;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="tclock-73" title="73"></a>
+<a class="sourceLine" id="tclock-74" title="74">      <span class="co"># Set the background and draw the clock</span></a>
+<a class="sourceLine" id="tclock-75" title="75">      </a>
+<a class="sourceLine" id="tclock-76" title="76">      <span class="kw">if</span> <span class="ex">tput</span> bce<span class="kw">;</span> <span class="kw">then</span> <span class="co"># Paint the screen the easy way if bce is supported</span></a>
+<a class="sourceLine" id="tclock-77" title="77">        <span class="fu">clear</span></a>
+<a class="sourceLine" id="tclock-78" title="78">      <span class="kw">else</span> <span class="co"># Do it the hard way</span></a>
+<a class="sourceLine" id="tclock-79" title="79">        <span class="ex">tput</span> home</a>
+<a class="sourceLine" id="tclock-80" title="80">        <span class="bu">echo</span> -n <span class="st">&quot;</span><span class="va">$blank_screen</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="tclock-81" title="81">      <span class="kw">fi</span></a>
+<a class="sourceLine" id="tclock-82" title="82">      <span class="ex">tput</span> cup <span class="va">$clock_row</span> <span class="va">$clock_col</span></a>
+<a class="sourceLine" id="tclock-83" title="83">      <span class="ex">display_clock</span></a>
+<a class="sourceLine" id="tclock-84" title="84">      </a>
+<a class="sourceLine" id="tclock-85" title="85">      <span class="co"># Draw a black progress bar then fill it in white</span></a>
+<a class="sourceLine" id="tclock-86" title="86">      <span class="ex">tput</span> cup <span class="va">$progress_row</span> <span class="va">$progress_col</span></a>
+<a class="sourceLine" id="tclock-87" title="87">      <span class="bu">echo</span> -n <span class="va">${FG_BLACK}</span></a>
+<a class="sourceLine" id="tclock-88" title="88">      <span class="bu">echo</span> -n <span class="st">&quot;###########################################################&quot;</span></a>
+<a class="sourceLine" id="tclock-89" title="89">      <span class="ex">tput</span> cup <span class="va">$progress_row</span> <span class="va">$progress_col</span></a>
+<a class="sourceLine" id="tclock-90" title="90">      <span class="bu">echo</span> -n <span class="va">${FG_WHITE}</span></a>
+<a class="sourceLine" id="tclock-91" title="91"></a>
+<a class="sourceLine" id="tclock-92" title="92">      <span class="co"># Advance the progress bar every second until a minute is used up</span></a>
+<a class="sourceLine" id="tclock-93" title="93">      <span class="kw">for</span> <span class="kw">((</span>i = <span class="va">$(</span><span class="fu">date</span> +%S<span class="va">)</span>;i &lt; 60; ++i<span class="kw">))</span>; <span class="kw">do</span></a>
+<a class="sourceLine" id="tclock-94" title="94">        <span class="bu">echo</span> -n <span class="st">&quot;#&quot;</span></a>
+<a class="sourceLine" id="tclock-95" title="95">        <span class="fu">sleep</span> 1</a>
+<a class="sourceLine" id="tclock-96" title="96">      <span class="kw">done</span></a>
+<a class="sourceLine" id="tclock-97" title="97">    <span class="kw">done</span></a></code></pre></div>
+<figure>
+<img src="images/adventure_tput_tclock.png" alt="tclock script in action" ><figcaption>tclock script in action</figcaption>
+</figure>
+<p>Our script paints the screen blue and places the current time in the center of the terminal window. This script does not dynamically update the display’s position if the terminal is resized (that’s an enhancement left to the reader). A progress bar is displayed beneath the clock and it is updated every second until the next minute is reached, when the clock itself is updated.</p>
+<p>One interesting feature of the script is how it deals with painting the screen. Terminals that support the “bce” capability erase using the current background color. So, on terminals that support bce, this is easy. We simply set the background color and then clear the screen. Terminals that do not support bce always erase to the default color (usually black).</p>
+<p>To solve this problem, our this script creates a long string of spaces that will fill the screen. On terminal types that do not support bce (for example, screen) the background color is set, the cursor is moved to the home position and then the string of spaces is drawn to fill the screen with the desired background color.</p>
+<h2 id="summing-up">Summing Up</h2>
+<p>Using <code>tput</code>, we can easily add visual enhancements to our scripts. While it’s important not to get carried away, lest we end up with a garish, blinking mess, adding text effects and color can increase the visual appeal of our work and improve the readability of information we present to our users.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><p>The terminfo man page contains the entire list of terminal capabilities defined terminfo database.</p></li>
+<li><p>On most systems, the <code>/lib/terminfo</code> and <code>/usr/share/terminfo</code> directories contain the all of the terminals supported by terminfo.</p></li>
+<li><p><a href="http://wiki.bash-hackers.org/scripting/terminalcodes/" title="Bash Hackers Wiki">Bash Hacker’s Wiki</a> has a good entry on the subject of text effects using <code>tput</code>. The page also has some interesting example scripts.</p></li>
+<li><p><a href="http://mywiki.wooledge.org/BashFAQ/037" title="Greg&#39;s Wiki">Greg’s Wiki</a> contains useful information about setting text colors using <code>tput</code>.</p></li>
+<li><p><a href="https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x405.html" title="Bash Prompt HOWTO">Bash Prompt HOWTO</a> discusses using <code>tput</code> to apply text effects to the shell prompt.</p></li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_adv_tput.php.html#top">Top</a> | <a
+      href="lc3_adv_redirection.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_dialog.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

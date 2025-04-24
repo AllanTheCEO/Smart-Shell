@@ -1,0 +1,30 @@
+  
+NAME
+    caller - Return the context of the current subroutine call.
+
+SYNOPSIS
+    caller [expr]
+
+DESCRIPTION
+    Return the context of the current subroutine call.
+    
+    Without EXPR, returns "$line $filename".  With EXPR, returns
+    "$line $subroutine $filename"; this extra information can be used to
+    provide a stack trace.
+    
+    The value of EXPR indicates how many call frames to go back before the
+    current one; the top frame is frame 0.
+    
+    Exit Status:
+    Returns 0 unless the shell is not executing a shell function or EXPR
+    is invalid.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

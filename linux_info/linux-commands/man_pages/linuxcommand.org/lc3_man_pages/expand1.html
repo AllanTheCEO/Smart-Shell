@@ -1,0 +1,76 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>expand man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for expand">
+  <meta name="keywords" content="Manual page, expand command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#text" style="color: white;">Back to Contents</a>
+  <pre>
+EXPAND(1)                     User Commands                     EXPAND(1)
+
+NAME
+       expand - convert tabs to spaces
+
+SYNOPSIS
+       expand [OPTION]... [FILE]...
+
+DESCRIPTION
+       Convert tabs in each FILE to spaces, writing to standard output.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       Mandatory  arguments  to  long  options  are  mandatory  for short
+       options too.
+
+       -i, --initial
+              do not convert tabs after non blanks
+
+       -t, --tabs=N
+              have tabs N characters apart, not 8
+
+       -t, --tabs=LIST
+              use comma separated list of tab positions The  last  speci‐
+              fied  position  can  be  prefixed with '/' to specify a tab
+              size to use after the last explicitly specified  tab  stop.
+              Also  a  prefix  of  '+' can be used to align remaining tab
+              stops relative to the last specified tab  stop  instead  of
+              the first column
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report   any   translation   bugs   to    &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright  ©  2020 Free Software Foundation, Inc.  License GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       unexpand(1)
+
+       Full documentation &lt;https://www.gnu.org/software/coreutils/expand&gt;
+       or available locally via: info '(coreutils) expand invocation'
+
+GNU coreutils 8.32              April 2020                      EXPAND(1)
+</pre></body></html>

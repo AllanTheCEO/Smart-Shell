@@ -1,0 +1,151 @@
+<code>me@linuxbox ~ $ cd &lt;tab&gt;
+
+me@linuxbox ~ $ cd &lt;tab&gt;
+Desktop/    Documents/  Downloads/  Music/  Pictures/   Public/
+Templates/  Videos/
+
+me@linuxbox ~ $ cd Desktop/&lt;tab&gt;
+Desktop/    Documents/  Downloads/  Music/  Pictures/   Public/
+Templates/  Videos/
+
+me@linuxbox ~ $ cd Documents/
+Desktop/    Documents/  Downloads/  Music/  Pictures/   Public/
+Templates/  Videos/</code></pre>
+<pre><code>me@linuxbox ~ $ cd /usr/local/share
+me@linuxbox share $ cd share bin
+me@linuxbox bin $ pwd
+/usr/local/bin</code></pre>
+<pre><code>me@linuxbox ~ $ ls /u/l/share&lt;tab&gt;</code></pre>
+<p><code>zsh</code> will expand it into:</p>
+<pre><code>me@linuxbox ~ $ ls /usr/local/share/</code></pre>
+<pre><code>me@linuxbox ~ $ rm -&lt;tab&gt;
+--force             -f      -- ignore nonexistent files, never prompt
+--help                      -- display help message and exit
+-i                          -- prompt before every removal
+-I                          -- prompt when removing many files
+--interactive               -- prompt under given condition
+                               (defaulting to always)
+--no-preserve-root          -- do not treat / specially
+--one-file-system           -- stay within file systems of files given
+                               as arguments
+--preserve-root             -- do not remove / (default)
+--recursive         -R  -r  -- remove directories and their contents
+                               recursively
+--verbose           -v      -- explain what is being done
+--version                   -- output version information and exit</code></pre>
+<pre><code>me@linuxbox ~ $ find . -name &quot;*.txt&quot; | sort</code></pre>
+<p>In <code>zsh</code>, we could do this:</p>
+<pre><code>me@linuxbox ~ $ ls **/*.txt</code></pre>
+<pre><code>me@linuxbox ~ $ **/*.txt(@)</code></pre>
+<p>will only display the files whose names end in <code>.txt</code> and are symbolic links.</p>
+<p>There are many supported qualifiers and they may be combined to perform very fine grained file selection. Here are some examples:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Z shell pathname expansions</caption>
+<colgroup>
+<col style="width: 16%" >
+<col style="width: 44%" >
+<col style="width: 37%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th>Qualifier</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>.</td>
+<td style="text-align: left;">Regular files</td>
+<td style="text-align: left;"><code>ls *.txt(.)</code></td>
+</tr>
+<tr class="even">
+<td>/</td>
+<td style="text-align: left;">Directories</td>
+<td style="text-align: left;"><code>ls *.txt(/)</code></td>
+</tr>
+<tr class="odd">
+<td>@</td>
+<td style="text-align: left;">Symbolic links</td>
+<td style="text-align: left;"><code>ls *.txt(@)</code></td>
+</tr>
+<tr class="even">
+<td>*</td>
+<td style="text-align: left;">Executable files</td>
+<td style="text-align: left;"><code>ls *(*)</code></td>
+</tr>
+<tr class="odd">
+<td>F</td>
+<td style="text-align: left;">Non-empty (“full”) directories</td>
+<td style="text-align: left;"><code>ls *(F)</code></td>
+</tr>
+<tr class="even">
+<td>/^F</td>
+<td style="text-align: left;">Empty directories</td>
+<td style="text-align: left;"><code>ls *(/^F)</code></td>
+</tr>
+<tr class="odd">
+<td>m<em>n</em></td>
+<td style="text-align: left;">Modified exactly <em>n</em> days ago</td>
+<td style="text-align: left;"><code>ls *(m5)</code></td>
+</tr>
+<tr class="even">
+<td>m-<em>n</em></td>
+<td style="text-align: left;">Modified less than <em>n</em> days ago</td>
+<td style="text-align: left;"><code>ls *(m-5)</code></td>
+</tr>
+<tr class="odd">
+<td>m+<em>n</em></td>
+<td style="text-align: left;">Modified more than <em>n</em> days ago</td>
+<td style="text-align: left;"><code>ls *(m+5)</code></td>
+</tr>
+<tr class="even">
+<td>L0</td>
+<td style="text-align: left;">Empty (zero length) file</td>
+<td style="text-align: left;"><code>ls *(L0)</code></td>
+</tr>
+<tr class="odd">
+<td>LM+<em>n</em></td>
+<td style="text-align: left;">File larger than <em>n</em> megabytes</td>
+<td style="text-align: left;"><code>ls *(LM+5)</code></td>
+</tr>
+<tr class="even">
+<td>LK-<em>n</em></td>
+<td style="text-align: left;">File smaller than <em>n</em> kilobytes</td>
+<td style="text-align: left;"><code>ls *(LK-100)</code></td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="global-aliases">Global Aliases</h4>
+<p>Z shell provides more powerful aliases. With <code>zsh</code> we can define an alias in the usual way, such as:</p>
+<pre><code>me@linuxbox ~ $ alias vi=&#39;/usr/bin/vim&#39;</code></pre>
+<pre><code>me@linuxbox ~ $ alias -g LOG=&#39;/var/log/syslog&#39;</code></pre>
+<p>and then use it anywhere on a command line:</p>
+<pre><code>me@linuxbox ~ $ less LOG</code></pre>
+<pre><code>me@linuxbox ~ $ alias -g L=&#39;| less&quot;</code></pre>
+<p>or</p>
+<pre><code>me@linuxbox ~ $ alias -g W=&#39;| wc -l&#39;</code></pre>
+<pre><code>me@linuxbox ~ $ cat LOG W</code></pre>
+<p>to display the number of lines in <code>/var/log/syslog</code>.</p>
+<h4 id="suffix-aliases">Suffix Aliases</h4>
+<p>What’s more, we can define aliases to act like an “open with…” by defining a <em>suffix alias</em>. For example, we can define an alias that says all files that end with “.txt” should be viewed with less:</p>
+<pre><code>me@linuxbox ~ $ alias -s txt=&#39;less&#39;</code></pre>
+<pre><code>me@linuxbox ~ $ dir-list.txt</code></pre>
+<p>How cool is that?</p>
+<h4 id="improved-history-search">Improved History Search</h4>
+<p><code>zsh</code> adds a neat trick to history searching. In <code>bash</code> (and <code>zsh</code> too) we can perform a reverse incremental history search by typing <code>Ctrl-r</code>, and each subsequent keystroke will refine the search. <code>zsh</code> goes one better by allowing us to simply type a few letters of the desired search string on the command line and then press up-arrow. It moves back through the history to find the first match, and each time we press the up-arrow, the next match is displayed.</p>
+<h4 id="environment-variable-editing">Environment Variable Editing</h4>
+<p><code>zsh</code> provides a shell builtin called <code>vared</code> for editing shell variables. For example, if we wanted to make a quick change to our <code>PATH</code> variable we can do this:</p>
+<pre><code>me@linuxbox ~ $ vared PATH</code></pre>
+<pre><code>me@linuxbox ~ $ tcsh
+%</code></pre>
+<pre><code>% exit
+me@linuxbox ~ $</code></pre>
+<pre><code>me@linuxbox ~ $ chsh
+password:
+Changing the login shell for me
+Enter the new value, or press ENTER for the default
+   Login Shell [/bin/bash]: /usr/bin/zsh
+
+~ 23:30:40
+$</code>

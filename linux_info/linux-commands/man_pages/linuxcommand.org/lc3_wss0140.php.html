@@ -1,0 +1,314 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 14: Errors and Signals and Traps (Oh My!) - Part 1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash shell scripting error and signal handling">
+    <meta name="keywords" content="Bash signal handling, bash traps, shell script error handling, SIGINT, SIGTERM">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0130.php.html">
+    <link rel="next" href="lc3_wss0150.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0130.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0150.php.html">Next</a>
+    </div>
+
+
+<h1>Errors and Signals and Traps (Oh My!) - Part 1</h1>
+
+<p>In this lesson, we're going to look at handling errors during script execution.</p>
+
+<p>The difference between a poor program and a good one is often measured in
+terms of the program's <i>robustness</i>.  That is, the program's ability to
+handle situations in which something goes wrong. </p>
+
+<h2>Exit Status</h2>
+
+<p>As we recall from previous lessons, every well-written program returns
+an exit status when it finishes.  If a program finishes successfully, the
+exit status will be zero.  If the exit status is anything other than zero,
+then the program failed in some way.</p>
+
+<p>It is very important to check the exit status of programs we call in our
+scripts.  It is also important that our scripts return a meaningful exit status
+when they finish.  There was once a Unix system administrator who wrote a
+script for a production system containing the following 2 lines of code:</p>
+
+<div class="codeexample"># Example of a really bad idea
+
+cd "$some_directory"
+rm *</div>
+
+<p>Why is this such a bad way of doing it?  It's not, if nothing goes wrong.
+The two lines change the working directory to the name contained in
+<code>$some_directory</code> and delete the files in that directory.  That's
+the intended behavior.  But what happens if the directory named in
+<code>$some_directory</code> doesn't exist?  In that case, the <code>cd</code>
+command will fail and the script executes the <code>rm</code> command on the
+current working directory.  Not the intended behavior!</p>
+
+<p>By the way, the hapless system administrator's script suffered this very
+failure and it destroyed a large portion of an important production system.
+Don't let this happen to you!</p>
+
+<p>The problem with the script was that it did not check the exit status of the
+<code>cd</code> command before proceeding with the <code>rm</code> command.</p>
+
+<h2>Checking the Exit Status</h2>
+
+<p>There are several ways we can get and respond to the exit status of a
+program.  First, we can examine the contents of the <code>$?</code>
+environment variable.  <code>$?</code> will contain the exit status of the
+last command executed.  We can see this work with the following:</p>
+
+<div class="display">[me@linuxbox]$ <code class="cmd"> true; echo $?</code>
+0
+[me@linuxbox]$ <code class="cmd">false; echo $?</code>
+1</div>
+
+<p>The <code>true</code> and <code>false</code> commands are programs that do
+nothing except return an exit status of zero and one, respectively.  Using
+them, we can see how the <code>$?</code> environment variable contains the exit
+status of the previous program.</p>
+
+<p>So to check the exit status, we could write the script this way:</p>
+
+<div class="codeexample"># Check the exit status
+
+<code class="user">cd</code> "$some_directory"
+<code class="user">if [</code> "$?" = "0" <code class="user">]; then</code>
+  rm *
+<code class="user">else
+  echo</code> "Cannot change directory!" 1&gt;&2
+  <code class="user">exit</code> 1
+<code class="user">fi</code></div>
+
+<p>In this version, we examine the exit status of the <code>cd</code> command
+and if it's not zero, we print an error message on standard error and
+terminate the script with an exit status of 1.</p>
+
+<p>While this is a working solution to the problem, there are more clever
+methods that will save us some typing.  The next approach we can try is to
+use the <code>if</code> statement directly, since it evaluates the exit status
+of commands it is given.</p>
+
+<p>Using <code>if</code>, we could write it this way:</p>
+
+<div class="codeexample"># A better way
+
+<code class="user">if cd</code> "$some_directory"; <code class="user">then</code>
+  rm ./*
+<code class="user">else
+  echo</code> "Could not change directory! Aborting." 1&gt;&2
+  <code class="user">exit</code> 1
+<code class="user">fi</code></div>
+
+<p>Here we check to see if the <code>cd</code> command is successful.  Only
+then does <code>rm</code> get executed; otherwise an error message is output
+and the program exits with a code of 1, indicating that an error has
+occurred.</p>
+
+<p>Notice too how we changed the target of the <code class="user">rm</code>
+command from "*" to "./*". This is a safety precaution. The reason is a little
+subtle and has to do with the lax way Unix-like systems name files. Since it is
+possible to include almost any character in a file name, we must card against
+file names that begin with hyphens as thy might be interpreted as command
+options after the wildcard is expanded. For example, if there was a file named
+<code>-rf</code> in the directory, it might cause <code class="user">rm</code>
+to do unpleasant things. It's a good idea to always include "./" ahead of
+leading asterisks in scripts.</p>
+
+<h2>An Error Exit Function</h2>
+
+<p>Since we will be checking for errors often in our programs, it makes sense
+to write a function that will display error messages.  This will save more
+typing and promote laziness.</p>
+
+<div class="codeexample"># An error exit function
+
+error_exit()
+{
+  <code class="user">echo</code> "$1" 1&gt;&2
+  <code class="user">exit</code> 1
+}
+
+# Using error_exit
+
+<code class="user">if cd</code> "$some_directory"; <code class="user">then</code>
+  rm ./*
+<code class="user">else</code>
+  error_exit "Cannot change directory! Aborting."
+<code class="user">fi</code></div>
+
+<h2>AND and OR Lists</h2>
+
+<p>Finally, we can further simplify our script by using the AND and OR
+control operators.  To explain how they work, here is a quote from the <code
+class="user"><a href="lc3_man_pages/bash1.html">bash</a></code> man page:</p>
+
+<p>"The  control operators && and || denote AND lists and OR lists,
+respectively.  An AND list has the form</p>
+
+<div class="codeexample">command1 && command2</div>
+
+<p><code>command2</code> is executed <i>if, and only if</i>, <code>command1</code>
+returns an exit status of zero.</p>
+
+<p>An OR list has the form</p>
+
+<div class="codeexample">command1 || command2</div>
+
+<p><code>command2</code> is executed <i>if, and only if</i>, <code>command1</code>
+returns a non-zero exit status.   The  exit status of AND and OR lists
+is the exit status of the last command executed in the list."</p>
+
+<p>Again, we can use the <code>true</code> and <code>false</code> commands to see
+this work:</p>
+
+<div class="display">[me@linuxbox]$ <code class="cmd">true || echo "echo executed"</code>
+[me@linuxbox]$ <code class="cmd">false || echo "echo executed"</code>
+echo executed
+[me@linuxbox]$ <code class="cmd">true && echo "echo executed"</code>
+echo executed
+[me@linuxbox]$ <code class="cmd">false && echo "echo executed"</code>
+[me@linuxbox]$</div>
+
+<p>Using this technique, we can write an even simpler version:</p>
+
+<div class="codeexample"># Simplest of all
+
+<code class="user">cd</code> "$some_directory" || error_exit "Cannot change directory! Aborting"
+rm *</div>
+
+<p>If an exit is not required in case of error, then we can even do this:</p>
+
+<div class="codeexample"># Another way to do it if exiting is not desired
+
+<code class="user">cd</code> "$some_directory" && rm ./*</div>
+
+<p>We need to point out that even with the defense against errors we have
+introduced in our example for the use of <code>cd</code>, this code is still
+vulnerable to a common programming error, namely, what happens if the name of
+the variable containing the name of the directory is misspelled?  In that case,
+the shell will interpret the variable as empty and the <code>cd</code> succeed,
+but it will change directories to the user's home directory, so beware!</p>
+
+<h2>Improving the Error Exit Function</h2>
+
+<p>There are a number of improvements that we can make to the
+<code>error_exit</code> function.  It is useful to include the name of the
+program in the error message to make clear where the error is coming from.
+This becomes more important as our programs get more complex and we start
+having scripts launching other scripts, etc.  Also, note the inclusion of the
+<code>LINENO</code> environment variable which will help identify the exact
+line within a script where the error occurred.</p>
+
+<div class="codeexample">#!/bin/bash
+
+# A slicker error handling routine
+
+# I put a variable in my scripts named PROGNAME which
+# holds the name of the program being run.  You can get this
+# value from the first item on the command line ($0).
+
+PROGNAME="$(basename $0)"
+
+error_exit()
+{
+
+# ----------------------------------------------------------------
+# Function for exit due to fatal program error
+#   Accepts 1 argument:
+#     string containing descriptive error message
+# ----------------------------------------------------------------
+
+
+  <code class="user">echo</code> "${PROGNAME}: ${1:-"Unknown Error"}" 1&gt;&2
+  <code class="user">exit</code> 1
+}
+
+# Example call of the error_exit function.  Note the inclusion
+# of the LINENO environment variable.  It contains the current
+# line number.
+
+<code class="user">echo</code> "Example of error with line number and message"
+error_exit "$LINENO: An error has occurred."</div>
+
+<p>The use of the curly braces within the <code>error_exit</code> function is
+an example of <i>parameter expansion</i>.  We can surround a variable name with
+curly braces (as with <code>${PROGNAME}</code>) if we need to be sure it is
+separated from surrounding text.  Some people just put them around every
+variable out of habit.  That usage is simply a style thing.  The second use,
+<code>${1:-"Unknown Error"}</code> means that if parameter 1 (<code>$1</code>)
+is undefined, substitute the string "Unknown Error" in its place.  Using
+parameter expansion, it is possible to perform a number of useful string
+manipulations.  More information about parameter expansion can be found in the
+<code class="user"><a href="lc3_man_pages/bash1.html">bash</a></code> man page
+under the topic "EXPANSIONS".</p>
+ 
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0140.php.html#top">Top</a> | <a
+      href="lc3_wss0130.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0150.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

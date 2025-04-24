@@ -1,0 +1,151 @@
+<code>me@linuxbox: ~/playground $ touch file1 file2 &quot;ugly file&quot;</code></pre>
+<figure>
+<img src="images/adventure_mc-playground.png" alt="The playground" ><figcaption>The playground</figcaption>
+</figure>
+<h3 id="copying-and-moving-files">Copying and Moving Files</h3>
+<p>Okay, here is where things start to get weird.</p>
+<p>Select <code>dir1</code>, then press <code>Alt-o</code> to display <code>dir1</code> in the other panel. Select the file <code>file1</code> and press F5 to copy (The F6-RenMov command is similar). We are now presented with this formidable-looking dialog box:</p>
+<figure>
+<img src="https://linuxcommand.org/images/adventure_mc-copydialog.png" alt="Copy dialog" ><figcaption>Copy dialog</figcaption>
+</figure>
+<p>To see Midnight Commander’s default behavior, just press <code>Enter</code> and <code>file1</code> is copied into directory <code>dir1</code> (i.e., the file is copied from the directory displayed in current panel to the directory displayed in the other panel).</p>
+<p>That was straightforward, but what if we want to copy <code>file2</code> to a file in <code>dir1</code> named <code>file3</code>? To do this, we select <code>file2</code> and press F5 again and enter the new filename into the Copy dialog:</p>
+<figure>
+<img src="images/adventure_mc-copydialog2.png" alt="Renaming a file during copy" ><figcaption>Renaming a file during copy</figcaption>
+</figure>
+<p>Again, this is pretty straightforward. But let’s say we tagged a group of files and wanted to copy and rename them as they are copied (or moved). How would we do that? Midnight Commander provides a way of doing it, but it’s a little strange.</p>
+<p>The secret is the source mask in the copy dialog. At first glance, it appears that the source mask is simply a file selection wildcard, but first appearances can be deceiving. The mask does filter files as we would expect, but only in a limited way. Unlike the range of wildcards available in the shell, the wildcards in the source mask are limited to “?” (for matching single characters) and &quot;*&quot; (for matching multiple characters). What’s more, the wildcards have a special property.</p>
+<p>It works like this: let’s say we had a file name with an embedded space such as “ugly file” and we want to copy (or move) it to <code>dir1</code> as the file “uglyfile”, instead. Using the source mask, we could enter the mask &quot;* *&quot; which means break the source file name into two blocks of text separated by a space. This wildcard pattern will match the file <code>ugly file</code>, since its name consists of two strings of characters separated by a space. Midnight Commander will associate each block of text with a number starting with 1, so block 1 will contain “ugly” and block 2 will contain “file”. Each block can be referred to by a number as with regular expression grouping. So to create a new file name for our target file without the embedded space, we would specify “\1\2” in the “to” field of the copy dialog like so:</p>
+<figure>
+<img src="images/adventure_mc-copydialog3.png" alt="Using grouping" ><figcaption>Using grouping</figcaption>
+</figure>
+<p>The “?” wildcard behaves the same way. If we make the source mask “???? ????” (which again matches the file <code>ugly file</code>), we now have eight pieces of text that we can rearrange at will. For example, we could make the “to” mask “\8\7\6\5\4\3\2\1”, and the resulting file name would be “elifylgu”. Pretty neat.</p>
+<p>Midnight Commander can also perform case conversion on file names. To do this, we include some additional escape sequences in the to mask:</p>
+<ul>
+<li><p>\u Converts the next character to uppercase.</p></li>
+<li><p>\U Converts all characters to uppercase until another sequence is encountered.</p></li>
+<li><p>\l Converts the next character to lowercase.</p></li>
+<li><p>\L Converts all characters to lowercase until another sequence is encountered.</p></li>
+</ul>
+<p>So if we wanted to change the name <code>ugly file</code> to camel case, we could use the mask “\u\L\1\u\L\2” and we would get the name <code>UglyFile</code>.</p>
+<h3 id="creating-links">Creating Links</h3>
+<p>Midnight Commander can create both hard and symbolic links. They are created using these 3 keyboard commands which cause a dialog to appear where the details of the link can be specified:</p>
+<ul>
+<li><p><code>Ctrl-x l</code> creates a hard link, in the directory shown in the current panel.</p></li>
+<li><p><code>Ctrl-x s</code> creates a symbolic link in the directory shown in the other panel, using an absolute directory path.</p></li>
+<li><p><code>Ctrl-x v</code> creates a symbolic link in the directory shown in the other panel, using a relative directory path.</p></li>
+</ul>
+<p>The two symbolic link commands are basically the same. They differ only in the fact that the paths suggested in the Symbolic Link dialog are absolute or relative.</p>
+<p>We’ll demonstrate creating a symbolic link by creating a link to <code>file1</code>. To do this, we select <code>file1</code> in the current panel and type <code>Ctrl-x s</code>. The Symbolic Link dialog appears and we can either enter a name for the link or we can accept the program’s suggestion. For the sake of clarity, we will change the name to <code>file1-sym</code>.</p>
+<figure>
+<img src="images/adventure_mc-symlink.png" alt="Symbolic link dialog" ><figcaption>Symbolic link dialog</figcaption>
+</figure>
+<h3 id="setting-file-modes-and-ownership">Setting File Modes and Ownership</h3>
+<p>File modes (i.e., permissions) can be set on the selected or tagged files by typing <code>Ctrl-x c</code>. Doing so will display a dialog box in which each attribute can be turned on or off. If Midnight Commander is being run with superuser privileges, file ownership can be changed by typing <code>Ctrl-x o</code>. A dialog will be displayed where the owner and group owner of selected/tagged files can be set.</p>
+<figure>
+<img src="images/adventure_mc-chmod.png" alt="Chmod dialog" ><figcaption>Chmod dialog</figcaption>
+</figure>
+<p>To demonstrate changing file modes, we will make <code>file1</code> executable. First, we will select <code>file1</code> and then type <code>Ctrl-x c</code>. The Chmod command dialog will appear, listing the file’s mode settings. By using the arrow keys we can select the check box labeled “execute/search by owner” and toggle its setting by using the space bar.</p>
+<h3 id="deleting-files">Deleting Files</h3>
+<p>Pressing the <code>F8</code> key deletes the selected or tagged files and directories. By default, Midnight Commander always prompts the user for confirmation before deletion is performed.</p>
+<p>We’re done with our playground for now, so it’s time to clean up. We will enter <code>cd</code> at the shell prompt to get the current panel to list our home directory. Next, we will select <code>playground</code> and press <code>F8</code> to delete the playground directory.</p>
+<figure>
+<img src="images/adventure_mc-deleteplayground.png" alt="Delete confirmation dialog" ><figcaption>Delete confirmation dialog</figcaption>
+</figure>
+<h2 id="power-features">Power Features</h2>
+<p>Beyond basic file manipulation, Midnight Commander offers a number of additional features, some of which are very interesting.</p>
+<h3 id="virtual-file-systems">Virtual File Systems</h3>
+<p>Midnight Commander can treat some types of archive files and remote hosts as though they are local file systems. Using the <code>cd</code> command at the shell prompt, we can access these.</p>
+<p>For example, we can look at the contents of tar files. To try this out, let’s create a compressed tar file containing the files in the <code>/etc</code> directory. We can do this by entering this command at the shell prompt:</p>
+<pre><code>me@linuxbox ~ $ tar czf etc.tgz /etc</code></pre>
+<pre><code>me@linuxbox ~ $ cd ftp://ftp.gtlib.gatech.edu/pub</code></pre>
+<p>Since we don’t have write permission on this site, we cannot modify any any files there, but we can copy files from the remote server to our local file system.</p>
+<p>The FISH protocol is similar. This protocol can be used to communicate with any Unix-like system that runs a secure shell (SSH) server. If we have write permissions on the remote server, we can operate on the remote system’s files as if they were local. This is extremely handy for performing remote administration. The <code>cd</code> command for FISH protocol looks like this:</p>
+<pre><code>me@linuxbox ~ $ cd sh://user@remotehost/dir</code></pre>
+<pre><code>find . -type f -name &quot;*.JPG&quot;</code></pre>
+<p>After typing the command we can either press <code>Enter</code> to execute the command or, for extra fun, we can click the “Add new” button and assign our command a name and save it for future use.</p>
+<h3 id="sub-shells">Sub-shells</h3>
+<p>We may, at any time, move from the Midnight Commander to a full shell session and back again by pressing <code>Ctrl-o</code>. The sub-shell is a copy of our normal shell, so whatever environment our usual shell establishes (aliases, shell functions, prompt strings, etc.) will be present in the sub-shell as well. If we start a long-running command in the sub-shell and press <code>Ctrl-o</code>, the command is suspended until we return to the sub-shell. Note that once a command is suspended, Midnight Commander cannot execute any further external commands until the suspended command terminates.</p>
+<h2 id="the-user-menu">The User Menu</h2>
+<p>So far we have avoided discussion of the mysterious <code>F2</code> command. This is the user menu, which may be Midnight Commander’s most powerful and useful feature. The user menu is, as the name suggests, a menu of user-defined commands.</p>
+<p>When we press the <code>F2</code> key, Midnight Commander looks for a file named <code>.mc.menu</code> in the current directory. If the file does not exist, Midnight Commander looks for <code>~/.config/mc/menu</code>. If that file does not exist, then Midnight Commander falls back to a system-wide menu file named <code>/usr/share/mc/mc.menu</code>.</p>
+<p>The neat thing about this scheme is that each directory can have its own set of user menu commands, so that we can create commands appropriate to the contents of the current directory. For example, if we have a “Pictures” directory, we can create commands for processing images; if we have a directory full of HTML files, we can create commands for managing a web site, and so on.</p>
+<p>So, after we press <code>F2</code> the first time, we are presented with the default user menu that looks something like this:</p>
+<figure>
+<img src="images/adventure_mc-usermenu.png" alt="The User Menu" ><figcaption>The User Menu</figcaption>
+</figure>
+<h3 id="editing-the-user-menu">Editing the User Menu</h3>
+<p>The default user menu contains several example entries. These are by no means set in stone. We are encouraged to edit the menu and create our own entries. The menu file is ordinary text and it can be edited with any text editor, but Midnight Commander provides a menu editing feature found in the “Command” pulldown menu. The entry is called “Edit menu file.”</p>
+<p>If we select this entry, Midnight Commander offers us a choice of “Local” and “User.” The Local entry allows us to edit the <code>.mc.menu</code> file in the current directory while selecting User will cause us to edit the <code>~/.config/mc/menu</code> file. Note that if we select Local and the current directory does not contain a menu file, Midnight Commander will copy the default menu file into current directory as a starting point for our editing.</p>
+<h3 id="menu-file-format">Menu File Format</h3>
+<p>Some parts of the user menu file format are pretty simple; other parts, not so much. We’ll start with the simple parts first.</p>
+<p>A menu file consists of one or more entries. Each entry contains:</p>
+<ul>
+<li><p>A single character (usually a letter) that will act as a hot key for the entry when the menu is displayed.</p></li>
+<li><p>Following the hot key, on the same line, is the description of the menu entry as it will appear on the menu.</p></li>
+<li><p>On the following lines are one or more commands to be performed when the menu entry is selected. These are ordinary shell commands. Any number of commands may be specified, so quite sophisticated operations are possible. Each command must be indented by at least one space or tab.</p></li>
+<li><p>A blank line to separate one menu entry from the next.</p></li>
+<li><p>Comments may appear on their own lines. Each comment line starts with a <code>#</code> character.</p></li>
+</ul>
+<p>Here is an example user menu entry that creates an HTML template in the current directory:</p>
+<pre><code># Create a new HTML file
+
+H   Create a new HTML file
+    { echo &quot;&lt;html&gt;&quot;
+    echo &quot;\t&lt;head&gt;\n\t&lt;/head&gt;&quot;
+    echo &quot;\t&lt;body&gt;\n\t&lt;/body&gt;&quot;
+    echo &quot;&lt;/html&gt;&quot;; }  &gt; new_page.html</code></pre>
+<pre><code>me@linuxbox ~ $ ls -l /bin/sh</code></pre>
+<h3 id="macros">Macros</h3>
+<p>With that bit of silliness out of the way, let’s look at how we can get a user menu entry to act on currently selected or tagged files. First, it helps to understand a little about how Midnight Commander executes user menu commands. It’s done by writing the commands to a file (essentially a shell script) and then launching <code>sh</code> to execute the contents of the file. During the process of writing the file, Midnight Commander performs <em>macro substitution</em>, replacing embedded symbols in the menu entry with alternate values. These macros are single alphabetic characters preceded by a percent sign. When Midnight Commander encounters one of these macros, it substitutes the value the macro represents. Here are the most commonly used macros:</p>
+<div style="overflow-x:auto"><table style="width:97%;">
+<caption>List of common macros</caption>
+<colgroup>
+<col style="width: 11%" >
+<col style="width: 86%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th>Macro</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>%f</td>
+<td style="text-align: left;">Selected file’s name</td>
+</tr>
+<tr class="even">
+<td>%x</td>
+<td style="text-align: left;">Selected file’s extension</td>
+</tr>
+<tr class="odd">
+<td>%b</td>
+<td style="text-align: left;">Selected file’s name stripped of extension (basename)</td>
+</tr>
+<tr class="even">
+<td>%d</td>
+<td style="text-align: left;">Name of the current directory</td>
+</tr>
+<tr class="odd">
+<td>%t</td>
+<td style="text-align: left;">The list of tagged files</td>
+</tr>
+<tr class="even">
+<td>%s</td>
+<td style="text-align: left;">If files are tagged, they are used, else the selected file is used.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Let’s say we wanted to create a user menu entry that would resize a JPEG image using the ever-handy <code>convert</code> program from the ImageMagick suite. Using macros, we could write a menu entry like this, which would act on the currently selected file:</p>
+<pre><code>#   Resize an image using convert
+
+R   Resize image to fit within 800 pixel bounding square
+    size=800
+    convert &quot;%f&quot; -resize ${size}x${size} &quot;%b-${size}.%x&quot;</code></pre>
+<pre><code>#   Resize an image using convert
+
++ f \.jpg$ | f \.JPG$
+R   Resize image to fit within 800 pixel bounding square
+    size=800
+    convert &quot;%f&quot; -resize ${size}x${size} &quot;%b-${size}.%x&quot;</code>

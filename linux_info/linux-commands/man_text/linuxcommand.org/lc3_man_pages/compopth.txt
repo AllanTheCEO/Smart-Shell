@@ -1,0 +1,43 @@
+  
+NAME
+    compopt - Modify or display completion options.
+
+SYNOPSIS
+    compopt [-o|+o option] [-DEI] [name ...]
+
+DESCRIPTION
+    Modify or display completion options.
+    
+    Modify the completion options for each NAME, or, if no NAMEs are supplied,
+    the completion currently being executed.  If no OPTIONs are given, print
+    the completion options for each NAME or the current completion specification.
+    
+    Options:
+    	-o option	Set completion option OPTION for each NAME
+    	-D		Change options for the "default" command completion
+    	-E		Change options for the "empty" command completion
+    	-I		Change options for completion on the initial word
+    
+    Using `+o' instead of `-o' turns off the specified option.
+    
+    Arguments:
+    
+    Each NAME refers to a command for which a completion specification must
+    have previously been defined using the `complete' builtin.  If no NAMEs
+    are supplied, compopt must be called by a function currently generating
+    completions, and the options for that currently-executing completion
+    generator are modified.
+    
+    Exit Status:
+    Returns success unless an invalid option is supplied or NAME does not
+    have a completion specification defined.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

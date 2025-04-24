@@ -1,0 +1,208 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 4: Variables</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash shell script variables">
+    <meta name="keywords" content="shell script variables, bash shell variables, parameter expansion, variable substitution">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0030.php.html">
+    <link rel="next" href="lc3_wss0050.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0030.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0050.php.html">Next</a>
+    </div>
+<h1>Variables</h1>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+        My System Information
+        &lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    &lt;h1&gt;My System Information&lt;/h1&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_</div>
+
+<p>Now that we have our script working, let's improve it. First off, we'll make
+some changes because we want to be lazy. In the script above, we see that the
+phrase "My System Information" is repeated. This is wasted typing (and extra
+work!) so we'll improve it like this:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+title="My System Information"
+
+cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+        $title
+        &lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    &lt;h1&gt;$title&lt;/h1&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_</div>
+
+<p>We added a line to the beginning of the script and replaced the two
+occurrences of the phrase "My System Information" with <code>$title</code>.</p>
+
+<h2>Variables</h2>
+
+<p>What we have done is to introduce a fundamental concept that appears in
+every programming language, <i>variables</i>. Variables are areas of memory
+that can be used to store information and are referred to by a name. In the
+case of our script, we created a variable called "title" and placed the phrase
+"My System Information" into memory. Inside the here script that contains our
+HTML, we use "$title" to tell the shell to perform <i>parameter expansion</i>
+and replace the name of the variable with the variable's contents.</p>
+
+<p>Whenever the shell sees a word that begins with a "$", it tries to find out
+what was assigned to the variable and substitutes it.</p>
+
+<h2>How to Create a Variable</h2>
+
+<p>To create a variable, put a line in the script that contains the name of the
+variable followed immediately by an equal sign ("="). No spaces are allowed.
+After the equal sign, assign the information to store.</p>
+
+<h2>Where Do Variable Names Come From?</h2>
+
+<p>We just make them up. That's right; we get to choose the names for our
+variables. There are a few rules.</p>
+
+<ol>
+  <li>Names must start with a letter.</li>
+  <li>A name must not contain embedded spaces. Use
+  underscores instead.</li>
+  <li>Punctuation marks are not permitted.</li>
+</ol>
+
+<h2>How Does This Increase Our Laziness?</h2>
+
+<p>The addition of the <code>title</code> variable made our life
+easier in two ways. First, it reduced the amount of
+typing we had to do. Second and more importantly,
+it made our script easier to maintain.</p>
+
+<p>As we write more and more scripts (or do any other kind of programming), we
+will see that programs are rarely ever finished. They are modified and improved
+by their creators and others.  After all, that's what open source development
+is all about. Let's say that we wanted to change the phrase "My System
+Information" to "Linuxbox System Information." In the previous version of the
+script, we would have had to change this in two locations. In the new version
+with the <code>title</code> variable, we only have to change it in one place.
+Since our script is so small, this might seem like a trivial matter, but as
+scripts get larger and more complicated, it becomes very important.
+
+<h2>Environment Variables</h2>
+
+<p>When we start our shell session, some variables are already set by the
+startup files we looked at earlier. To see all the variables that are in the
+environment, use the <code class="user">printenv</code> command. One variable
+in our environment contains the host name for the system. We will add this
+variable to our script like so:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+title="System Information for"
+
+cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+        $title $HOSTNAME
+        &lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    &lt;h1&gt;$title $HOSTNAME&lt;/h1&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_</div>
+
+<p>Now our script will always include the name of the machine on which we are
+running. Note that, by convention, environment variables names are
+uppercase.</p>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0040.php.html#top">Top</a> | <a
+      href="lc3_wss0030.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0050.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

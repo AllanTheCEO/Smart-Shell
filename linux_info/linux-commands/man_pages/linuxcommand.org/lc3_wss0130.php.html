@@ -1,0 +1,318 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 13: Flow Control - Part 3</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash scripting for loops">
+    <meta name="keywords" content="bash scripts for loops, shell scripting for loops">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0120.php.html">
+    <link rel="next" href="lc3_wss0140.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0120.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0140.php.html">Next</a>
+    </div>
+<h1>Flow Control - Part 3</h1>
+
+<p>Now that we have learned about positional parameters, it's time to cover the
+remaining flow control statement, <code class="user"><a
+href="lc3_man_pages/forh.html">for</a></code>. Like <code
+class="user">while</code> and <code class= "user">until</code>, <code
+class="user">for</code> is used to construct loops. <code
+class="user">for</code> works like this:</p>
+
+<div class="codeexample"><code class="user">for</code> variable <code class="user">in</code> words; <code class="user">do</code>
+    commands
+<code class="user">done</code></div>
+
+<p>In essence, <code class="user">for</code> assigns a word from the list of
+words to the specified variable, executes the commands, and repeats this over
+and over until all the words have been used up. Here is an example:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">for</code> i <code class="user">in</code> word1 word2 word3; <code class="user">do</code>
+    <code class="user">echo</code> "$i"
+<code class="user">done</code></div>
+
+<p>In this example, the variable <code>i</code> is assigned the string
+"<code>word1</code>", then the statement <code>echo "$i"</code> is executed,
+then the variable <code>i</code> is assigned the string "<code>word2</code>",
+and the statement <code>echo "$i"</code> is executed, and so on, until all the
+words in the list of words have been assigned.</p>
+
+<p>The interesting thing about <code class= "user">for</code> is the many ways
+we can construct the list of words. All kinds of expansions can be used. In the
+next example, we will construct the list of words using command
+substitution:</p>
+
+<div class="codeexample">#!/bin/bash
+
+count=0
+<code class="user">for</code> i <code class="user">in</code> $(cat ~/.bash_profile); <code class="user">do</code>
+    count=$((count + 1))
+    <code class="user">echo</code> "Word $count ($i) contains $(echo -n $i | wc -c) characters"
+<code class="user">done</code></div>
+
+<p>Here we take the file <code>.bash_profile</code> and count the number of
+words in the file and the number of characters in each word.</p>
+
+<p>So what's this got to do with positional parameters? Well, one of the
+features of <code class= "user">for</code> is that it can use the positional
+parameters as the list of words:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">for</code> i <code class="user">in</code> "$@"; <code class="user">do</code>
+    <code class="user">echo</code> $i
+<code class="user">done</code></div>
+
+<p>The shell variable <code>"$@"</code> contains the list of command line
+arguments. This technique is often used to process a list of files on the
+command line. Here is a another example:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">for</code> filename <code class="user">in</code> "$@"; <code class="user">do</code>
+    result=
+    <code class="user">if [</code> -f "$filename" <code class="user">]; then</code>
+        result="$filename is a regular file"
+    <code class="user">else</code>
+        <code class="user">if [</code> -d "$filename" <code class="user">]; then</code>
+            result="$filename is a directory"
+        <code class="user">fi
+    fi
+    if [</code> -w "$filename" <code class="user">]; then</code>
+        result="$result and it is writable"
+    <code class="user">else</code>
+        result="$result and it is not writable"
+    <code class="user">fi
+    echo</code> "$result"
+<code class="user">done</code></div>
+
+<p>Try this script. Give it a list of files or a
+wildcard like "<code>*</code>" to see it work.</p>
+
+<p>The use of <code>in "$@"</code> is so common that it is assumed if the
+<code>in words</code> clause is ommited.</p>
+
+<p>Here is another example script.  This one compares the files in two
+directories and lists which files in the first directory are missing from the
+second.</p>
+
+<div class="codeexample">#!/bin/bash
+
+# cmp_dir - program to compare two directories
+
+# Check for required arguments
+<code class="user">if [</code> $# -ne 2 <code class="user">]; then</code>
+    <code class="user">echo</code> "usage: $0 directory_1 directory_2" 1&gt;&amp;2
+    <code class="user">exit</code> 1
+<code class="user">fi</code>
+
+# Make sure both arguments are directories
+<code class="user">if [</code> ! -d "$1" <code class="user">]; then</code>
+    <code class="user">echo</code> "$1 is not a directory!" 1&gt;&amp;2
+    <code class="user">exit</code> 1
+<code class="user">fi</code>
+
+<code class="user">if [</code> ! -d "$2" <code class="user">]; then</code>
+    <code class="user">echo</code> "$2 is not a directory!" 1&gt;&amp;2
+    <code class="user">exit</code> 1
+<code class="user">fi</code>
+
+# Process each file in directory_1, comparing it to directory_2
+missing=0
+<code class="user">for</code> filename <code class="user">in</code> "$1"/*; <code class="user">do</code>
+    fn=$(basename "$filename")
+    <code class="user">if [</code> -f "$filename" <code class="user">]; then</code>
+        <code class="user">if [</code> ! -f "$2/$fn" <code class="user">]; then</code>
+            <code class="user">echo</code> "$fn is missing from $2"
+            missing=$((missing + 1))
+        <code class="user">fi
+    fi
+done
+echo</code> "$missing files missing"</div>
+
+<p>Now on to the real work. We are going to improve the <code>home_space</code>
+function to output more information. Recall that our previous version looked
+like this:</p>
+
+
+<div class="codeexample">home_space()
+{
+    # Only the superuser can get this information
+
+    <code class="user">if [</code> "$(id -u)" = "0" <code class="user">]; then</code>
+        <code class="user">echo</code> "&lt;h2&gt;Home directory space by user&lt;/h2&gt;"
+        <code class="user">echo</code> "&lt;pre&gt;"
+        <code class="user">echo</code> "Bytes Directory"
+        du -s /home/* | sort -nr
+        <code class="user">echo</code> "&lt;/pre&gt;"
+    <code class="user">fi</code>
+
+}   # end of home_space</div>
+
+<p>Here is the new version:</p>
+
+<div class="codeexample">home_space() {
+    <code class="user">echo</code> "&lt;h2&gt;Home directory space by user&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    format="%8s%10s%10s   %-s\n"
+    printf "$format" "Dirs" "Files" "Blocks" "Directory"
+    printf "$format" "----" "-----" "------" "---------"
+    <code class="user">if [</code> $(id -u) = "0" <code class="user">]; then</code>
+        dir_list="/home/*"
+    <code class="user">else</code>
+        dir_list=$HOME
+    <code class="user">fi
+    for</code> home_dir <code class="user">in</code> $dir_list; <code class="user">do</code>
+        total_dirs=$(find $home_dir -type d | wc -l)
+        total_files=$(find $home_dir -type f | wc -l)
+        total_blocks=$(du -s $home_dir)
+        printf "$format" "$total_dirs" "$total_files" "$total_blocks"
+    <code class="user">done
+    echo</code> "&lt;/pre&gt;"
+
+}   # end of home_space</div>
+
+<p>This improved version introduces a new command <code class="user"><a href=
+"lc3_man_pages/printf1.html">printf</a></code>, which is used to produce
+formatted output according to the contents of a <i>format string</i>. <code
+class= "user">printf</code> comes from the C programming language and has been
+implemented in many other programming languages including C++, Perl, awk, java,
+PHP, and of course, bash. More information about <code
+class="user">printf</code> format strings can be found at:</p>
+
+<ul>
+<li><a href=
+"http://www.gnu.org/software/gawk/manual/html_node/Control-Letters.html#Control-Letters">
+GNU Awk User's Guide - Control Letters</a></li>
+
+<li><a href=
+"http://www.gnu.org/software/gawk/manual/html_node/Format-Modifiers.html#Format-Modifiers">
+GNU Awk User's Guide - Format Modifiers</a></li>
+</ul>
+
+<p>We also introduce the <code class="user"><a href=
+"https://linuxcommand.org/lc3_man_pages/find1.html">find</a></code> command. <code class="user">find</code>
+is used to search for files or directories that meet specific criteria. In the
+<code>home_space</code> function, we use <code class= "user">find</code> to
+list the directories and regular files in each home directory. Using the <code
+class="user">wc</code> command, we count the number of files and directories
+found.</p>
+
+<p>The really interesting thing about <code>home_space</code> is how we deal
+with the problem of superuser access. Notice that we test for the superuser
+with <code class="user">id</code> and, according to the outcome of the test, we
+assign different strings to the variable <code>dir_list</code>, which becomes
+the list of words for the <code class="user">for</code> loop that follows. This
+way, if an ordinary user runs the script, only his/her home directory will be
+listed.</p>
+
+<p>Another function that can use a <code class= "user">for</code> loop is our
+unfinished <code>system_info</code> function. We can build it like this:</p>
+
+<div class="codeexample">system_info() {
+    # Find any release files in /etc
+
+    <code class="user">if</code> ls /etc/*release 1&gt;/dev/null 2&gt;&amp;1; <code class="user">then</code>
+        <code class="user">echo</code> "&lt;h2&gt;System release info&lt;/h2&gt;"
+        <code class="user">echo</code> "&lt;pre&gt;"
+        <code class="user">for</code> i <code class="user">in</code> /etc/*release; <code class="user">do</code>
+
+            # Since we can't be sure of the
+            # length of the file, only
+            # display the first line.
+
+            head -n 1 "$i"
+        <code class="user">done</code>
+        uname -orp
+        <code class="user">echo</code> "&lt;/pre&gt;"
+    <code class="user">fi</code>
+
+}   # end of system_info</div>
+
+<p>In this function, we first determine if there are any release files to
+process. The release files contain the name of the vendor and the version of
+the distribution. They are located in the <code>/etc</code> directory. To
+detect them, we perform an <code class="user">ls</code> command and throw away
+all of its output. We are only interested in the exit status. It will be true
+if any files are found.</p>
+
+<p>Next, we output the HTML for this section of the page, since we now know
+that there are release files to process. To process the files, we start a <code
+class="user">for</code> loop to act on each one.  Inside the loop, we use the
+<code class="user"><a href="lc3_man_pages/head1.html">head</a></code> command
+to return the first line of each file.</p>
+
+<p>Finally, we use the <code class="user"><a href=
+"lc3_man_pages/uname1.html">uname</a></code> command with the "o", "r", and "p"
+options to obtain some additional information from the system.</p>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0130.php.html#top">Top</a> | <a
+      href="lc3_wss0120.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0140.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

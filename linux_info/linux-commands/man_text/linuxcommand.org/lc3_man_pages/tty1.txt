@@ -1,0 +1,42 @@
+  
+TTY(1)                        User Commands                        TTY(1)
+
+NAME
+       tty  -  print  the file name of the terminal connected to standard
+       input
+
+SYNOPSIS
+       tty [OPTION]...
+
+DESCRIPTION
+       Print the file name of the terminal connected to standard input.
+
+       -s, --silent, --quiet
+              print nothing, only return an exit status
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report    any   translation   bugs   to   &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright © 2020 Free Software Foundation, Inc.   License  GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       Full documentation &lt;https://www.gnu.org/software/coreutils/tty&gt;
+       or available locally via: info '(coreutils) tty invocation'
+
+GNU coreutils 8.32              April 2020                         TTY(1)
+</body></html>

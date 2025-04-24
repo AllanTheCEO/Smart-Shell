@@ -1,0 +1,58 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>fc man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for fc">
+  <meta name="keywords" content="Manual page, fc command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    fc - Display or execute commands from the history list.
+
+SYNOPSIS
+    fc [-e ename] [-lnr] [first] [last] or fc -s [pat=rep] [command]
+
+DESCRIPTION
+    Display or execute commands from the history list.
+    
+    fc is used to list or edit and re-execute commands from the history list.
+    FIRST and LAST can be numbers specifying the range, or FIRST can be a
+    string, which means the most recent command beginning with that
+    string.
+    
+    Options:
+      -e ENAME	select which editor to use.  Default is FCEDIT, then EDITOR,
+    		then vi
+      -l 	list lines instead of editing
+      -n	omit line numbers when listing
+      -r	reverse the order of the lines (newest listed first)
+    
+    With the `fc -s [pat=rep ...] [command]' format, COMMAND is
+    re-executed after the substitution OLD=NEW is performed.
+    
+    A useful alias to use with this is r='fc -s', so that typing `r cc'
+    runs the last command beginning with `cc' and typing `r' re-executes
+    the last command.
+    
+    Exit Status:
+    Returns success or status of executed command; non-zero if an error occurs.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

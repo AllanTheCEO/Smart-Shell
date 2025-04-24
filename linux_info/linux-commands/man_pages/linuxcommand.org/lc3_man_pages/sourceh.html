@@ -1,0 +1,45 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>source man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for source">
+  <meta name="keywords" content="Manual page, source command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    source - Execute commands from a file in the current shell.
+
+SYNOPSIS
+    source filename [arguments]
+
+DESCRIPTION
+    Execute commands from a file in the current shell.
+    
+    Read and execute commands from FILENAME in the current shell.  The
+    entries in $PATH are used to find the directory containing FILENAME.
+    If any ARGUMENTS are supplied, they become the positional parameters
+    when FILENAME is executed.
+    
+    Exit Status:
+    Returns the status of the last command executed in FILENAME; fails if
+    FILENAME cannot be read.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

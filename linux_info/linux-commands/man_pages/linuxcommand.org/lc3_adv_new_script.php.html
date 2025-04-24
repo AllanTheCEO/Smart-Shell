@@ -1,0 +1,365 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Linux Command Line Adventure: new_script</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="New_Script Shell Script Generator">
+    <meta name="keywords" content="bash, shell scripting, coding standards, code generator">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_adv_standards.php.html">
+    <link rel="next" href="lc3_adv_sql.php.html">
+    <link rel="contents" href="lc3_adventures.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_adv_standards.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_sql.php.html">Next</a>
+    </div>
+<h1 id="coding-standards-part-2-new_script">Coding Standards Part 2: new_script</h1>
+<p>In Part 1, we created a coding standard that will assist us when writing serious, production-quality scripts. The only problem is the standard is rather complicated, and writing a script that conforms to it can get a bit tedious. Any time we want to write a “good” script, we have to do a lot of rote, mechanical work to include such things as error handlers, traps, help message functions, etc.</p>
+<p>To overcome this, many programmers rely on script templates that contain much of this routine coding. In this adventure, we’re going to look at a program called <code>new_script</code> from LinuxCommand.org that creates templates for bash scripts. Unlike static templates, <code>new_script</code> custom generates templates that include usage and help messages, as well as a parser for the script’s desired command line options and arguments. Using <code>new_script</code> saves a lot of time and effort and helps us make even the most casual script a well-crafted and robust program.</p>
+<h2 id="installing-new_script">Installing new_script</h2>
+<p>To install <code>new_script</code>, we download it from LinuxCommand.org, move it to a directory in our PATH, and set it to be executable.</p>
+<pre><code>me@linuxbox:~$ curl -O http://linuxcommand.org/new_script.bash
+me@linuxbox:~$ mv new_script.bash ~/bin/new_script
+me@linuxbox:~$ chmod +x ~/bin/new_script</code></pre>
+<p>After installing it, we can test it this way:</p>
+<pre><code>me@linuxbox:~$ new_script --help</code></pre>
+<p>If the installation was successful, we will see the help message:</p>
+<pre><code>new_script 3.5.3
+Bash shell script template generator.
+
+Usage: new_script [-h|--help ]
+       new_script [-q|--quiet] [-s|--root] [script]
+
+  Options:
+
+  -h, --help    Display this help message and exit.
+  -q, --quiet   Quiet mode. No prompting. Outputs default script.
+  -s, --root    Output script requires root privileges to run.</code></pre>
+<h2 id="options-and-arguments">Options and Arguments</h2>
+<p>Normally, <code>new_script</code> is run without options. It will prompt the user for a variety of information that it will use to construct the script template. If an output script file name is not specified, the user will be prompted for one. For some special use cases, the following options are supported:</p>
+<ul>
+<li><p><strong>-h, –help</strong> The help option displays the help message we saw above. The help option is mutually exclusive with the other <code>new_script</code> options and after the help message is displayed, <code>new_script</code> exits.</p></li>
+<li><p><strong>-q, –quiet</strong> The quiet option causes <code>new_script</code> to become non-interactive and to output a base template without customization. In this mode, <code>new_script</code> will output its script template to standard output if no output script file is specified.</p></li>
+<li><p><strong>-s, –root</strong> The superuser option adds a routine to the template that requires the script to be run by the superuser. If a non-privileged user attempts to run the resulting script, it will display an error message and terminate.</p></li>
+</ul>
+<h2 id="creating-our-first-template">Creating Our First Template</h2>
+<p>Let’s make a template to demonstrate how <code>new_script</code> works and what it can do. First, we’ll launch <code>new_script</code> and give it the name of a script we want to create.</p>
+<pre><code>me@linuxbox:~$ new_script new_script-demo
+
+------------------------------------------------------------------------
+** Welcome to new_script version 3.5.3 **
+------------------------------------------------------------------------
+
+File &#39;new_script-demo&#39; exists. Overwrite [y/n] &gt; y</code></pre>
+<p>We’ll be greeted with a welcome message. If the script already exists, we are prompted to overwrite. If we had not specified a script file name, we would be prompted for one.</p>
+<pre><code>------------------------------------------------------------------------
+** Comment Block **
+
+The purpose is a one line description of what the script does.
+------------------------------------------------------------------------
+The purpose of the script is to: &gt; demonstrate the new_script template
+
+------------------------------------------------------------------------
+The script may be licensed in one of two ways:
+1. All rights reserved (default) or
+2. GNU GPL version 3 (preferred).
+------------------------------------------------------------------------
+
+Include GPL license header [y/n]? &gt; y</code></pre>
+<p>The first information <code>new_script</code> asks for are the purpose of the script and how it is licensed. Later, when we examine the finished template below, we’ll see that <code>new_script</code> figures out the author’s name and email address, as well as the copyright date.</p>
+<pre><code>------------------------------------------------------------------------
+** Privileges **
+
+The template may optionally include code that will prevent it from
+running if the user does not have superuser (root) privileges.
+------------------------------------------------------------------------
+
+Does this script require superuser privileges [y/n]? &gt; n</code></pre>
+<p>If we need to make this script usable only by the superuser, we set that next.</p>
+<pre><code>------------------------------------------------------------------------
+** Command Line Options **
+
+The generated template supports both short name (1 character), and long
+name (1 word) options. All options must have a short name. Long names
+are optional. The options &#39;h&#39; and &#39;help&#39; are provided automatically.
+
+Further, each option may have a single argument. Argument names must
+be valid variable names.
+
+Descriptions for options and option arguments should be short (less
+than 1 line) and will appear in the template&#39;s comment block and
+help_message.
+------------------------------------------------------------------------
+
+Does this script support command-line options [y/n]? &gt; y</code></pre>
+<p>Now we get to the fun part; defining the command line options. If we answer no to this question, <code>new_script</code> will write the template and exit.</p>
+<p>As we respond to the next set of prompts, remember that we are building a help message (and a parser) that will resemble the <code>new_script</code> help message, so use that as a guide for context. Keep responses clear and concise.</p>
+<pre><code>Option 1:
+  Enter short option name [a-z] (Enter to end) -&gt; a
+  Description of option ------------------------&gt; the first option named &#39;a&#39;
+  Enter long option name (optional) ------------&gt; option_a
+  Enter option argument (if any) ---------------&gt; 
+
+Option 2:
+  Enter short option name [a-z] (Enter to end) -&gt; b
+  Description of option ------------------------&gt; the second option named &#39;b&#39;
+  Enter long option name (optional) ------------&gt; option_b
+  Enter option argument (if any) ---------------&gt; b_argument
+  Description of argument (if any)--------------&gt; argument for option &#39;b&#39;
+
+Option 3:
+  Enter short option name [a-z] (Enter to end) -&gt; </code></pre>
+<p>By entering nothing at the short option prompt, <code>new_script</code> ends the input of the command options and writes the template. We’re done!</p>
+<p>A note about short option names: <code>new_script</code> will accept any value, not just lowercase letters. This includes uppercase letters, numerals, etc. Use good judgment.</p>
+<p>A note about long option names and option arguments: long option names and option arguments must be valid bash variable names. If they are not, <code>new_script</code> will attempt correct them, If there are embedded spaces, they will be replaced with underscores. Anything else will cause <code>no_script</code> to replace the name with a calculated default value based on the short option name.</p>
+<h2 id="looking-at-the-template">Looking at the Template</h2>
+<p>Here we see a numbered listing of the finished template.</p>
+<pre><code>  1  #!/usr/bin/env bash
+  2  # ---------------------------------------------------------------------
+  3  # new_script-demo - Demonstrate the new_script template
+     
+  4  # Copyright 2021, Linux User &lt;me@linuxbox.example.com&gt;
+  5    
+  6  # This program is free software: you can redistribute it and/or modify
+  7  # it under the terms of the GNU General Public License as published by
+  8  # the Free Software Foundation, either version 3 of the License, or
+  9  # (at your option) any later version.
+     
+ 10  # This program is distributed in the hope that it will be useful,
+ 11  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ 12  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ 13  # GNU General Public License at &lt;http://www.gnu.org/licenses/&gt; for
+ 14  # more details.
+     
+ 15  # Usage: new_script-demo [-h|--help]
+ 16  #        new_script-demo [-a|--option_a] [-b|--option_b b_argument]
+     
+ 17  # Revision history:
+ 18  # 2021-05-05 Created by new_script ver. 3.5.3
+ 19  # ---------------------------------------------------------------------
+     </code></pre>
+<p>The comment block is complete with license, usage, and revision history. Notice how the first letter of the purpose has been capitalized and the author’s name and email address have been calculated. <code>new_script</code> gets the author’s name from the <code>/etc/password</code> file. If the <code>REPLYTO</code> environment variable is set, it supplies the email address (this was common with old-timey email programs); otherwise the email address will be expanded from <code>$USER@$(hostname)</code>. To define the <code>REPLYTO</code> variable, we just add it to our <code>~/.bashrc</code> file. For example:</p>
+<pre><code>export REPLYTO=me@linuxbox.example.com</code></pre>
+<p>Our script template continues with the constants and functions:</p>
+<pre><code> 20  PROGNAME=${0##*/}
+ 21  VERSION=&quot;0.1&quot;
+ 22  LIBS=     # Insert pathnames of required external shell libraries here
+     </code></pre>
+<p>The global constants appear next, with the program name (derived from <code>$0</code>) and the version number. The <code>LIBS</code> constant should be set to contain a space-delimited list (in double quotes of course) of any files to be sourced. Note: the way the template implements this feature requires that library pathnames do not contain spaces. Besides the template not working, including embedded spaces in a library name would be in extremely poor taste.</p>
+<pre><code> 23  clean_up() { # Perform pre-exit housekeeping
+ 24    return
+ 25  }
+     
+ 26  error_exit() {
+     
+ 27    local error_message=&quot;$1&quot;
+     
+ 28    printf &quot;%s: %s\n&quot; &quot;$PROGNAME&quot; &quot;${error_message:-&quot;Unknown Error&quot;}&quot; &gt;&amp;2
+ 29    clean_up
+ 30    exit 1
+ 31  }
+     
+ 32  graceful_exit() {
+ 33    clean_up
+ 34    exit
+ 35  }
+     
+ 36  signal_exit() { # Handle trapped signals
+     
+ 37    local signal=&quot;$1&quot;
+     
+ 38    case &quot;$signal&quot; in
+ 39      INT)
+ 40        error_exit &quot;Program interrupted by user&quot; ;;
+ 41      TERM)
+ 42        error_exit &quot;Program terminated&quot; ;;
+ 43      *)
+ 44        error_exit &quot;Terminating on unknown signal&quot; ;;
+ 45    esac
+ 46  }</code></pre>
+<p>The first group of functions handles program termination. The <code>clean_up</code> function should include the code for any housekeeping tasks needed before the script exits. This function is called by all the other exit functions to ensure an orderly termination.</p>
+<pre><code> 47  load_libraries() { # Load external shell libraries
+     
+ 48    local i
+     
+ 49    for i in $LIBS; do
+ 50      if [[ -r &quot;$i&quot; ]]; then
+ 51        source &quot;$i&quot; || error_exit &quot;Library &#39;$i&#39; contains errors.&quot;
+ 52      else
+ 53        error_exit &quot;Required library &#39;$i&#39; not found.&quot;
+ 54      fi
+ 55    done
+ 56  }
+     </code></pre>
+<p>The <code>load_libraries</code> function loops through the contents of the <code>LIBS</code> constant and sources each file. If any file is missing or contains errors, this function will terminate the script with an error.</p>
+<pre><code> 57  usage() {
+ 58    printf &quot;%s\n&quot; &quot;Usage: ${PROGNAME} [-h|--help]&quot;
+ 59    printf &quot;%s\n&quot; \
+         &quot;       ${PROGNAME} [-a|--option_a] [-b|--option_b b_argument]&quot;
+ 60  }
+     
+ 61  help_message() {
+ 62    cat &lt;&lt;- _EOF_
+ 63  $PROGNAME ver. $VERSION
+ 64  Demonstrate the new_script template
+     
+ 65  $(usage)
+     
+ 66    Options:
+ 67    -h, --help                  Display this help message and exit.
+ 68    -a, --option_a              The first option named &#39;a&#39;
+ 69    -b, --option_b b_argument   The second option named &#39;b&#39;
+ 70      Where &#39;b_argument&#39; is the argument for option &#39;b&#39;.
+     
+ 71  _EOF_
+ 72    return
+ 73  }</code></pre>
+<p>The <code>usage</code> and <code>help_message</code> functions are based on the information we supplied. Notice how the help message is neatly formatted and the option descriptions are capitalized as needed.</p>
+<pre><code> 74  # Trap signals
+ 75  trap &quot;signal_exit TERM&quot; TERM HUP
+ 76  trap &quot;signal_exit INT&quot;  INT
+     
+ 77  load_libraries</code></pre>
+<p>The last tasks involved with set up are the signal traps and calling the function to source the external libraries, if there are any.</p>
+<p>Next comes the parser, again based on our command options.</p>
+<pre><code> 78  # Parse command-line
+ 79  while [[ -n &quot;$1&quot; ]]; do
+ 80    case &quot;$1&quot; in
+ 81      -h | --help)
+ 82        help_message
+ 83        graceful_exit
+ 84        ;;
+ 85      -a | --option_a)
+ 86        echo &quot;the first option named &#39;a&#39;&quot;
+ 87        ;;
+ 88      -b | --option_b)
+ 89        echo &quot;the second option named &#39;b&#39;&quot;
+ 90        shift; b_argument=&quot;$1&quot;
+ 91        echo &quot;b_argument == $b_argument&quot;
+ 92        ;;
+ 93      --* | -*)
+ 94        usage &gt;&amp;2
+ 95        error_exit &quot;Unknown option $1&quot;
+ 96        ;;
+ 97      *)
+ 98        printf &quot;Processing argument %s...\n&quot; &quot;$1&quot;
+ 99        ;;
+100    esac
+101    shift
+102  done</code></pre>
+<p>The parser detects each of our specified options and provides a simple stub for our actual code. One feature of the parser is that positional parameters that appear after the options are assumed to be arguments to the script so this template is ready to handle them even if the script has no options.</p>
+<pre><code>103  # Main logic
+   
+104  graceful_exit</code></pre>
+<p>We come to the end of the template where the main logic is located. Since this script doesn’t do anything yet, we simply call the <code>graceful_exit</code> function so that we, well, exit gracefully.</p>
+<h3 id="testing-the-template">Testing the Template</h3>
+<p>The finished template is a functional (and correct!) script. We can test it. First the help function:</p>
+<pre><code>me@linuxbox:~$ ./new_script-demo --help
+new_script-demo ver. 0.1
+Demonstrate the new_script template
+
+Usage: new_script-demo [-h|--help]
+       new_script-demo [-a|--option_a] [-b|--option_b b_argument]
+
+  Options:
+  -h, --help                  Display this help message and exit.
+  -a, --option_a              The first option named &#39;a&#39;
+  -b, --option_b b_argument   The second option named &#39;b&#39;
+    Where &#39;b_argument&#39; is the argument for option &#39;b&#39;.
+
+me@linuxbox:~$</code></pre>
+<p>With no options or arguments, the template produces no output.</p>
+<pre><code>me@linuxbox:~$ ./new_script-demo
+me@linuxbox:~$</code></pre>
+<p>The template displays informative messages as it processes the options and arguments.</p>
+<pre><code>me@linuxbox:~$ ./new_script-domo -a
+the first option named &#39;a&#39;
+me@linuxbox:~$ ./new_script-demo -b test
+the second option named &#39;b&#39;
+b_argument == test
+me@linuxbox:~$ ./new_script-demo ./*
+Processing argument ./bin...
+Processing argument ./Desktop...
+Processing argument ./Disk_Images...
+Processing argument ./Documents...
+Processing argument ./Downloads...
+    .
+    .
+    .</code></pre>
+<h2 id="summing-up">Summing Up</h2>
+<p>Using <code>new_script</code> saves a lot of time and effort. It’s easy to use and it produces high quality script templates. Once a programmer decides on a script’s options and arguments, they can use <code>new_script</code> to quickly produce a working script and add feature after feature until everything is fully implemented.</p>
+<p>Feel free to examine the <code>new_script</code> code. Parts of it are exciting.</p>
+<h2 id="further-reading">Further Reading</h2>
+<p>There are many bash shell script “templates” available on the Internet. A Google search for “bash script template” will locate some. Many are just small code snippets or suggestions on coding standards. Here are a few interesting ones worth reading:</p>
+<ul>
+<li><p><em>Boilerpalte Shell Script Template</em> <a href="https://natelandau.com/boilerplate-shell-script-template/" class="uri">https://natelandau.com/boilerplate-shell-script-template/</a></p></li>
+<li><p><em>Another Bash Script Template</em> <a href="https://jonlabelle.com/snippets/view/shell/another-bash-script-template" class="uri">https://jonlabelle.com/snippets/view/shell/another-bash-script-template</a></p></li>
+<li><p><em>Basic script template for every bash script</em> <a href="https://coderwall.com/p/koixia/logging-mini-framework-snippet-for-every-shell-script" class="uri">https://coderwall.com/p/koixia/logging-mini-framework-snippet-for-every-shell-script</a></p></li>
+<li><p><em>Argbash documentation</em> A template generator that works from a configuration file rather than interactively. <a href="https://argbash.readthedocs.io/en/latest/" class="uri">https://argbash.readthedocs.io/en/latest/</a></p></li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_adv_new_script.php.html#top">Top</a> | <a
+      href="lc3_adv_standards.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_sql.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+  
+NAME
+    logout - Exit a login shell.
+
+SYNOPSIS
+    logout [n]
+
+DESCRIPTION
+    Exit a login shell.
+    
+    Exits a login shell with exit status N.  Returns an error if not executed
+    in a login shell.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

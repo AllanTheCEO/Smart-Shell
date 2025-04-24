@@ -1,0 +1,3 @@
+<code>me@linuxbox ~ $ program_list &gt; program_list.txt</code></pre>
+<p>Create a plain text listing of <code>/usr/bin</code> and store it in a file named <code>program_list.txt</code>.</p>
+<pre><code>me@linuxbox ~ $ program_list -t /usr/sbin &gt; program_list_usr_sbin.tsv</code>

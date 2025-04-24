@@ -1,0 +1,196 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 5: Command Substitution and Constants</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash shell scripting: Command Substitution and Constants">
+    <meta name="keywords" content="shell script constants, shell command substitution">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0040.php.html">
+    <link rel="next" href="lc3_wss0060.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0040.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0060.php.html">Next</a>
+    </div>
+<h1>Command Substitution and Constants</h1>
+
+<p>In the previous lesson, we learned how to create variables and perform
+parameter expansions with them. In this lesson, we will extend this idea to
+show how we can substitute the results from commands.</p>
+
+<p>When we last left our script, it could create an HTML page that contained a
+few simple lines of text, including the host name of the machine which we
+obtained from the environment variable HOSTNAME.  Now, we will add a time stamp
+to the page to indicate when it was last updated, along with the user that did
+it.</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+title="System Information for"
+
+cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+        $title $HOSTNAME
+        &lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    &lt;h1&gt;$title $HOSTNAME&lt;/h1&gt;
+    &lt;p&gt;Updated on $(date +"%x %r %Z") by $USER&lt;/p&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_</div>
+
+<p>As we can see, another environment variable, <code>USER</code>, is used to
+get the user name. In addition, we used this strange looking thing:</p>
+
+<pre>$(date +"%x %r %Z")</pre>
+
+<p>The characters "$( )" tell the shell, "substitute the results of the
+enclosed command," a technique known as <i>command substitution</i>. In our
+script, we want the shell to insert the results of the command <code>date +"%x
+%r %Z"</code> which outputs the current date and time. The <code
+class="user"><a href= "lc3_man_pages/date1.html">date</a></code> command has
+many features and formatting options. To look at them all, try this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">date --help | less</code></div>
+
+<p>Be aware that there is an older, alternate syntax for "$(command)" that uses
+the backtick character " ` ". This older form is compatible with the original
+Bourne shell (<code>sh</code>) but its use is discouraged in favor of the
+modern syntax. The bash shell fully supports scripts written for
+<code>sh</code>, so the following forms are equivalent:</p>
+
+<p><code>$(command)<br>
+`command`</code></p>
+
+<h2>Assigning a Command's Result to a Variable</h2>
+
+<p>We can also assign the results of a command to a variable:</p>
+
+<div class="codeexample">right_now="$(date +"%x %r %Z")"</div>
+
+<p>We can even nest the variables (place one inside another), like this:</p>
+
+<div class="codeexample">right_now="$(date +"%x %r %Z")"
+time_stamp="Updated on $right_now by $USER"</div>
+
+<p><strong>An important safety tip:</strong> when performing parameter
+expansions or command substitutions, it is good practice to surround them in
+double quotes to prevent unwanted word splitting in case the result of the
+expansion contains whitespace characters.</p>
+
+<h2>Constants</h2>
+
+<p>As the name variable suggests, the content of a variable is subject to
+change. This means that it is expected that during the execution of our script,
+a variable may have its content modified by something the script does.</p>
+
+<p>On the other hand, there may be values that, once set, should never be
+changed. These are called <i>constants</i>. This is a common idea in
+programming. Most programming languages have special facilities to support
+values that are not allowed to change. Bash also has this facility but it is
+rarely used.  Instead, if a value is intended to be a constant, it is given an
+uppercase name to remind the programmer that it should be considered a constant
+even if it's not being enforced.</p> 
+
+<p>Environment variables are usually considered constants since they are rarely
+changed. Like constants, environment variables are given uppercase names by
+convention. In the scripts that follow, we will use this convention - uppercase
+names for constants and lowercase names for variables.</p>
+
+<p>So, applying everything we know, our program looks like this:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+title="System Information for $HOSTNAME"
+RIGHT_NOW="$(date +"%x %r %Z")"
+TIME_STAMP="Updated on $RIGHT_NOW by $USER"
+
+cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+        $title
+        &lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    &lt;h1&gt;$title&lt;/h1&gt;
+    &lt;p&gt;$TIME_STAMP&lt;/p&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_</div>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0050.php.html#top">Top</a> | <a
+      href="lc3_wss0040.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0060.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

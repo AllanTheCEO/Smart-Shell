@@ -1,0 +1,52 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>unset man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for unset">
+  <meta name="keywords" content="Manual page, unset command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    unset - Unset values and attributes of shell variables and functions.
+
+SYNOPSIS
+    unset [-f] [-v] [-n] [name ...]
+
+DESCRIPTION
+    Unset values and attributes of shell variables and functions.
+    
+    For each NAME, remove the corresponding variable or function.
+    
+    Options:
+      -f	treat each NAME as a shell function
+      -v	treat each NAME as a shell variable
+      -n	treat each NAME as a name reference and unset the variable itself
+    		rather than the variable it references
+    
+    Without options, unset first tries to unset a variable, and if that fails,
+    tries to unset a function.
+    
+    Some variables cannot be unset; also see `readonly'.
+    
+    Exit Status:
+    Returns success unless an invalid option is given or a NAME is read-only.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

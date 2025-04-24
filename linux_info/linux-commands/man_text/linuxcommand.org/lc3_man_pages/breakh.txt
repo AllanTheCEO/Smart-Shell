@@ -1,0 +1,25 @@
+  
+NAME
+    break - Exit for, while, or until loops.
+
+SYNOPSIS
+    break [n]
+
+DESCRIPTION
+    Exit for, while, or until loops.
+    
+    Exit a FOR, WHILE or UNTIL loop.  If N is specified, break N enclosing
+    loops.
+    
+    Exit Status:
+    The exit status is 0 unless N is not greater than or equal to 1.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

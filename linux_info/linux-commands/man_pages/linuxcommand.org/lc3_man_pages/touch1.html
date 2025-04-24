@@ -1,0 +1,106 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>touch man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for touch">
+  <meta name="keywords" content="Manual page, touch command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#file" style="color: white;">Back to Contents</a>
+  <pre>
+TOUCH(1)                      User Commands                      TOUCH(1)
+
+NAME
+       touch - change file timestamps
+
+SYNOPSIS
+       touch [OPTION]... FILE...
+
+DESCRIPTION
+       Update  the access and modification times of each FILE to the cur‐
+       rent time.
+
+       A FILE argument that does not exist is created empty, unless -c or
+       -h is supplied.
+
+       A  FILE argument string of - is handled specially and causes touch
+       to change the times of the file associated with standard output.
+
+       Mandatory arguments  to  long  options  are  mandatory  for  short
+       options too.
+
+       -a     change only the access time
+
+       -c, --no-create
+              do not create any files
+
+       -d, --date=STRING
+              parse STRING and use it instead of current time
+
+       -f     (ignored)
+
+       -h, --no-dereference
+              affect  each  symbolic  link instead of any referenced file
+              (useful only on systems that can change the timestamps of a
+              symlink)
+
+       -m     change only the modification time
+
+       -r, --reference=FILE
+              use this file's times instead of current time
+
+       -t STAMP
+              use [[CC]YY]MMDDhhmm[.ss] instead of current time
+
+       --time=WORD
+              change  the  specified time: WORD is access, atime, or use:
+              equivalent to -a WORD is modify or mtime: equivalent to -m
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Note that the -d and -t options accept  different  time-date  for‐
+       mats.
+
+DATE STRING
+       The  --date=STRING  is  a  mostly  free format human readable date
+       string such as "Sun, 29 Feb 2004 16:21:42  -0800"  or  "2004-02-29
+       16:21:42"  or  even  "next  Thursday".   A date string may contain
+       items indicating calendar date, time of day,  time  zone,  day  of
+       week,  relative time, relative date, and numbers.  An empty string
+       indicates the beginning of the day.  The  date  string  format  is
+       more complex than is easily documented here but is fully described
+       in the info documentation.
+
+AUTHOR
+       Written by Paul Rubin, Arnold Robbins, Jim Kingdon, David  MacKen‐
+       zie, and Randy Smith.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report   any   translation   bugs   to    &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright  ©  2020 Free Software Foundation, Inc.  License GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       Full documentation &lt;https://www.gnu.org/software/coreutils/touch&gt;
+       or available locally via: info '(coreutils) touch invocation'
+
+GNU coreutils 8.32              April 2020                       TOUCH(1)
+</pre></body></html>

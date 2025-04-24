@@ -1,0 +1,66 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>mapfile man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for mapfile">
+  <meta name="keywords" content="Manual page, mapfile command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    mapfile - Read lines from the standard input into an indexed array variable.
+
+SYNOPSIS
+    mapfile [-d delim] [-n count] [-O origin] [-s count] [-t] [-u fd] [-C callback] [-c quantum] [array]
+
+DESCRIPTION
+    Read lines from the standard input into an indexed array variable.
+    
+    Read lines from the standard input into the indexed array variable ARRAY, or
+    from file descriptor FD if the -u option is supplied.  The variable MAPFILE
+    is the default ARRAY.
+    
+    Options:
+      -d delim	Use DELIM to terminate lines, instead of newline
+      -n count	Copy at most COUNT lines.  If COUNT is 0, all lines are copied
+      -O origin	Begin assigning to ARRAY at index ORIGIN.  The default index is 0
+      -s count	Discard the first COUNT lines read
+      -t	Remove a trailing DELIM from each line read (default newline)
+      -u fd	Read lines from file descriptor FD instead of the standard input
+      -C callback	Evaluate CALLBACK each time QUANTUM lines are read
+      -c quantum	Specify the number of lines read between each call to
+    			CALLBACK
+    
+    Arguments:
+      ARRAY	Array variable name to use for file data
+    
+    If -C is supplied without -c, the default quantum is 5000.  When
+    CALLBACK is evaluated, it is supplied the index of the next array
+    element to be assigned and the line to be assigned to that element
+    as additional arguments.
+    
+    If not supplied with an explicit origin, mapfile will clear ARRAY before
+    assigning to it.
+    
+    Exit Status:
+    Returns success unless an invalid option is given or ARRAY is readonly or
+    not an indexed array.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

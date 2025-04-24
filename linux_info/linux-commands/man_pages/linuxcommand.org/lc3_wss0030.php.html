@@ -1,0 +1,253 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 3: Here Scripts</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash shell scripting: Here Scripts">
+    <meta name="keywords" content="here scripts, here documents">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0020.php.html">
+    <link rel="next" href="lc3_wss0040.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0020.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0040.php.html">Next</a>
+    </div><h1>Here Scripts</h1>
+
+<p>Beginning with this lesson, we will construct a useful application. This
+application will produce an HTML document that contains information about our
+system. As we construct our script, we will discover step by step the tools
+needed to solve the problem at hand.</p>
+
+<h2>Writing an HTML File with a Script</h2>
+
+<p>As we may be aware, a well formed HTML file contains the following
+content:</p>
+
+<div class="codeexample">&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;
+    The title of your page
+    &lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+    Your page content goes here.
+&lt;/body&gt;
+&lt;/html&gt;</div>
+
+<p>Now, with what we already know, we could write a script to produce the above
+content:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an html file
+
+<code class="user">echo</code> "&lt;html&gt;"
+<code class="user">echo</code> "&lt;head&gt;"
+<code class="user">echo</code> "  &lt;title&gt;"
+<code class="user">echo</code> "  The title of your page"
+<code class="user">echo</code> "  &lt;/title&gt;"
+<code class="user">echo</code> "&lt;/head&gt;"
+<code class="user">echo</code> ""
+<code class="user">echo</code> "&lt;body&gt;"
+<code class="user">echo</code> "  Your page content goes here."
+<code class="user">echo</code> "&lt;/body&gt;"
+<code class="user">echo</code> "&lt;/html&gt;"</div>
+
+<p>This script can be used as follows:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">sysinfo_page &gt; sysinfo_page.html</code></div>
+
+<p>It has been said that the greatest programmers are also the laziest. They
+write programs to save themselves work. Likewise, when clever programmers write
+programs, they try to save themselves typing.</p>
+
+<p>The first improvement to this script will be to replace the repeated use of
+the <code>echo</code> command with a single instance by using quotation more
+efficiently:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+<code class="user">echo</code> "&lt;html&gt;
+ &lt;head&gt;
+   &lt;title&gt;
+   The title of your page
+   &lt;/title&gt;
+ &lt;/head&gt;
+ 
+ &lt;body&gt;
+   Your page content goes here.
+ &lt;/body&gt;
+ &lt;/html&gt;"</div>
+
+<p>Using quotation, it is possible to embed carriage returns in our text and
+have the <code>echo</code> command's argument span multiple lines.</p>
+
+<p>While this is certainly an improvement, it does have a limitation.  Since
+many types of markup used in HTML incorporate quotation marks themselves, it
+makes using a quoted string a little awkward. A quoted string can be used but
+each embedded quotation mark will need to be escaped with a backslash
+character.</p>
+
+<p>In order to avoid the additional typing, we need to look for a better way to
+produce our text. Fortunately, the shell provides one. It's called a <i>here
+script</i>.</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+cat &lt;&lt; _EOF_
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;
+    The title of your page
+    &lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+    Your page content goes here.
+&lt;/body&gt;
+&lt;/html&gt;
+_EOF_</div>
+
+<p>A here script (also sometimes called a here document) is an additional form
+of <a href= "lc3_lts0070.php.html">I/O redirection</a>. It provides a way to include
+content that will be given to the standard input of a command. In the case of
+the script above, the standard input of the <code>cat</code> command was given
+a stream of text from our script.</p>
+
+<p>A here script is constructed like this:</p>
+
+<div class="codeexample"><code class="user">command</code> &lt;&lt; token
+content to be used as command's standard input
+token</div>
+
+<p><i>token</i> can be any string of characters. "_EOF_" (EOF is short for "End
+Of File") is traditional, but we can use anything as long as it does not
+conflict with a bash reserved word. The token that ends the here script must
+exactly match the one that starts it, or else the remainder of our script will
+be interpreted as more standard input to the command which can lead to some
+really exciting script failures.</p>
+
+<p>There is one additional trick that can be used with a here script. Often, we
+might want to indent the content portion of the here script to improve the
+readability of the script. We can do this if we change the script as
+follows:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+        The title of your page
+        &lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+        Your page content goes here.
+    &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_</div>
+
+<p>Changing the "&lt;&lt;" to "&lt;&lt;-" causes bash to ignore the leading
+tabs (but not spaces) in the here script. The output from the cat command will
+not contain any of the leading tab characters. This technique is a bit
+problematic, as many text editors are configured (and desirably so) to use
+sequences of spaces rather than tab characters.</p>
+
+<p>O.k., let's make our page. We will edit our page to get it to say
+something:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce an HTML file
+
+cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+        My System Information
+        &lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    &lt;h1&gt;My System Information&lt;/h1&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_</div>
+
+<p>In our next lesson, we will make our script produce some real information
+about the system.</p>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0030.php.html#top">Top</a> | <a
+      href="lc3_wss0020.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0040.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

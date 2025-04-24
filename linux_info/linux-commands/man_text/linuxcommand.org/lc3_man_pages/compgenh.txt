@@ -1,0 +1,26 @@
+  
+NAME
+    compgen - Display possible completions depending on the options.
+
+SYNOPSIS
+    compgen [-abcdefgjksuv] [-o option] [-A action] [-G globpat] [-W wordlist]  [-F function] [-C command] [-X filterpat] [-P prefix] [-S suffix] [word]
+
+DESCRIPTION
+    Display possible completions depending on the options.
+    
+    Intended to be used from within a shell function generating possible
+    completions.  If the optional WORD argument is supplied, matches against
+    WORD are generated.
+    
+    Exit Status:
+    Returns success unless an invalid option is supplied or an error occurs.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

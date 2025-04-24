@@ -1,0 +1,86 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>realpath man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for realpath">
+  <meta name="keywords" content="Manual page, realpath command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#file" style="color: white;">Back to Contents</a>
+  <pre>
+REALPATH(1)                   User Commands                   REALPATH(1)
+
+NAME
+       realpath - print the resolved path
+
+SYNOPSIS
+       realpath [OPTION]... FILE...
+
+DESCRIPTION
+       Print  the resolved absolute file name; all but the last component
+       must exist
+
+       -e, --canonicalize-existing
+              all components of the path must exist
+
+       -m, --canonicalize-missing
+              no path components need exist or be a directory
+
+       -L, --logical
+              resolve '..' components before symlinks
+
+       -P, --physical
+              resolve symlinks as encountered (default)
+
+       -q, --quiet
+              suppress most error messages
+
+       --relative-to=DIR
+              print the resolved path relative to DIR
+
+       --relative-base=DIR
+              print absolute paths unless paths below DIR
+
+       -s, --strip, --no-symlinks
+              don't expand symlinks
+
+       -z, --zero
+              end each output line with NUL, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by Padraig Brady.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report    any   translation   bugs   to   &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright © 2020 Free Software Foundation, Inc.   License  GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       readlink(1), readlink(2), realpath(3)
+
+       Full  documentation  &lt;https://www.gnu.org/software/coreutils/real‐
+       path&gt;
+       or available locally via: info '(coreutils) realpath invocation'
+
+GNU coreutils 8.32              April 2020                    REALPATH(1)
+</pre></body></html>

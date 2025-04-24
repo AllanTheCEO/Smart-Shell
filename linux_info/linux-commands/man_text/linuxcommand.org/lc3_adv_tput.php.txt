@@ -1,0 +1,62 @@
+<code>[me@linuxbox ~]$ echo $TERM
+xterm</code></pre>
+<pre><code>[me@linuxbox ~]$ infocmp screen
+#   Reconstructed via infocmp from file: /lib/terminfo/s/screen
+screen|VT 100/ANSI X3.64 virtual terminal,
+    am, km, mir, msgr, xenl,
+    colors#8, cols#80, it#8, lines#24, ncv@, pairs#64,
+    acsc=++\,\,--..00``aaffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~,
+    bel=^G, blink=\E[5m, bold=\E[1m, cbt=\E[Z, civis=\E[?25l,
+    clear=\E[H\E[J, cnorm=\E[34h\E[?25h, cr=^M,
+    csr=\E[%i%p1%d;%p2%dr, cub=\E[%p1%dD, cub1=^H,
+    cud=\E[%p1%dB, cud1=^J, cuf=\E[%p1%dC, cuf1=\E[C,
+    cup=\E[%i%p1%d;%p2%dH, cuu=\E[%p1%dA, cuu1=\EM,
+    cvvis=\E[34l, dch=\E[%p1%dP, dch1=\E[P, dl=\E[%p1%dM,
+    dl1=\E[M, ed=\E[J, el=\E[K, el1=\E[1K, enacs=\E(B\E)0,
+    flash=\Eg, home=\E[H, ht=^I, hts=\EH, ich=\E[%p1%d@,
+    il=\E[%p1%dL, il1=\E[L, ind=^J, is2=\E)0, kbs=\177,
+    kcbt=\E[Z, kcub1=\EOD, kcud1=\EOB, kcuf1=\EOC, kcuu1=\EOA,
+    kdch1=\E[3~, kend=\E[4~, kf1=\EOP, kf10=\E[21~,
+    kf11=\E[23~, kf12=\E[24~, kf2=\EOQ, kf3=\EOR, kf4=\EOS,
+    kf5=\E[15~, kf6=\E[17~, kf7=\E[18~, kf8=\E[19~, kf9=\E[20~,
+    khome=\E[1~, kich1=\E[2~, kmous=\E[M, knp=\E[6~, kpp=\E[5~,
+    nel=\EE, op=\E[39;49m, rc=\E8, rev=\E[7m, ri=\EM, rmacs=^O,
+    rmcup=\E[?1049l, rmir=\E[4l, rmkx=\E[?1l\E&gt;, rmso=\E[23m,
+    rmul=\E[24m, rs2=\Ec\E[?1000l\E[?25h, sc=\E7,
+    setab=\E[4%p1%dm, setaf=\E[3%p1%dm,
+    sgr=\E[0%?%p6%t;1%;%?%p1%t;3%;%?%p2%t;4%;%?%p3%t;7%;%?%p4%t;5%;m%?%p9%t\016%e\017%;,
+    sgr0=\E[m\017, smacs=^N, smcup=\E[?1049h, smir=\E[4h,
+    smkx=\E[?1h\E=, smso=\E[3m, smul=\E[4m, tbc=\E[3g,</code></pre>
+<pre><code>tput longname</code></pre>
+<p>This outputs the full name of the current terminal type. We can specify another terminal type by including the <code>-T</code> option. Here, we will ask for the full name of the terminal type named “screen”:</p>
+<pre><code>tput -T screen longname</code></pre>
+<pre><code>tput colors
+tput cols</code></pre>
+<pre><code>tput bce &amp;&amp; echo &quot;True&quot;</code></pre>
+<p>We can send instructions to the terminal. For example, to move the cursor to the position 20 characters to the right and 5 rows down:</p>
+<pre><code>tput cup 5 20</code></pre>
+<pre><code>alias term_size=`echo &quot;Rows=$(tput lines) Cols=$(tput cols)&quot;&#39;</code></pre>
+<p>If we define this alias and execute it, we will see the size of the current terminal displayed. If we then change the size of the terminal window and execute the alias a second time, we will see the values have been updated.</p>
+<p>One interesting feature we can use in our scripts is the SIGWINCH signal. This signal is sent each time the terminal window is resized. We can include a signal handler (i.e., a trap) in our scripts to detect this signal and act upon it:</p>
+<div class="sourceCode" id="term_size2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="term_size2-1" title="1">    <span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="term_size2-2" title="2">    <span class="co"># term_size2 - Dynamically display terminal window size</span></a>
+<a class="sourceLine" id="term_size2-3" title="3"></a>
+<a class="sourceLine" id="term_size2-4" title="4">    <span class="fu">redraw()</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="term_size2-5" title="5">        <span class="fu">clear</span></a>
+<a class="sourceLine" id="term_size2-6" title="6">        <span class="bu">echo</span> <span class="st">&quot;Width = </span><span class="va">$(</span><span class="ex">tput</span> cols<span class="va">)</span><span class="st"> Height = </span><span class="va">$(</span><span class="ex">tput</span> lines<span class="va">)</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="term_size2-7" title="7">    <span class="kw">}</span></a>
+<a class="sourceLine" id="term_size2-8" title="8"></a>
+<a class="sourceLine" id="term_size2-9" title="9">    <span class="bu">trap</span> redraw WINCH</a>
+<a class="sourceLine" id="term_size2-10" title="10"></a>
+<a class="sourceLine" id="term_size2-11" title="11">    <span class="ex">redraw</span></a>
+<a class="sourceLine" id="term_size2-12" title="12">    <span class="kw">while</span> <span class="fu">true</span><span class="kw">;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="term_size2-13" title="13">        <span class="bu">:</span></a>
+<a class="sourceLine" id="term_size2-14" title="14">    <span class="kw">done</span></a></code></pre></div>
+<pre><code>[me@linuxbox ~]$ banner &quot;BIG TEXT&quot;
+######    ###    #####          ####### ####### #     # #######
+#     #    #    #     #            #    #        #   #     #
+#     #    #    #                  #    #         # #      #
+######     #    #  ####            #    #####      #       #
+#     #    #    #     #            #    #         # #      #
+#     #    #    #     #            #    #        #   #     #
+######    ###    #####             #    ####### #     #    #</code>

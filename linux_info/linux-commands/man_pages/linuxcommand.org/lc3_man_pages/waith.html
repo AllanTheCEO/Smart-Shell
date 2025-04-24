@@ -1,0 +1,52 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>wait man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for wait">
+  <meta name="keywords" content="Manual page, wait command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    wait - Wait for job completion and return exit status.
+
+SYNOPSIS
+    wait [-fn] [id ...]
+
+DESCRIPTION
+    Wait for job completion and return exit status.
+    
+    Waits for each process identified by an ID, which may be a process ID or a
+    job specification, and reports its termination status.  If ID is not
+    given, waits for all currently active child processes, and the return
+    status is zero.  If ID is a job specification, waits for all processes
+    in that job's pipeline.
+    
+    If the -n option is supplied, waits for the next job to terminate and
+    returns its exit status.
+    
+    If the -f option is supplied, and job control is enabled, waits for the
+    specified ID to terminate, instead of waiting for it to change status.
+    
+    Exit Status:
+    Returns the status of the last ID; fails if ID is invalid or an invalid
+    option is given.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

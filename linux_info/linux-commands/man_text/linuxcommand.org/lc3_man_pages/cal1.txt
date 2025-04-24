@@ -1,0 +1,194 @@
+  
+CAL(1)                        User Commands                        CAL(1)
+
+NAME
+       cal - display a calendar
+
+SYNOPSIS
+       cal [options] [[[day] month] year]
+       cal [options] [timestamp|monthname]
+
+DESCRIPTION
+       cal  displays  a  simple calendar.  If no arguments are specified,
+       the current month is displayed.
+
+       The month may be specified as a number (1-12), as a month name  or
+       as an abbreviated month name according to the current locales.
+
+       Two  different  calendar  systems  are used, Gregorian and Julian.
+       These are nearly identical systems with Gregorian making  a  small
+       adjustment  to  the  frequency  of  leap  years;  this facilitates
+       improved synchronization with solar  events  like  the  equinoxes.
+       The  Gregorian  calendar  reform  was  introduced in 1582, but its
+       adoption continued up to 1923.  By default cal uses  the  adoption
+       date  of 3 Sept 1752.  From that date forward the Gregorian calen‐
+       dar is displayed; previous dates use the Julian  calendar  system.
+       11 days were removed at the time of adoption to bring the calendar
+       in sync with solar events.  So Sept 1752 has a mix of  Julian  and
+       Gregorian  dates by which the 2nd is followed by the 14th (the 3rd
+       through the 13th are absent).
+
+       Optionally, either the proleptic Gregorian calendar or the  Julian
+       calendar may be used exclusively.  See --reform below.
+
+OPTIONS
+       -1, --one
+              Display single month output.  (This is the default.)
+
+       -3, --three
+              Display three months spanning the date.
+
+       -n , --months number
+              Display  number of months, starting from the month contain‐
+              ing the date.
+
+       -S, --span
+              Display months spanning the date.
+
+       -s, --sunday
+              Display Sunday as the first day of the week.
+
+       -m, --monday
+              Display Monday as the first day of the week.
+
+       --iso  Display the proleptic Gregorian calendar exclusively.  This
+              option  does  not  affect week numbers and the first day of
+              the week.  See --reform below.
+
+       -j, --julian
+              Use day-of-year numbering for  all  calendars.   These  are
+              also  called  ordinal  days.   Ordinal days range from 1 to
+              366.  This option does not switch from the Gregorian to the
+              Julian   calendar   system,   that  is  controlled  by  the
+              --reform option.
+
+              Sometimes  Gregorian  calendars  using  ordinal  dates  are
+              referred to as Julian calendars.  This can be confusing due
+              to the many date related conventions  that  use  Julian  in
+              their  name: (ordinal) julian date, julian (calendar) date,
+              (astronomical) julian date,  (modified)  julian  date,  and
+              more.   This  option  is named julian, because ordinal days
+              are identified as julian by the POSIX  standard.   However,
+              be  aware  that  cal  also uses the Julian calendar system.
+              See DESCRIPTION above.
+
+       --reform val
+              This option sets the adoption date of the Gregorian  calen‐
+              dar  reform.   Calendar  dates  previous  to reform use the
+              Julian calendar system.  Calendar dates  after  reform  use
+              the Gregorian calendar system.  The argument val can be:
+
+              · 1752   -  sets  3  September  1752  as  the  reform  date
+                (default).  This is when the  Gregorian  calendar  reform
+                was adopted by the British Empire.
+
+              · gregorian  -  display  Gregorian  calendars  exclusively.
+                This special placeholder sets the reform date  below  the
+                smallest year that cal can use; meaning all calendar out‐
+                put uses the Gregorian calendar system.  This  is  called
+                the  proleptic Gregorian calendar, because dates prior to
+                the calendar system's creation use extrapolated values.
+
+              · iso - alias of gregorian.  The ISO 8601 standard for  the
+                representation  of  dates and times in information inter‐
+                change requires using the proleptic Gregorian calendar.
+
+              · julian - display Julian calendars exclusively.  This spe‐
+                cial  placeholder  sets the reform date above the largest
+                year that cal can use; meaning all calendar  output  uses
+                the Julian calendar system.
+
+              See DESCRIPTION above.
+
+       -y, --year
+              Display a calendar for the whole year.
+
+       -Y, --twelve
+              Display a calendar for the next twelve months.
+
+       -w, --week[=number]
+              Display week numbers in the calendar (US or ISO-8601).  See
+              NOTES section for more details.
+
+       --color[=when]
+              Colorize the output.  The optional  argument  when  can  be
+              auto, never or always.  If the when argument is omitted, it
+              defaults to auto.  The colors can be disabled; for the cur‐
+              rent  built-in default see the --help output.  See also the
+              COLORS section.
+
+       -V, --version
+              Display version information and exit.
+
+       -h, --help
+              Display help text and exit.
+
+PARAMETERS
+       Single digits-only parameter (e.g., 'cal 2020')
+              Specifies the year to be displayed; note the year  must  be
+              fully  specified:  cal  89  will not display a calendar for
+              1989.
+
+       Single string parameter (e.g., 'cal tomorrow' or 'cal August')
+              Specifies timestamp or a month name (or  abbreviated  name)
+              according to the current locales.
+
+              The  special  placeholders  are accepted when parsing time‐
+              stamp, "now" may be used to  refer  to  the  current  time,
+              "today",  "yesterday",  "tomorrow"  refer to of the current
+              day, the day before or the next day, respectively.
+
+              The relative date specifications are also accepted, in this
+              case  "+"  is evaluated to the current time plus the speci‐
+              fied time span. Correspondingly, a time span that  is  pre‐
+              fixed  with  "-" is evaluated to the current time minus the
+              specified time span, for example '+2days'. Instead of  pre‐
+              fixing  the  time span with "+" or "-", it may also be suf‐
+              fixed with a space and the word "left" or "ago" (for  exam‐
+              ple '1 week ago').
+
+       Two parameters (e.g., 'cal 11 2020')
+              Denote the month (1 - 12) and year.
+
+       Three parameters (e.g., 'cal 25 11 2020')
+              Denote  the day (1-31), month and year, and the day will be
+              highlighted if the calendar is displayed on a terminal.  If
+              no  parameters  are specified, the current month's calendar
+              is displayed.
+
+NOTES
+       A year starts on January 1.  The first day of the week  is  deter‐
+       mined by the locale or the --sunday and --monday options.
+
+       The  week  numbering depends on the choice of the first day of the
+       week.  If it is Sunday then the customary North American numbering
+       is  used,  where  1  January is in week number 1.  If it is Monday
+       (-m) then the ISO 8601 standard week numbering is used, where  the
+       first Thursday is in week number 1.
+
+COLORS
+       Implicit coloring can be disabled as follows:
+
+              touch /etc/terminal-colors.d/cal.disable
+
+       See  terminal-colors.d(5) for more details about colorization con‐
+       figuration.
+
+BUGS
+       The default cal output uses 3 September 1752 as the Gregorian cal‐
+       endar  reform  date.   The  historical reform  dates for the other
+       locales, including its  introduction  in  October  1582,  are  not
+       implemented.
+
+       Alternative  calendars,  such as the Umm al-Qura, the Solar Hijri,
+       the Ge'ez, or the lunisolar Hindu, are not supported.
+
+HISTORY
+       A cal command appeared in Version 6 AT&T UNIX.
+
+AVAILABILITY
+       The cal command is part of the util-linux package and is available
+       from https://www.kernel.org/pub/linux/utils/util-linux/.
+
+util-linux                     January 2018                        CAL(1)
+</body></html>

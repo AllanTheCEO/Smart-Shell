@@ -1,0 +1,24 @@
+  
+NAME
+    unalias - Remove each NAME from the list of defined aliases.
+
+SYNOPSIS
+    unalias [-a] name [name ...]
+
+DESCRIPTION
+    Remove each NAME from the list of defined aliases.
+    
+    Options:
+      -a	remove all alias definitions
+    
+    Return success unless a NAME is not an existing alias.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

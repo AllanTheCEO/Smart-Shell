@@ -1,0 +1,11 @@
+lrwxrwxrwx     25 Jul  3 16:42 System.map -&gt; /boot/System.map-4.0.36-3
+-rw-r--r-- 105911 Oct 13  2018 System.map-4.0.36-0.7
+-rw-r--r-- 105935 Dec 29  2018 System.map-4.0.36-3
+-rw-r--r-- 181986 Dec 11  2019 initrd-4.0.36-0.7.img
+-rw-r--r-- 182001 Dec 11  2019 initrd-4.0.36.img
+lrwxrwxrwx     26 Jul  3 16:42 module-info -&gt; /boot/module-info-4.0.36-3
+-rw-r--r--  11773 Oct 13  2018 module-info-4.0.36-0.7
+-rw-r--r--  11773 Dec 29  2018 module-info-4.0.36-3
+lrwxrwxrwx     16 Dec 11  2019 vmlinuz -&gt; vmlinuz-4.0.36-3
+-rw-r--r-- 454325 Oct 13  2018 vmlinuz-4.0.36-0.7
+-rw-r--r-- 454434 Dec 29  2018 vmlinuz-4.0.36-3

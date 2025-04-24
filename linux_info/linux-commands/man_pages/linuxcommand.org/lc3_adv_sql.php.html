@@ -1,0 +1,1142 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Linux Command Line Adventure: SQL</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="SQL (Structured Query Language) Introduction and Tutorial">
+    <meta name="keywords" content="sql, structured query language, sqlite, sqlite3, tutorial, rdbms, database">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_adv_new_script.php.html">
+    <link rel="next" href="lc3_adventures.php.html#contents">
+    <link rel="contents" href="lc3_adventures.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_adv_new_script.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adventures.php.html#contents">Next</a>
+    </div>
+<h1 id="sql">SQL</h1>
+<p>Okay kids, gird your grid for a big one.</p>
+<p>The world as we know it is powered by data. Data, in turn, is stored in databases. Most everything we use computers for involves using data stored in some kind of database. When we talk about storing large amounts of data, we often mean <em>relational database management systems</em> (RDBMS). Banks, insurance companies, most every accounting system, and many, many websites use relational databases to store and organize their data.</p>
+<p>The idea of relational data storage is generally credited to English computer scientist and IBM researcher E. F. Cobb, who proposed it in a paper in 1970. In the years that followed, a number of software companies built relational database systems with varying degrees of success. Around 1973, IBM developed a simplified and flexible method of managing relational databases called <em>Structured Query Language</em> (SQL, often pronounced “sequel”). Today the combination of RDBMS and SQL is a huge industry, generating many billions of dollars every year.</p>
+<p>Relational databases are important to the history of Linux as well. It was the availability of open source database programs (such as MySQL) and web servers (most notably, Apache) that led to an explosion of Linux adoption in the early days of the world wide web.</p>
+<p>In this adventure, we’re going to study the fundamentals of relational databases and use a popular command line program to create and manage a database of our own. The AWK adventure is a suggested prerequisite.</p>
+<h2 id="a-little-theory">A Little Theory</h2>
+<p>Before we can delve into SQL we have to look at what relational databases are and how they work.</p>
+<h3 id="tables">Tables</h3>
+<p>Simply put, a relational database is one or more <em>tables</em> containing columns and rows. Technically, the columns are known as <em>attributes</em> and the rows as <em>tuples</em>, but most often they are simply called columns and rows. In many ways, a table resembles the familiar spreadsheet. In fact, spreadsheet programs are often used to prepare and edit database tables. Each column contains data of a consistent type, for example, one column might consist of integers and another column strings. A table can contain any number of rows.</p>
+<h3 id="schemas">Schemas</h3>
+<p>The design of a database is called its <em>schema</em> and it can be simple, containing just a single table or two, or it can be complex, containing many tables with complex interrelationships between them.</p>
+<p>Let’s imagine a database for a bookstore consisting of three tables. The first is called <code>Customers</code>, the second is called <code>Items</code>, and the third is called <code>Sales</code>. The <code>Customers</code> table will have multiple rows with each row containing information about one customer. The columns include a customer number, first and last names, and the customer’s address. Here is such a table with just some made-up names:</p>
+<pre><code>Cust First   Last     Street                City        ST
+---- ------- -------- --------------------- ----------- --
+0001 Richard Stollman 1 Outonthe Street     Boston      MA
+0002 Eric    Roymond  2 Amendment Road      Bunker Hill PA
+0003 Bruce   Porens   420 Middleville Drive Anytown     US</code></pre>
+<p>The <code>Items</code> table lists our books and contains the item number, title, author, and price.</p>
+<pre><code>Item Title                                  Author        Price
+---- -------------------------------------- ------------- -----
+1001 Winning Friends and Influencing People Dale Carnegie 14.95
+1002 The Communist Manifesto                Marx &amp; Engels 00.00
+1003 Atlas Shrugged                         Ayn Rand      99.99</code></pre>
+<p>As we go about selling items in our imaginary bookstore, we generate rows in the <code>Sales</code> table. Each sale generates a row containing the customer number, date and time of the sale, the item number, the quantity sold, and the total amount of the sale.</p>
+<pre><code>Cust Date_Time    Item Quan Total
+---- ------------ ---- ---- ------
+0002 202006150931 1003    1  99.99
+0001 202006151108 1002    1   0.00
+0003 202006151820 1001   10 149.50</code></pre>
+<h3 id="keys">Keys</h3>
+<p>Now we might be wondering what the <code>Cust</code> and <code>Item</code> columns are for. They serve as <em>keys</em>. Keys are values that serve to uniquely identify a table row and to facilitate interrelationships between tables. Keys have some special properties. They must be both unique (that is, they can appear only once in a table and specifically identify a row) and they must also be immutable (they can never change). If they can’t meet these requirements, they cannot be keys. Some database implementations have methods of enforcing these requirements during table creation and keys can be formally specified. In the case of our bookstore database, the <code>Cust</code> column contains the keys for the <code>Customers</code> table and the <code>Item</code> column contains the keys for the <code>Items</code> table.</p>
+<p>Knowing this about keys, we can now understand why the <code>Sales</code> table works the way it does. We can see for example that row 1 of the <code>Sales</code> table tells us that customer <code>0002</code> purchased 1 copy of item <code>1003</code> for $99.99. So why do we need special values for the keys? Why not, for instance, just use the customer’s name as the key? It’s because we can’t guarantee that the name won’t change, or that two people might have the same name. We can guarantee that an arbitrarily assigned value like our customer number is unique and immutable.</p>
+<h2 id="database-enginesservers">Database Engines/Servers</h2>
+<p>There are a number of database servers available for Linux. The two most prominent are MySQL (and its fork MariaDB) and PostgreSQL. These database servers implement <em>client/server architecture</em>, a concept that became a hot topic in the 1990s. Database servers of this type run as server processes and clients connect to them over a network connection and send SQL statements for the server to carry out. The results of the database operations are returned to the client program for further processing and presentation. Many web sites use this architecture with a web server sending SQL statements to a separate database server to dynamically create web pages as needed. The famous <em>LAMP stack</em> consisting of Linux, Apache web server, MySQL, and PHP powered much of the early web.</p>
+<p>For purposes of this adventure, setting up database servers such as MySQL and PostgreSQL is too complicated to cover here since, among other things, they support multiple concurrent users and their attendant security controls. It’s more than we need for just learning SQL.</p>
+<h2 id="sqlite3">sqlite3</h2>
+<p>The database server we will be using is SQLite. SQLite is a library that can be used with applications to provide a high-level of SQL functionality. It’s very popular with the embedded systems crowd. It saves application developers the trouble of writing custom solutions to their data storage and management tasks. In addition to the library, SQLite provides a command line tool for directly interacting with SQLite databases. Also, since it accepts SQL from standard input (as well as it own command line interface) and sends its results to standard output, it’s ideal for use in our shell scripts.</p>
+<p>SQLite is available from most Linux distribution repositories. Installation is easy, for example:</p>
+<pre><code>me@linuxbox:~$ sudo apt install sqlite3</code></pre>
+<h3 id="building-a-playground">Building a Playground</h3>
+<p>Let’s build a playground and play with some real data. On the LinuxCommand.org site there is a archive we can download that will do the trick.</p>
+<pre><code>me@linuxbox:~$ cd
+me@linuxbox:~$ curl -c http://linuxcommand.org/adventure-sql.tgz
+me@linuxbox:~$ tar xzf adventure-sql.tgz
+me@linuxbox:~$ cd adventure-sql</code></pre>
+<p>Extracting the <code>.tgz</code> file will produce the playground directory containing the data sets, some demonstration code, and some helpful tools. The data sets we will be working with contain the listings of installed packages on an Ubuntu 18.04 system. This will include the name of packages, a short description of each one, a list of files contained in each package, and their sizes.</p>
+<pre><code>me@linuxbox:~/adventure-sql$ ls</code></pre>
+<p>All the files are human-readable text, so feel free to give them a look. The data sets in the archive are the <code>.tsv</code> files. These are tab-separated value files. The first one is the <code>package_descriptions.tsv</code> file. This contains two columns of data; a package name and a package description. The second file, named <code>package_files.txv</code>, has three columns: a package name, the name of a file installed by the package and the size of the file.</p>
+<h3 id="starting-sqlite3">Starting sqlite3</h3>
+<p>To launch SQLite, we simply issue the command <code>sqlite3</code> followed optionally by the name of a file to hold our database of tables. If we do not supply a file name, SQLite will create a temporary database in memory.</p>
+<pre><code>me@linuxbox:~/advemture-sql$ sqlite3
+SQLite version 3.22.0 2018-01-22 18:45:57
+Enter &quot;.help&quot; for usage hints.
+Connected to a transient in-memory database.
+Use &quot;.open FILENAME&quot; to reopen on a persistent database.
+sqlite&gt;</code></pre>
+<p>When loading is complete, SQLite will present a prompt where we can enter commands. Commands can be either SQL statements or <em>dot commands</em> that are used to control SQLite itself. To see a list of the available dot commands, we enter <code>.help</code> at the prompt.</p>
+<pre><code>sqlite&gt; .help</code></pre>
+<p>There are only a few of the dot commands that will be of interest to us and they deal mainly with how output is formatted. To exit <code>sqlite3</code>, we enter the dot command <code>.quit</code> at the prompt.</p>
+<pre><code>sqlite&gt; .quit</code></pre>
+<p>Though we can interact directly with the <code>sqlite3</code> program using the <code>sqlite&gt;</code> prompt, <code>sqlite3</code> can also accept streams of dot commands and SQL statements through standard input. This is how SQLite is most often used.</p>
+<h3 id="creating-a-table-and-inserting-our-data">Creating a Table and Inserting Our Data</h3>
+<p>To get started with our database, we need to first convert our <code>.tsv</code> files into a stream of SQL statements. Our database will initially consist of two tables. The first is named <code>Package_Descriptions</code> and the second is named <code>Package_Files</code>. To create the SQL stream for the <code>Package_Descriptions</code> table we will use the <code>insert_Package_Descriptions.awk</code> program supplied in the playground archive.</p>
+<pre><code>me@linuxbox:~/advemture-sql$ ./insert_Package_Descriptions.awk \
+&lt; package_descriptions.tsv &gt; insert_Package_Descriptions.sql</code></pre>
+<p>Let’s take a look at the resulting SQL stream. We’ll use the <code>head</code> command to display the first few lines of the stream.</p>
+<pre><code>me@linuxbox:~/advemture-sql$ head insert_Package_Descriptions.sql
+DROP TABLE IF EXISTS Package_Descriptions;
+CREATE TABLE Package_Descriptions (
+    package_name VARCHAR(60),
+    description  VARCHAR(120)
+);
+BEGIN TRANSACTION;
+INSERT INTO Package_Descriptions
+     VALUES ( &#39;a2ps&#39;,
+              &#39;GNU a2ps - &#39;&#39;Anything to PostScript&#39;&#39; converter and pretty-prin
+ter&#39;);
+INSERT INTO Package_Descriptions
+     VALUES ( &#39;accountsservice&#39;,
+              &#39;query and manipulate user account information&#39;);</code></pre>
+<p>And the last few lines using the <code>tail</code> command.</p>
+<pre><code>me@linuxbox:~/advemture-sql$ tail insert_Package_Descriptions.sql
+     VALUES ( &#39;zlib1g:amd64&#39;,
+              &#39;compression library - runtime&#39;);
+INSERT INTO Package_Descriptions
+     VALUES ( &#39;zlib1g:i386&#39;,
+              &#39;compression library - runtime&#39;);
+INSERT INTO Package_Descriptions
+     VALUES ( &#39;zlib1g-dev:amd64&#39;,
+              &#39;compression library - development&#39;);
+INSERT INTO Package_Descriptions
+     VALUES ( &#39;zsh&#39;,
+              &#39;shell with lots of features&#39;);
+INSERT INTO Package_Descriptions
+     VALUES ( &#39;zsh-common&#39;,
+              &#39;architecture independent files for Zsh&#39;);
+COMMIT;</code></pre>
+<p>As we can see, SQL is verbose and somewhat English-like. Convention dictates that language keywords be in uppercase; however it is not required. SQL is case insensitive. White space is not important, but is often used to make the SQL statements easier to read. Statements can span multiple lines but don’t have to. Statements are terminated by a semicolon character. The SQL in this adventure is generally formatted in accordance with the style guide written by Simon Holywell linked in the “Further Reading” section below. Since some SQL can get quite complicated, visual neatness counts when writing code.</p>
+<p>SQL supports two forms of commenting.</p>
+<pre><code>-- Single line comments are preceeded by 2 dashes
+
+/* And multi-line comments are done in the
+   style of the C programming language */</code></pre>
+<p>Before we go on, we need to digress for a moment to discuss SQL as a standard. While there are ANSI standards for SQL, every database server implements SQL differently. Each one has a slightly different dialect. The reason for this is partly historical; in the early days there weren’t any firm standards, and partly commercial. Each database vendor wanted to make it hard for customers to migrate to competing products so each vendor added unique extensions and features to the language to promote the dreaded “vendor lock-in” for their product. SQLite supports most of standard SQL (but not all of it) and it adds a few unique features.</p>
+<h3 id="creating-and-deleting-tables">Creating and Deleting Tables</h3>
+<p>The first 2 lines of our SQL stream deletes any existing table named <code>Package_Descriptions</code> and creates a new table with that name. The <code>DROP TABLE</code> statement deletes a table. The optional <code>IF EXISTS</code> clause is used to prevent errors if the table does not already exist. There are a lot of optional clauses in SQL. The <code>CREATE TABLE</code> statement defines a new table. As we can see, this table will have 2 columns. The first column, <code>package_name</code> is defined to be a variable length string up to 60 characters long. <code>VARCHAR</code> is one of the available data types we can define. Here are some of the common data types supported by SQL databases:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Common SQL data types</caption>
+<colgroup>
+<col style="width: 18%" >
+<col style="width: 80%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Data Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">INTEGER</td>
+<td style="text-align: left;">Integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CHAR(n)</td>
+<td style="text-align: left;">Fixed length string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VARCHAR(n)</td>
+<td style="text-align: left;">Variable length string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NUMERIC</td>
+<td style="text-align: left;">Decimal numbers</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REAL</td>
+<td style="text-align: left;">Floating point numbers</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DATETIME</td>
+<td style="text-align: left;">Date and time values</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="data-types">Data Types</h3>
+<p>SQL databases support many types of data. Unfortunately, this varies by vendor. Even in cases where two databases share the same data type name, the actual meaning of the data type can differ. Data types in SQLite, unlike other SQL databases, are not rigidly fixed. Values in SQLite are <em>dynamically typed</em>. While SQLite allows many of the common data types found in other databases to be specified, it actually only supports 4 general types of data storage.</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>SQLite data types</caption>
+<colgroup>
+<col style="width: 18%" >
+<col style="width: 80%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Data Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">INTEGER</td>
+<td style="text-align: left;">Signed integers using 1, 2, 3, 4, 6, or 8 bytes as needed</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REAL</td>
+<td style="text-align: left;">8-byte IEEE floating point numbers</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TEXT</td>
+<td style="text-align: left;">Text strings</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BLOB</td>
+<td style="text-align: left;">Binary large objects (for example JPEG, or MP3 files)</td>
+</tr>
+</tbody>
+</table></div>
+<p>In our example above, we specified <code>VARCHAR</code> as the data type for our columns. SQLite is perfectly happy with this, but it actually stores the values in these columns as just <code>TEXT</code>. It ignores the length restrictions set in the data type specification. SQLite is extremely lenient about data types. In fact, it allows any kind of data to be stored in any specified data type, even allowing a mixture of data types in a single column. This is completely incompatible with all other databases, and relying on this would be very bad practice. In the remainder of this adventure we will be sticking to conventional data types and behavior.</p>
+<h3 id="inserting-data">Inserting Data</h3>
+<p>Moving on with our SQL stream, we see that the majority of the stream consists of <code>INSERT</code> statements. This is how rows are added to a table. Insert is sort of a misnomer as <code>INSERT</code> statements append rows to a table.</p>
+<p>We surround the <code>INSERT</code> statements with <code>BEGIN TRANSACTION</code> and <code>COMMIT</code>. This is done for performance reasons. If we leave these out, the rows will still be appended to the table but each <code>INSERT</code> will be treated as a separate transaction, vastly increasing the amount of time it takes to append a large number of rows. Treating a transaction this way also has another important benefit. SQL does not apply the transaction to the database until it receives the <code>COMMIT</code> statement, thus it is possible to write SQL code that will abandon a transaction if there is a problem and the change will be rolled back leaving the database unchanged.</p>
+<p>Let’s go ahead and create our first table and add the package names and descriptions.</p>
+<pre><code>me@linuxbox:~/advemture-sql$ sqlite3 adv-sql.sqlite \
+&lt; insert_Package_Descriptions.sql</code></pre>
+<p>We execute the <code>sqlite3</code> program specifying <code>adv-sql.sqlite</code> as the file used to store our tables. The choice of file name is arbitrary. We read our SQL stream into standard input and <code>sqlite3</code> carries out the statements.</p>
+<h3 id="doing-some-queries">Doing Some Queries</h3>
+<p>Now that we have a database (albeit a small one), let’s take a look at it. To do this, we will start up <code>sqlite3</code> and interact with it at the prompt.</p>
+<pre><code>me@linuxbox:~/advemture-sql$ sqlite3 adv-sql.sqlite
+SQLite version 3.22.0 2018-01-22 18:45:57
+Enter &quot;.help&quot; for usage hints.
+sqlite&gt; </code></pre>
+<p>We’ll first use some SQLite dot commands to examine the structure of the database.</p>
+<pre><code>sqlite&gt; .tables
+Package_Descriptions
+sqlite&gt; .schema Package_Descriptions
+CREATE TABLE Package_Descriptions (
+    package_name VARCHAR(60),
+    description  VARCHAR(120)
+); </code></pre>
+<p>The <code>.tables</code> dot command displays a list of tables in the database while the <code>.schema</code> dot command lists the statements used to create the specified table.</p>
+<p>Next, we’ll get into some real SQL using <code>SELECT</code>, probably the most frequently used SQL statement.</p>
+<pre><code>sqlite&gt; SELECT * FROM Package_Descriptions;
+a2ps|GNU a2ps - &#39;Anything to PostScript&#39; converter and pretty-printer
+accountsservice|query and manipulate user account information
+acl|Access control list utilities
+acpi-support|scripts for handling many ACPI events
+acpid|Advanced Configuration and Power Interface event daemon
+adduser|add and remove users and groups
+adium-theme-ubuntu|Adium message style for Ubuntu
+adwaita-icon-theme|default icon theme of GNOME (small subset)
+aisleriot|GNOME solitaire card game collection
+alsa-base|ALSA driver configuration files
+.
+.
+.</code></pre>
+<p>This is the simplest form of the <code>SELECT</code> statement. The syntax is the word <code>SELECT</code> followed by a list of columns or calculated values we want, and a <code>FROM</code> clause specifying the source of the data. This example uses <code>*</code> which means every column. Alternately, we could explicitly name the columns, like so:</p>
+<pre><code>sqlite&gt; SELECT package_name, description FROM Package_Descriptions;</code></pre>
+<p>And achieve the same result.</p>
+<h3 id="controlling-the-output">Controlling the Output</h3>
+<p>As we can see from the output above, the default format is fine for further processing by tools such as <code>awk</code>, but it leaves a lot to be desired when it comes to being read by humans. We can adjust the output format with some dot commands. We’ll also add the <code>LIMIT</code> clause to the end of our query to output just 10 rows.</p>
+<pre><code>sqlite&gt; .headers on
+sqlite&gt; .mode column
+sqlite&gt; SELECT * FROM Package_Descriptions LIMIT 10;
+package_name  description                                                     
+------------  ----------------------------------------------------------------
+a2ps          GNU a2ps - &#39;Anything to PostScript&#39; converter and pretty-printer
+accountsserv  query and manipulate user account information                   
+acl           Access control list utilities                                   
+acpi-support  scripts for handling many ACPI events                           
+acpid         Advanced Configuration and Power Interface event daemon         
+adduser       add and remove users and groups                                 
+adium-theme-  Adium message style for Ubuntu                                  
+adwaita-icon  default icon theme of GNOME (small subset)                      
+aisleriot     GNOME solitaire card game collection                            
+alsa-base     ALSA driver configuration files</code></pre>
+<p>By using the <code>.headers on</code> and <code>.mode column</code> dot commands, we add the column headings and change the output to column format. These settings stay in effect until we change them. The <code>.mode</code> dot command has a number of interesting possible settings.</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>SQLite output modes</caption>
+<colgroup>
+<col style="width: 12%" >
+<col style="width: 86%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">csv</td>
+<td style="text-align: left;">Comma-separated values</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">column</td>
+<td style="text-align: left;">Left-aligned columns. Use .width n1 n2… to set column widths.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">html</td>
+<td style="text-align: left;">HTML &lt;table&gt; code</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">insert</td>
+<td style="text-align: left;">SQL insert statements for TABLE</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">line</td>
+<td style="text-align: left;">One value per line</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">list</td>
+<td style="text-align: left;">Values delimited by .separator string. This is the default.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tabs</td>
+<td style="text-align: left;">Tab-separated values</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tcl</td>
+<td style="text-align: left;">TCL (Tool Control Language) list elements</td>
+</tr>
+</tbody>
+</table></div>
+<p>Here we will set the mode and column widths for our table.</p>
+<pre><code>sqlite&gt; .mode column 
+sqlite&gt; .width 20 60 
+sqlite&gt; SELECT * FROM Package_Descriptions LIMIT 10;
+package_name          description                                                 
+--------------------  ---------------------------------------------------------
+a2ps                  GNU a2ps - &#39;Anything to PostScript&#39; converter and pretty-
+accountsservice       query and manipulate user account information               
+acl                   Access control list utilities                               
+acpi-support          scripts for handling many ACPI events                       
+acpid                 Advanced Configuration and Power Interface event daemon     
+adduser               add and remove users and groups                             
+adium-theme-ubuntu    Adium message style for Ubuntu                              
+adwaita-icon-theme    default icon theme of GNOME (small subset)                  
+aisleriot             GNOME solitaire card game collection                        
+alsa-base             ALSA driver configuration files                             </code></pre>
+<p>In addition to listing columns, <code>SELECT</code> can be used to perform various output tasks. For example, we can perform calculations such as counting the number of rows in the <code>Package_Descriptions</code> table.</p>
+<pre><code>sqlite&gt; SELECT COUNT(package_name) FROM Package_Descriptions;
+count(package_name) 
+--------------------
+1972                </code></pre>
+<h3 id="being-selective">Being Selective</h3>
+<p>We can make <code>SELECT</code> output rows based on some selection criteria. Either an exact match:</p>
+<pre><code>sqlite&gt; SELECT * FROM Package_Descriptions WHERE package_name = &#39;bash&#39;;
+package_name          description                                                 
+--------------------  --------------------------------------------------------
+bash                  GNU Bourne Again SHell                                  </code></pre>
+<p>A partial match using SQL wildcard characters:</p>
+<pre><code>sqlite&gt; SELECT * FROM Package_Descriptions WHERE description LIKE &#39;%bash%&#39;;
+package_name          description
+--------------------  --------------------------------------------------------
+bash-completion       programmable completion for the bash shell
+command-not-found     Suggest installation of packages in interactive bash ses</code></pre>
+<p>SQL supports two wildcard characters. The underscore (<code>_</code>), which matches any single character, and the percent sign (<code>%</code>), which matches zero or more instances of any character.</p>
+<p>Notice too that strings are surrounded with single quotes. If a value is quoted this way, SQL treats it as a string. For example, the value <code>'123'</code> would be treated as a string rather than a number.</p>
+<h3 id="sorting-output">Sorting Output</h3>
+<p>Unless we tell <code>SELECT</code> to sort our data, it will be listed in the order it was inserted into the table. Our data appears in alphabetical order by package name because it was inserted that way, not because of anything SQLite is doing. The <code>ORDER BY</code> clause can be added to determine which column is used for sorting. To demonstrate, let’s sort the output by the description,</p>
+<pre><code>sqlite&gt; SELECT * FROM Package_Descriptions ORDER BY description LIMIT 10;
+package_name          description
+--------------------  -------------------------------------------------------
+network-manager-conf
+fonts-noto-cjk        &quot;No Tofu&quot; font families with large Unicode coverage (CJ
+fonts-noto-mono       &quot;No Tofu&quot; monospaced font family with large Unicode cov
+udev                  /dev/ and hotplug management daemon
+procps                /proc file system utilities
+alsa-base             ALSA driver configuration files
+libasound2-plugins:a  ALSA library additional plugins
+libhyphen0:amd64      ALTLinux hyphenation library - shared library
+apcupsd               APC UPS Power Management (daemon)
+apcupsd-doc           APC UPS Power Management (documentation/examples)</code></pre>
+<p>The default sorting order is ascending, but we can also sort in descending order by including <code>DESC</code> after the column name. Multiple columns can be named and <code>ASC</code> can be used to specify ascending order.</p>
+<pre><code>sqlite&gt; SELECT * FROM Package_Descriptions ORDER BY description DESC LIMIT 10;
+package_name  description                                       
+------------  --------------------------------------------------
+xsane-common  xsane architecture independent files              
+libx264-152:  x264 video coding library                         
+libevdev2:am  wrapper library for evdev devices                 
+wireless-reg  wireless regulatory database                      
+crda          wireless Central Regulatory Domain Agent          
+libmutter-2-  window manager library from the Mutter window mana
+libwayland-s  wayland compositor infrastructure - server library
+libwayland-c  wayland compositor infrastructure - cursor library
+libwayland-c  wayland compositor infrastructure - client library
+libwayland-e  wayland compositor infrastructure - EGL library   </code></pre>
+<h3 id="adding-another-table">Adding Another Table</h3>
+<p>To demonstrate more of what we can do with <code>SELECT</code>, we’re going to need a bigger database. We have a second <code>.tsv</code> file that we can add. To save a step, we’ll filter the file into SQL and pipe it directly into <code>sqlite3</code>.</p>
+<pre><code>me@linuxbox:~/advemture-sql$ ./insert_package_files.awk \ 
+                                &lt; package_files-deb.tsv \
+                                | sqlite3 adv-sql.sqlite</code></pre>
+<p>The second table is named <code>Package_Files</code>. Here is its schema:</p>
+<pre><code>sqlite&gt; .schema Package_Files
+CREATE TABLE Package_Files (
+    package_name VARCHAR(60),
+    file         VARCHAR(120),
+    size_bytes   INTEGER
+);</code></pre>
+<p>As we can see, this table has 3 columns; the package name, the name of a file installed by the package, and the size of the installed file in bytes. Let’s do a <code>SELECT</code> to see how this table works.</p>
+<pre><code>sqlite&gt; .headers on
+sqlite&gt; .mode column
+sqlite&gt; .width 15 50 -10
+sqlite&gt; SELECT * FROM Package_Files WHERE package_name = &#39;bash&#39;;
+package_name     file                                                size_bytes
+---------------  -------------------------------------------------  ----------
+bash             /bin/bash                                             1113504
+bash             /etc/bash.bashrc                                         2319
+bash             /etc/skel/.bash_logout                                    220
+bash             /etc/skel/.bashrc                                        3771
+bash             /etc/skel/.profile                                        807
+bash             /usr/bin/bashbug                                         7115
+bash             /usr/bin/clear_console                                  10312
+bash             /usr/share/doc/bash/COMPAT.gz                            7853
+bash             /usr/share/doc/bash/INTRO.gz                             2921
+bash             /usr/share/doc/bash/NEWS.gz                             27983
+bash             /usr/share/doc/bash/POSIX.gz                             3702
+bash             /usr/share/doc/bash/RBASH                                1693
+bash             /usr/share/doc/bash/README                               3839
+bash             /usr/share/doc/bash/README.Debian.gz                     1919
+bash             /usr/share/doc/bash/README.abs-guide                     1105
+bash             /usr/share/doc/bash/README.commands.gz                   3021
+bash             /usr/share/doc/bash/changelog.Debian.gz                  1357
+bash             /usr/share/doc/bash/copyright                           10231
+bash             /usr/share/doc/bash/inputrc.arrows                        727
+bash             /usr/share/lintian/overrides/bash                         156
+bash             /usr/share/man/man1/bash.1.gz                           86656
+bash             /usr/share/man/man1/bashbug.1.gz                          804
+bash             /usr/share/man/man1/clear_console.1.gz                   1194
+bash             /usr/share/man/man1/rbash.1.gz                            154
+bash             /usr/share/man/man7/bash-builtins.7.gz                    508
+bash             /usr/share/menu/bash                                      194
+bash             /bin/rbash                                                  4</code></pre>
+<p>Notice the <code>.width</code> dot command above. A negative value causes the corresponding column to be right-aligned.</p>
+<h3 id="subqueries">Subqueries</h3>
+<p>The <code>SELECT</code> statement can be used to produce many kinds of output. For example, it can be used to simply print literal strings.</p>
+<pre><code>sqlite&gt; .mode column
+sqlite&gt; .header off
+sqlite&gt; SELECT &#39;String 1&#39;, &#39;String 2&#39;;
+string 1    string 2</code></pre>
+<p>As we saw before, <code>SELECT</code> can produce calculated values.</p>
+<pre><code>sqlite&gt; .header on
+sqlite&gt; SELECT 2 + 2;
+2 + 2
+--------------------
+4
+sqlite&gt; SELECT COUNT(file), AVG(size_bytes) FROM Package_Files;
+count(file)  avg(size_bytes)
+-----------  ----------------
+153506       33370.3488658424</code></pre>
+<p>To make complicated expressions more readable, we can assign their results to <em>aliases</em> by using the <code>AS</code> clause.</p>
+<pre><code>sqlite&gt; SELECT COUNT(file) AS Files,
+   ...&gt; AVG(size_bytes) AS &#39;Average Size&#39;
+   ...&gt; FROM Package_Files;
+Files       Average Size    
+----------  ----------------
+153506      33370.3488658424</code></pre>
+<p>An important feature of <code>SELECT</code> is the ability to produce results by combining data from multiple tables. This process is done by performing <em>joins</em> and <em>subqueries</em>. We’ll talk about joins a little later, but for now let’s concentrate on subqueries. <code>SELECT</code> allows us to include another <code>SELECT</code> statement as an item to output. To demonstrate this, we will produce a table that includes columns for package name, number of files in the package, and the total size of the package. The <code>SELECT</code> statement to do this is rather formidable. We’ll open our text editor and create a file named <code>subquery_demo1.sql</code> with the following content:</p>
+<pre><code>-- subquery_demo1.sql
+
+-- Query to list top 20 packages with the greatest numbers of files
+
+.mode column
+.header on
+.width 20 40 10 10
+SELECT package_name, description,
+       (SELECT COUNT(file)
+          FROM Package_Files
+         WHERE Package_Descriptions.package_name = Package_Files.package_name)
+            AS files,
+       (SELECT SUM(size_bytes)
+          FROM Package_Files
+         WHERE Package_Descriptions.package_name = Package_Files.package_name)
+            AS size
+  FROM Package_Descriptions ORDER BY files DESC LIMIT 20;</code></pre>
+<p>We’ll next run this query and view the results.</p>
+<pre><code>me@linuxbox:~/adventure-sql$ sqlite3 adv-sql.sqlite &lt; subquery_demo1.sql
+package_name          description                       files       size      
+--------------------  --------------------------------  ----------  ----------
+linux-headers-4.15.0  Header files related to Linux ke  14849       63991787  
+linux-headers-4.15.0  Header files related to Linux ke  14849       64001943  
+humanity-icon-theme   Humanity Icon theme               8014        14213715  
+linux-headers-4.15.0  Linux kernel headers for version  7861        9015084   
+linux-headers-4.15.0  Linux kernel headers for version  7860        9025673   
+linux-modules-extra-  Linux kernel extra modules for v  4173        165921470 
+linux-modules-extra-  Linux kernel extra modules for v  4172        165884678 
+libreoffice-common    office productivity suite -- arc  3551        76686149  
+gnome-accessibility-  High Contrast GTK+ 2 theme and i  3464        3713621   
+ubuntu-mono           Ubuntu Mono Icon theme            3025        3755093   
+ncurses-term          additional terminal type definit  2727        1987483   
+manpages-dev          Manual pages about using GNU/Lin  2101        2192620   
+linux-firmware        Firmware for Linux kernel driver  1938        331497257 
+tzdata                time zone and daylight-saving ti  1834        1210058   
+vim-runtime           Vi IMproved - Runtime files       1642        27941732  
+codium                Code editing. Redefined.          1307        271907088 
+zsh-common            architecture independent files f  1256        12261077  
+perl-modules-5.26     Core Perl modules                 1144        18015966  
+adwaita-icon-theme    default icon theme of GNOME (sma  1127        4848678   
+gimp-data             Data files for GIMP               1032        45011675</code></pre>
+<p>The query takes some time to run (it has a lot to do) and from the results we see that it produces 4 columns: package name, description, number of files in the package, and total size of the package. Let’s take this query apart and see how it works. At the uppermost level we see that the query follows the normal pattern of a <code>SELECT</code> statement.</p>
+<pre><code>SELECT list_of_items FROM Package_Descriptions
+ORDER BY total_files DESC
+LIMIT 20;</code></pre>
+<p>The basic structure is simple. What’s interesting is the <code>list_of_items</code> part. We know the list of items is a comma-separated list of items to output, so if we follow the commas we can see the list:</p>
+<ol type="1">
+<li><code>package_name</code></li>
+<li><code>description</code></li>
+<li><code>(SELECT COUNT(file) FROM Package_Files WHERE Package_Descriptions.package_name = Package_Files.package_name) AS files</code></li>
+<li><code>(SELECT SUM(size_bytes) FROM Package_Files WHERE Package_Descriptions.package_name = Package_Files.package_name) AS size</code></li>
+</ol>
+<p>It’s also possible to use a subquery in a <code>WHERE</code> clause. Consider this query that we will name <code>subquery_demo2.sql</code>:</p>
+<pre><code>-- subquery_demo2.sql
+
+-- Query to list all packages containing more than 1000 files
+
+.mode column
+.header on
+.width 20 60
+SELECT package_name, description
+  FROM Package_Descriptions
+ WHERE 1000 &lt; (SELECT COUNT(file)
+          FROM Package_Files
+         WHERE Package_Descriptions.package_name = Package_Files.package_name)
+ ORDER BY package_name;</code></pre>
+<p>When we execute this, we get the following results:</p>
+<pre><code>me@linuxbox:~/adventure-sql$ sqlite3 adv-sql.sqlite &lt; subquery_demo2.sql
+package_name          description                                                 
+--------------------  --------------------------------------------------------
+adwaita-icon-theme    default icon theme of GNOME (small subset)              
+codium                Code editing. Redefined.                                
+gimp-data             Data files for GIMP                                     
+gnome-accessibility-  High Contrast GTK+ 2 theme and icons                    
+humanity-icon-theme   Humanity Icon theme                                     
+inkscape              vector-based drawing program                            
+libreoffice-common    office productivity suite -- arch-independent files     
+linux-firmware        Firmware for Linux kernel drivers                       
+linux-headers-4.15.0  Header files related to Linux kernel version 4.15.0     
+linux-headers-4.15.0  Linux kernel headers for version 4.15.0 on 64 bit x86 SM
+linux-headers-4.15.0  Header files related to Linux kernel version 4.15.0     
+linux-headers-4.15.0  Linux kernel headers for version 4.15.0 on 64 bit x86 SM
+linux-modules-4.15.0  Linux kernel extra modules for version 4.15.0 on 64 bit 
+linux-modules-4.15.0  Linux kernel extra modules for version 4.15.0 on 64 bit 
+linux-modules-extra-  Linux kernel extra modules for version 4.15.0 on 64 bit 
+linux-modules-extra-  Linux kernel extra modules for version 4.15.0 on 64 bit 
+manpages-dev          Manual pages about using GNU/Linux for development      
+ncurses-term          additional terminal type definitions                     
+perl-modules-5.26     Core Perl modules                                        
+tzdata                time zone and daylight-saving time data                  
+ubuntu-mono           Ubuntu Mono Icon theme                                   
+vim-runtime           Vi IMproved - Runtime files                              
+zsh-common            architecture independent files for Zsh</code></pre>
+<h3 id="updating-tables">Updating Tables</h3>
+<p>The <code>UPDATE</code> statement is used to change values in one or more existing rows. We will demonstrate this by adding 100 to the size of each file in the <code>sqlite3</code> package. First, let’s look at the files in the package.</p>
+<pre><code>sqlite&gt; .mode column
+sqlite&gt; .header on
+sqlite&gt; .width 50 -10
+sqlite&gt; SELECT file, size_bytes FROM Package_Files
+   ...&gt; WHERE package_name = &#39;sqlite3&#39;;
+file                                                size_bytes
+--------------------------------------------------  ----------
+/usr/bin/sqldiff                                       1103280
+/usr/bin/sqlite3                                       1260976
+/usr/share/doc/sqlite3/copyright                          1261
+/usr/share/man/man1/sqlite3.1.gz                          3596
+/usr/share/doc/sqlite3/changelog.Debian.gz                  35</code></pre>
+<p>Next, we’ll update the table, adding 100 to the size of each file.</p>
+<pre><code>sqlite&gt; UPDATE Package_Files SET size_bytes = size_bytes + 100
+   ...&gt; WHERE package_name = &#39;sqlite3&#39;;</code></pre>
+<p>When we examine the rows now, we see the change.</p>
+<pre><code>sqlite&gt; SELECT file, size_bytes FROM Package_Files
+   ...&gt; WHERE package_name = &#39;sqlite3&#39;;
+file                                                size_bytes
+--------------------------------------------------  ----------
+/usr/bin/sqldiff                                       1103380
+/usr/bin/sqlite3                                       1261076
+/usr/share/doc/sqlite3/copyright                          1361
+/usr/share/man/man1/sqlite3.1.gz                          3696
+/usr/share/doc/sqlite3/changelog.Debian.gz                 135</code></pre>
+<p>Finally, we’ll subtract 100 from each row to return the sizes to their original values.</p>
+<pre><code>sqlite&gt; UPDATE Package_Files SET size_bytes = size_bytes - 100
+   ...&gt; WHERE package_name = &#39;sqlite3&#39;;</code></pre>
+<p><code>UPDATE</code> can modify multiple values at once. To demonstrate this, we will create a new table called <code>Package_Stats</code> and use <code>UPDATE</code> to fill in the values. Since this one is a little complicated, we will put this in a file named <code>create_Package_Stats.sql</code>.</p>
+<pre><code>-- create_Package_Stats.sql
+
+DROP TABLE IF EXISTS Package_Stats;
+CREATE TABLE Package_Stats (
+    package_name  VARCHAR(60),
+    count         INTEGER,
+    tot_size      INTEGER,
+    min_size      INTEGER,
+    max_size      INTEGER,
+    avg_size      REAL
+);
+
+INSERT INTO Package_Stats (package_name)
+     SELECT package_name
+       FROM Package_Descriptions;
+
+UPDATE Package_Stats
+   SET count = (SELECT COUNT(file)
+                  FROM Package_Files
+                 WHERE Package_Files.package_name =
+                       Package_Stats.package_name),
+    tot_size = (SELECT SUM(size_bytes)
+                  FROM Package_Files
+                 WHERE Package_Files.package_name = 
+                       Package_Stats.package_name),
+    min_size = (SELECT MIN(size_bytes)
+                  FROM Package_Files
+                 WHERE Package_Files.package_name = 
+                       Package_Stats.package_name),
+    max_size = (SELECT MAX(size_bytes)
+                  FROM Package_Files
+                 WHERE Package_Files.package_name = 
+                       Package_Stats.package_name),
+    avg_size = (SELECT AVG(size_bytes)
+                  FROM Package_Files
+                 WHERE Package_Files.package_name = 
+                       Package_Stats.package_name);</code></pre>
+<p>This file consists of four SQL statements. The first two are used to create the new table, as we have seen before. The third statement is an alternate form of the <code>INSERT</code> statement. This form is useful, as it copies a value from one table into another. This <code>INSERT</code> will create all the rows we need but only fill in the <code>package_name</code> column. To fill in the rest, we will use an <code>UPDATE</code> that fills in the remaining five values based on the results of some queries of the <code>Package_Files</code> table. Note that without a <code>WHERE</code> clause, <code>UPDATE</code> applies changes to every row.</p>
+<p>Once the table is constructed, we can examine its contents.</p>
+<pre><code>sqlite&gt; .width 25 -5 -10 -8 -8 -10
+sqlite&gt; SELECT * FROM Package_Stats LIMIT 10;
+package_name               count    tot_size  min_size  max_size    avg_size
+-------------------------  -----  ----------  --------  --------  ----------
+a2ps                         299     3455890       117    388096  11558.1605
+accountsservice               19      261704        42    182552  13773.8947
+acl                           11       91106        30     35512  8282.36363
+acpi-support                  18       13896        67      4922       772.0
+acpid                         19       86126       115     52064  4532.94736
+adduser                       81      246658         7     37322  3045.16049
+adium-theme-ubuntu           137      126759        25     12502  925.248175
+adwaita-icon-theme          1127     4848678        30     87850  4302.28748
+aisleriot                    316     1890864        47    281544  5983.74683
+alsa-base                     42      195295        24     34160  4649.88095</code></pre>
+<p>We’ll come back to this table a little later when we take a look at joins.</p>
+<h3 id="deleting-rows">Deleting Rows</h3>
+<p>Deleting rows is pretty easy in SQL. There is a <code>DELETE</code> statement with a <code>WHERE</code> clause to specify a target. We’ll demonstrate that, but first there’s a nifty trick that SQLite supports.</p>
+<p>We can change the output mode to write out <code>INSERT</code> statements. Let’s try it out.</p>
+<pre><code>sqlite&gt; .mode insert Package_Files</code></pre>
+<p>If we use this <code>.mode</code> setting, we tell SQLite that we want <code>INSERT</code> statements directed at the specified table, in this case, <code>Package_Files</code>. Once we set this output mode, we can see the result.</p>
+<pre><code>sqlite&gt; SELECT * FROM Package_Files WHERE package_name = &#39;sqlite3&#39;;
+INSERT INTO Package_Files VALUES(&#39;sqlite3&#39;,&#39;/usr/bin/sqldiff&#39;,1103380);
+INSERT INTO Package_Files VALUES(&#39;sqlite3&#39;,&#39;/usr/bin/sqlite3&#39;,1261076);
+INSERT INTO Package_Files VALUES(&#39;sqlite3&#39;,&#39;/usr/share/doc/sqlite3/copyright&#39;,1
+361);
+INSERT INTO Package_Files VALUES(&#39;sqlite3&#39;,&#39;/usr/share/man/man1/sqlite3.1.gz&#39;,3
+696);
+INSERT INTO Package_Files VALUES(&#39;sqlite3&#39;,&#39;/usr/share/doc/sqlite3/changelog.De
+bian.gz&#39;,135);</code></pre>
+<p>We’ll repeat this <code>SELECT</code>, but first we’ll change the output from standard output to a file named <code>insert_sqlite3.sql</code>.</p>
+<pre><code>sqlite&gt; .output insert_sqlite3.sql
+sqlite&gt; select * from Package_Files where package_name = &#39;sqlite3&#39;;</code></pre>
+<p>This will write the stream of <code>INSERT</code> statements to the specified file. Next we’ll set the output back to standard output by issuing the <code>.output</code> dot command without an output file name.</p>
+<pre><code>sqlite&gt; .output</code></pre>
+<p>Now let’s delete the rows in the <code>Package_Files</code> table.</p>
+<pre><code>sqlite&gt; DELETE FROM Package_Files WHERE package_name = &#39;sqlite3&#39;;</code></pre>
+<p>We can confirm the deletion by running our query again and we see an empty result.</p>
+<pre><code>sqlite&gt; .header on
+sqlite&gt; .mode column
+sqlite&gt; .width 12 50 -10
+sqlite&gt; SELECT * FROM Package_Files WHERE package_name = &#39;sqlite3&#39;;
+sqlite&gt;</code></pre>
+<p>Since we saved an SQL stream that can restore the deleted rows, we can now put them back in the table. The <code>.read</code> dot command can read the stream and execute it as though it came from standard input.</p>
+<pre><code>sqlite&gt; .read insert_sqlite3.sql</code></pre>
+<p>Now when we run our query, we see that the rows have been restored.</p>
+<pre><code>sqlite&gt; SELECT * FROM Package_Files WHERE package_name = &#39;sqlite3&#39;;
+package_name  file                                                size_bytes
+------------  --------------------------------------------------  ----------
+sqlite3       /usr/bin/sqldiff                                       1103280
+sqlite3       /usr/bin/sqlite3                                       1260976
+sqlite3       /usr/share/doc/sqlite3/copyright                          1261
+sqlite3       /usr/share/man/man1/sqlite3.1.gz                          3596
+sqlite3       /usr/share/doc/sqlite3/changelog.Debian.gz                  35</code></pre>
+<h3 id="adding-and-deleting-columns">Adding and Deleting Columns</h3>
+<p>SQL provides the <code>ALTER TABLE</code> statement to modify table’s schema. To demonstrate this, we will add a couple of columns to the <code>Package_Descriptions</code> table and fill them with values calculated from the <code>Package_Files</code> table. We’ll place the necessary SQL in the <code>add_column.sql</code> file.</p>
+<pre><code>-- add_column.sql
+
+-- Add and populate columns to Package_Descriptions
+
+ALTER TABLE Package_Descriptions ADD COLUMN files INTEGER;
+ALTER TABLE Package_Descriptions ADD COLUMN size INTEGER;
+
+UPDATE Package_Descriptions
+   SET files = (SELECT COUNT(file)
+                  FROM Package_Files
+                 WHERE Package_Files.package_name =
+                       Package_Descriptions.package_name),
+        size = (SELECT SUM(size_bytes)
+                  FROM Package_Files
+                 WHERE Package_Files.package_name =
+                       Package_Descriptions.package_name);</code></pre>
+<p>We’ll execute the statements and examine resulting schema.</p>
+<pre><code>sqlite&gt; .read add_column.sql
+sqlite&gt; .schema
+CREATE TABLE Package_Descriptions (
+    package_name VARCHAR(60),
+    description  VARCHAR(120),
+    files        INTEGER,
+    size         INTEGER);
+
+sqlite&gt; SELECT * FROM Package_Descriptions WHERE package_name = &#39;sqlite3&#39;;
+package_name  description                          files       size      
+------------  -----------------------------------  ----------  ----------
+sqlite3       Command line interface for SQLite 3  5           2369648 </code></pre>
+<p>SQL provides another <code>ALTER TABLE</code> statement for deleting columns from a table. It has the following form:</p>
+<pre><code>ALTER TABLE table_name DROP COLUMN column_name;</code></pre>
+<p>Unfortunately, SQLite does not support this so we have to do it the hard way. This is accomplished in four steps:</p>
+<ol type="1">
+<li>Create a new temporary table with the desired schema.</li>
+<li>Copy the columns we want to keep into the temporary table.</li>
+<li>Drop the original table.</li>
+<li>Rename the temporary table.</li>
+</ol>
+<p>Here is a file called <code>drop_column.sql</code> that does the job.</p>
+<pre><code>-- drop_column.sql
+
+-- Remove extra columns from Package_Descriptions
+
+BEGIN TRANSACTION;
+
+-- Create new table with temporary name
+
+DROP TABLE IF EXISTS temp;
+CREATE TABLE temp (
+    package_name VARCHAR(60),
+    description  VARCHAR(120));
+
+-- Copy columns we want into new table
+
+INSERT INTO temp
+    (package_name, description)
+    SELECT package_name, description
+      FROM Package_Descriptions;
+
+-- Get rid of old table and rename the new replacement table
+
+DROP TABLE Package_Descriptions;
+
+ALTER TABLE temp RENAME TO Package_Descriptions;
+
+COMMIT;</code></pre>
+<p>We again use the alternate form of the <code>INSERT</code> statement for copying values from one table to another. We copy the <code>package_name</code> and <code>description</code> columns from the <code>Package_Descriptions</code> table to the correspondingly named columns in the <code>temp</code> table.</p>
+<h3 id="joins">Joins</h3>
+<p>A join is a method by which we perform a query and produce a result that combines the data from two tables. SQLite supports several types of joins but we’re going to focus on the most commonly used type called an <em>inner join</em>. We can think of an inner join as the intersection of two tables. In the example below, a file called <code>join_demo.sql</code>, we will produce a query result that matches our earlier example when we added columns to the <code>Package_Descriptions</code> table.</p>
+<pre><code>-- join_demo.sql
+
+-- Demonstrate join by selecting columns from 2 tables
+
+.header on
+.mode column
+.width 20 35 -5 -10
+
+SELECT Package_Descriptions.package_name AS Package,
+       description AS Description,
+       count AS Files,
+       tot_size AS Size
+  FROM Package_Descriptions
+  INNER JOIN Package_Stats
+          ON Package_Descriptions.package_name =
+             Package_Stats.package_name
+LIMIT 10;</code></pre>
+<p>The results of this query are as follows:</p>
+<pre><code>Package               Description                          Files        Size
+--------------------  -----------------------------------  -----  ----------
+a2ps                  GNU a2ps - &#39;Anything to PostScript&#39;    299     3455890
+accountsservice       query and manipulate user account i     19      261704
+acl                   Access control list utilities           11       91106
+acpi-support          scripts for handling many ACPI even     18       13896
+acpid                 Advanced Configuration and Power In     19       86126
+adduser               add and remove users and groups         81      246658
+adium-theme-ubuntu    Adium message style for Ubuntu         137      126759
+adwaita-icon-theme    default icon theme of GNOME (small    1127     4848678
+aisleriot             GNOME solitaire card game collectio    316     1890864
+alsa-base             ALSA driver configuration files         42      195295</code></pre>
+<p>If we break down this query, we see that it starts out as we expect, then it is followed by the <code>INNER JOIN</code> statement. The <code>INNER</code> keyword is optional as an inner join is the default. After the <code>INNER JOIN</code> we have to specify the relationship on which the join is based. In this example, we are looking for matching instances of the <code>package_name</code> in both tables. Any expression my be used to convey the table relationship, provided that the result of the expression is true or false.</p>
+<p>Since <code>package_name</code> is a column in both the <code>Package_Descriptions</code> and <code>Package_Stats</code> tables, we must precede it with the name of the respective table to avoid ambiguity.</p>
+<h3 id="views">Views</h3>
+<p>The join example above is a pretty useful query for our tables, but due to its complexity it’s best executed from a file rather than as an ad hoc query. SQL addresses this issue by providing a feature called <em>views</em> that allows a complex query to be stored in the database and used to produce a virtual table that can be used with simple query commands. In the following example we will create a view using our <code>INNER JOIN</code> query above to create a virtual table called <code>Stats</code> that we can use as the target of subsequent queries.</p>
+<pre><code>-- view_demo.sql
+
+DROP VIEW IF EXISTS Stats;
+CREATE VIEW Stats
+AS
+    SELECT Package_Descriptions.package_name AS Package,
+           description AS Description,
+           count AS Files,
+           tot_size AS Size
+      FROM Package_Descriptions
+      INNER JOIN Package_Stats
+              ON Package_Descriptions.package_name =
+                 Package_Stats.package_name
+        ORDER BY Package;</code></pre>
+<p>Once our view is created, we can treat <code>Stats</code> as just another table in our database even though it does not really exist as such.</p>
+<pre><code>sqlite&gt; .header on
+sqlite&gt; .mode column
+sqlite&gt; .width 20 35 -5 -10
+sqlite&gt; SELECT * FROM Stats LIMIT 10;
+Package               Description                          Files        Size      
+--------------------  -----------------------------------  -----  ----------
+a2ps                  GNU a2ps - &#39;Anything to PostScript&#39;    299     3455890   
+accountsservice       query and manipulate user account i     19      261704    
+acl                   Access control list utilities           11       91106     
+acpi-support          scripts for handling many ACPI even     18       13896     
+acpid                 Advanced Configuration and Power In     19       86126     
+adduser               add and remove users and groups         81      246658    
+adium-theme-ubuntu    Adium message style for Ubuntu         137      126759    
+adwaita-icon-theme    default icon theme of GNOME (small    1127     4848678   
+aisleriot             GNOME solitaire card game collectio    316     1890864   
+alsa-base             ALSA driver configuration files         42      195295</code></pre>
+<p>To delete a view we use the <code>DROP VIEW</code> statement as follows:</p>
+<pre><code>sqlite&gt; DROP VIEW Stats;</code></pre>
+<h3 id="indexes">Indexes</h3>
+<p>It’s been said that the three most important features of a database system are “performance, performance, and performance.” While this in not exactly true (things like data integrity and reliability are important, too), complex operations on large databases can get really slow, so it’s important to make things as fast as we can. One feature we can take advantage of are <em>indexes</em>.</p>
+<p>An index is a data structure the database maintains that speeds up database searches. It’s a sorted list of rows in a table ordered by elements in one or more columns. Without an index, a table is sorted according to values in a hidden column called <code>rowid</code>. The values in this column are integers that start with 1 and increment each time a row is added to the table. Here we see a query that selects the 100th row from the <code>Package_Stats</code> table.</p>
+<pre><code>sqlite&gt; .header on
+sqlite&gt; .mode column
+sqlite&gt; .width 20 -5 -8 -8 -8 -8
+sqlite&gt; SELECT * FROM Package_Stats WHERE rowid = 100;
+package_name          count  tot_size  min_size  max_size  avg_size
+--------------------  -----  --------  --------  --------  --------
+cups-server-common      595   1996400         0    370070  3355.294</code></pre>
+<p>Our database server can locate this row in the table very quickly because it already knows where to find the 100th row. However, if we want to search for the row that contains package name <code>cups-server-common</code>, SQLite must examine every row in the table to locate the matching row. To facilitate performance tuning, SQLite provides a way to see what search strategy is used during a query.</p>
+<pre><code>sqlite&gt; .width -8 -5 -4 55 
+sqlite&gt; EXPLAIN QUERY PLAN
+   ...&gt; SELECT * FROM Package_Stats WHERE package_name = &#39;cups-server-common&#39;;
+selectid  order  from  detail
+--------  -----  ----  ------------------------------------------------------- 
+       0      0     0  SCAN TABLE Package_Stats</code></pre>
+<p>We can see from the <code>SCAN TABLE Package_Stats</code> the SQLite performs a sequential search of the table during this query.</p>
+<p>To create an index to allow faster searches of <code>package_name</code> we can do the following:</p>
+<pre><code>sqlite&gt; CREATE INDEX idx_package_name
+   ...&gt; ON Package_Stats (package_name);</code></pre>
+<p>After doing this, we’ll look at the query plan and see the difference.</p>
+<pre><code>sqlite&gt; EXPLAIN QUERY PLAN
+   ...&gt; SELECT * FROM Package_Stats WHERE package_name = &#39;cups-server-common&#39;;
+   selectid  order  from  detail                                                 
+   --------  -----  ----  -------------------------------------------------------
+          0      0     0  SEARCH TABLE Package_Stats USING INDEX idx_package_name</code></pre>
+<p>Hereafter, when we search the table for a package name, SQLite will use the index to directly get to the row rather than looking at every row searching for a match. So why don’t we just index everything? The reason we don’t is that indexes impose overhead every time a row is inserted, deleted, or updated since the indexes must be kept up to date. Indexes are best used on tables that are read more often than written to.</p>
+<p>We probably won’t see much of a performance improvement when searching the <code>Package_Stats</code> table because it’s just not that big, but on a large table the improvement can be substantial.</p>
+<p>We can see the index when we examine the table’s schema.</p>
+<pre><code>sqlite&gt; .schema Package_Stats
+CREATE TABLE Package_Stats (
+    package_name  VARCHAR(60),
+    count         INTEGER,
+    tot_size      INTEGER,
+    min_size      INTEGER,
+    max_size      INTEGER,
+    avg_size      REAL
+);
+CREATE INDEX idx_package_name
+ON Package_Stats (package_name);</code></pre>
+<p>SQLite also has a dot command.</p>
+<pre><code>sqlite&gt; .indexes
+idx_package_name</code></pre>
+<p>Another benefit of using an index is that it’s kept in sorted order (that’s how it performs searches quickly). The side effect is that when an index is used during a query the results of the query will be sorted as well. To demonstrate, we’ll create another index for the <code>Package_Stats</code> table, this time using the <code>tot_size</code> column. Notice that when we perform a select based on that column, the results are in ascending order.</p>
+<pre><code>sqlite&gt; CREATE INDEX idx_tot_size
+   ...&gt; ON Package_Stats (tot_size);
+sqlite&gt; .width 20 -5 -10 -8 -8 -8
+sqlite&gt; SELECT * FROM Package_Stats
+   ...&gt; WHERE tot_size &gt; 100000000;
+   package_name          count    tot_size  min_size  max_size avg_size
+   --------------------  -----  ----------  --------  -------- --------
+   inkscape               1025   127507308         0  19599216 124397.3
+   libreoffice-core        119   135106135        26  66158968 1135345.
+   linux-modules-extra-   4172   165884678      1292   4216105 39761.42
+   linux-modules-extra-   4173   165921470      1292   4216105 39760.71
+   thunderbird              69   180861838        27  12163098 2621186.
+   firefox                  74   203393773        23  12408360 2748564.
+   google-chrome-stable    100   235727530        25  16288078 2357275.
+   libgl1-mesa-dri:amd6     20   237774005        36  19548840 11888700
+   codium                 1307   271907088        17  11551467 208039.0
+   linux-firmware         1938   331497257         6  19922416 171051.2</code></pre>
+<p>To delete our indexes, we use the <code>DROP INDEX</code> statement.</p>
+<pre><code>sqlite&gt; DROP INDEX idx_package_name;
+sqlite&gt; DROP INDEX idx_tot_size;</code></pre>
+<h3 id="triggers-and-stored-procedures">Triggers and Stored Procedures</h3>
+<p>As we saw earlier during our discussion of views, SQL allow us to store SQL code in the database. Besides views, SQL provides for two other ways of storing code. These two methods are <em>stored procedures</em> and <em>triggers</em>. Stored procedures, as the name implies, allows a block of SQL statements to be stored and treated as a subroutine available to other SQL programs, or for use during ad hoc interactions with the database. Creating a stored procedure is done with this syntax:</p>
+<pre><code>CREATE PROCEDURE procudure_name
+AS
+    [block of SQL code];</code></pre>
+<p>Parameters can be passed to stored procedures. Here is an example:</p>
+<pre><code>CREATE PROCEDURE list_pkg_files @package VARCHAR(60)
+AS
+    SELECT package_name, file
+      FROM Package_Files
+     WHERE package_name = @package; </code></pre>
+<p>To call this procedure, we would do this:</p>
+<pre><code>EXEC list_package_files @package = &#39;bash&#39;;</code></pre>
+<p>Unfortunately, SQLite does not support stored procedures. It does, however, support the second method of code storage, triggers.</p>
+<p>Triggers are stored blocks of code that are automatically called when some event occurs and a specified condition is met. Triggers are typically used to perform certain maintenance tasks to keep the database in good working order.</p>
+<p>Triggers can be set to activate before, after, or instead of the execution of <code>INSERT</code>, <code>DELETE</code>, or <code>UPDATE</code> statements. In the example below, we will have a trigger activate before a <code>DELETE</code> is performed on the <code>Package_Files</code> table.</p>
+<pre><code>/*
+    trigger_demo.sql
+
+    Trigger demo where we create a &quot;trash can&quot; for the
+    Package_Files table and set a trigger to copy rows
+    to the PF_Backup table just before they are deleted
+    from Package_Files.
+*/
+
+-- Create backup table with the same schema as Package_Files
+
+CREATE TABLE IF NOT EXISTS PF_Backup (
+    package_name VARCHAR(60),
+    file         VARCHAR(120),
+    size_bytes   INTEGER
+);
+
+-- Define trigger to copy rows into PF_Backup as they are
+-- deleted from Package_Files
+
+CREATE TRIGGER backup_row_before_delete
+BEFORE DELETE ON Package_Files
+BEGIN
+    INSERT INTO PF_Backup
+    VALUES (OLD.package_name, OLD.file, OLD.size_bytes);
+END;</code></pre>
+<p>The first thing we do is create a table to hold our deleted rows. We use a slightly different form of the <code>CREATE TABLE</code> statement to create the table only if it does not already exist. This will ensure that an existing table of saved rows will persist, even if we reload the trigger.</p>
+<p>After creating the table, we create a trigger called <code>backup_row_before_delete</code> to copy data from the <code>Package_Files</code> table to the <code>PF_Backup</code> table just before any row in <code>Package_Files</code> is deleted.</p>
+<p>In order to reference data that might be used by the trigger, SQL provides the <code>NEW</code> reference for new data that is inserted or updated, and the <code>OLD</code> reference for previous data that is updated or deleted. In our example, we use the <code>OLD</code> reference to refer to the data about to be deleted.</p>
+<h3 id="performing-backups">Performing Backups</h3>
+<p>Since SQLite uses an ordinary file to store each database (as opposed to the exotic methods used by some other systems), we can use regular command line tools such as <code>cp</code> to perform database backups. There is an interesting SQL method we can use, too. The <code>.dump</code> dot command will produce a stream of SQL statements that will fully reproduce the database including tables, views, triggers, etc. To output the database this way, we need only do the following:</p>
+<pre><code>sqlite&gt; .dump</code></pre>
+<p>The stream will appear on standard output or we can use the <code>.output</code> dot command to direct the stream to the file of our choice.</p>
+<p>One interesting application of this technique would be to combine tables from multiple databases into one. For example, let’s imagine we had several Raspberry Pi computers each performing data logging of an external sensor. We could collect dumps from each machine and combine all of the tables into a single database for data analysis and reporting.</p>
+<h3 id="generating-your-own-datasets">Generating Your Own Datasets</h3>
+<p>Below are the programs used to create the datasets used in this adventure. They are included in the archive for those who want to create their own datasets.</p>
+<h4 id="for-deb-based-systems-debian-ubuntu-mint-raspberry-pi-os">For Deb-based Systems (Debian, Ubuntu, Mint, Raspberry Pi OS)</h4>
+<p>The first program named <code>mk_package_descriptions-deb</code>, extracts package information and outputs a <code>.tsv</code> file.</p>
+<pre><code>#!/bin/bash
+
+# mk_package_descriptions-deb - Output tsv list of installed debian/ubnutu
+#                               packages on standard output
+
+phase1() { # Replace repeated spaces with a tab
+  awk &#39;
+  {
+    gsub(/[ ][ ]+/, &quot;\t&quot;)
+    print $0
+  }&#39;
+  return
+}
+
+phase2() { # Output field 2 and 5 separated by a tab
+  awk &#39;
+    BEGIN {
+      FS = &quot;\t&quot;
+    }
+
+    $1 == &quot;ii&quot; {
+      print $2 &quot;\t&quot; $5
+    }&#39;
+  return
+}
+
+dpkg-query -l | phase1 | phase2</code></pre>
+<p>The second program, <code>mk_package_files-deb</code> outputs all the files included in each package.</p>
+<pre><code>#!/bin/bash
+
+# mk_package_files - make list of files in all packages
+# Reads *.list files in LIST_DIR. Outputs stream of tsv to stdout.
+
+LIST_DIR=/var/lib/dpkg/info
+
+mk_list () {
+
+  local list_file=&quot;$1&quot;
+  local lf_length=&quot;${#list_file}&quot;
+  local len
+  local package
+  local -a files
+
+  ((len = lf_length - 5))
+  package=&quot;${list_file:0:$len}&quot; # strip &#39;.list&#39; extension
+  package=&quot;${package##*/}&quot; # strip leading pathname
+  mapfile files &lt; &quot;$list_file&quot; # load list into array
+  for i in &quot;${files[@]}&quot;; do
+    i=&quot;${i//[$&#39;\t\r\n&#39;]}&quot; # strip trailing newlines
+    if [[ -f &quot;$i&quot; ]] ; then # write tsv file
+      printf &quot;%s\t%s\t%s\n&quot; \
+        &quot;$package&quot; \
+        &quot;$i&quot; \
+        &quot;$(stat --printf &#39;%s&#39; &quot;$i&quot;)&quot; # size of file
+    fi
+  done
+  return
+}
+
+for i in &quot;$LIST_DIR&quot;/*.list; do
+  mk_list &quot;$i&quot;
+done</code></pre>
+<h4 id="for-rpm-based-systems-rhel-centos-fedora">For RPM-based Systems (RHEL, CentOS, Fedora)</h4>
+<p>The <code>mk_package_descriptions-rpm</code> script:</p>
+<pre><code>#!/bin/bash
+
+# mk_package_descriptions-rpm - Output tsv list of installed Fedora/CentOS
+#                               packages on standard output
+
+while read package; do
+  description=$(dnf info &quot;$package&quot; \
+    | awk &#39;$1 == &quot;Summary&quot; { gsub(/Summary      : /, &quot;&quot;); print $0; exit }&#39;)
+  printf &quot;%s\t%s\n&quot; \
+    &quot;$package&quot; \
+    &quot;$description&quot;
+done &lt; &lt;( dnf list installed | awk &#39;NF == 3 { print $1 }&#39; )</code></pre>
+<p>The <code>mk_package_files-rpm</code> script:</p>
+<pre><code>#!/bin/bash
+
+# mk_package_files-rpm - Output tsv list of installed Fedora/CentOS files
+#                        on standard output
+
+while read package; do
+  while read package_file; do
+    if [[ -r &quot;$package_file&quot; ]]; then # not all files are present/readable
+      printf &quot;%s\t%s\t%s\n&quot; \
+        &quot;$package&quot; \
+        &quot;$package_file&quot; \
+        &quot;$(stat --printf &#39;%s&#39; &quot;$package_file&quot;)&quot;
+    fi
+  done &lt; &lt;( rpm -ql &quot;$package&quot; )
+done &lt; &lt;( dnf list installed | awk &#39;NF == 3 { print $1 }&#39; )</code></pre>
+<h4 id="converting-.tsv-to-sql">Converting .tsv to SQL</h4>
+<p>Below are two AWK programs used to convert the <code>.tsv</code> files into SQL. First, the <code>insert_package_descriptions.awk</code> program:</p>
+<pre><code>#!/usr/bin/awk -f
+
+# insert_package_descriptions.awk - Insert records from
+#                                   package_descriptions.tsv
+
+BEGIN {
+    FS=&quot;\t&quot;
+    print &quot;DROP TABLE IF EXISTS Package_Descriptions;&quot;
+    print &quot;CREATE TABLE Package_Descriptions (&quot;
+    print &quot;    package_name VARCHAR(60),&quot;
+    print &quot;    description  VARCHAR(120)&quot;
+    print &quot;);&quot;
+    print &quot;BEGIN TRANSACTION;&quot; # vastly improves performance
+}
+
+{
+    gsub(/&#39;/, &quot;&#39;&#39;&quot;) # double up single quotes to escape them
+    print &quot;INSERT INTO Package_Descriptions&quot;
+    print &quot;     VALUES ( &#39;&quot; $1 &quot;&#39;, &#39;&quot; $2 &quot;&#39;);&quot;
+}
+
+END {
+    print &quot;COMMIT;&quot;
+}</code></pre>
+<p>Second, the <code>insert_package_files.awk</code> program:</p>
+<pre><code>#!/usr/bin/awk -f
+
+# insert_package_files.awk - Insert records from
+#                            package_files.tsv
+
+BEGIN {
+    FS=&quot;\t&quot;
+    print &quot;DROP TABLE IF EXISTS Package_Files;&quot;
+    print &quot;CREATE TABLE Package_Files (&quot;
+    print &quot;    package_name VARCHAR(60),&quot;
+    print &quot;    file         VARCHAR(120),&quot;
+    print &quot;    size_bytes   INTEGER&quot;
+    print &quot;);&quot;
+    print &quot;BEGIN TRANSACTION;&quot; # vastly improves performance
+}
+
+{
+    gsub(/&#39;/, &quot;&#39;&#39;&quot;) # double up single quotes to escape them
+    print &quot;INSERT INTO Package_Files&quot;
+    print &quot;     VALUES (&#39;&quot; $1 &quot;&#39;, &#39;&quot; $2 &quot;&#39;,&#39;&quot; $3 &quot;&#39;);&quot;
+}
+
+END {
+    print &quot;COMMIT;&quot;
+}</code></pre>
+<h2 id="summing-up">Summing Up</h2>
+<p>SQL is an important and widely used technology. It’s kinda fun too. While we looked at the general features and characteristics of SQL, there is much more to learn. For example, there are the more advanced concepts such as <em>normalization</em>, <em>referential integrity</em>, and <em>relational algebra</em>. Though we didn’t get to the really heady stuff, we did cover enough to get some real work done whenever we need to integrate data storage into our scripts and projects.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><p><em>SQL Style Guide by Simon Holywell</em> The style guide that influenced the formatting of the SQL presented in this adventure. <a href="https://www.sqlstyle.guide/" class="uri">https://www.sqlstyle.guide/</a></p></li>
+<li><p><em>SQL Tutorial</em> A good general tutorial on SQL. Covers most of the major SQL dialects (though not SQLite). <a href="https://www.w3schools.com/sql/" class="uri">https://www.w3schools.com/sql/</a></p></li>
+<li><p><em>SQLite project home page</em> Includes detailed documentation. <a href="https://www.sqlite.org/index.html" class="uri">https://www.sqlite.org/index.html</a></p></li>
+<li><p><em>SQLite Tutorial</em> An excellent detailed tutorial and reference for the SQLite dialect of SQL. Definitely worth checking out if you plan to use SQLite seriously. <a href="https://www.sqlitetutorial.net/" class="uri">https://www.sqlitetutorial.net/</a></p></li>
+<li><p><em>MySQL home page</em> A very popular multi-user database system used by many websites. <a href="https://mysql.com/" class="uri">https://mysql.com/</a></p></li>
+<li><p><em>MariaDB Foundation home page</em> MariaDB is a fork of the open source version of MySQL. The project came about out of concern over Oracle’s purchase of the company behind MySQL. <a href="https://mariadb.org/" class="uri">https://mariadb.org/</a></p></li>
+<li><p><em>PostgreSQL project home page</em> Another very popular open source multi-user database. <a href="https://www.postgresql.org/" class="uri">https://www.postgresql.org/</a></p></li>
+<li>Various Wikipedia articles providing background for the topics covered in this adventure:
+<ul>
+<li><em>SQL</em> <a href="https://en.wikipedia.org/wiki/SQL" class="uri">https://en.wikipedia.org/wiki/SQL</a></li>
+<li><em>Relational Database</em> <a href="https://en.wikipedia.org/wiki/Relational_database" class="uri">https://en.wikipedia.org/wiki/Relational_database</a></li>
+<li><em>Relational Model</em> <a href="https://en.wikipedia.org/wiki/Relational_model" class="uri">https://en.wikipedia.org/wiki/Relational_model</a></li>
+<li><em>LAMP Software Stack</em> <a href="https://en.wikipedia.org/wiki/LAMP_(software_bundle)" class="uri">https://en.wikipedia.org/wiki/LAMP_(software_bundle)</a></li>
+<li><em>MySQL</em> <a href="https://en.wikipedia.org/wiki/MySQL" class="uri">https://en.wikipedia.org/wiki/MySQL</a></li>
+<li><em>MariaDB</em> <a href="https://en.wikipedia.org/wiki/MariaDB" class="uri">https://en.wikipedia.org/wiki/MariaDB</a></li>
+<li><em>PostgreSQL</em> <a href="https://en.wikipedia.org/wiki/PostgreSQL" class="uri">https://en.wikipedia.org/wiki/PostgreSQL</a></li>
+</ul></li>
+<li><p>Stanford University offers an online course called “Introduction to Databases” taught by Professor Jennifer Widom. I took this course; it’s quite good. The course videos are available in this YouTube playlist: <a href="https://www.youtube.com/playlist?list=PLroEs25KGvwzmvIxYHRhoGTz9w8LeXek0" class="uri">https://www.youtube.com/playlist?list=PLroEs25KGvwzmvIxYHRhoGTz9w8LeXek0</a></p></li>
+<li><p>Finally, the phrase “gird your grid for a big one” is taken from the 1971 comedy album <em>I Think We’re All Bozos on This Bus</em> by the Firesign Theater. Besides being very funny to retro-futurism fans like myself, the album is notable because it contains one of the first pop culture references to computer hacking. You can read more about it at Wikipedia: <a href="https://en.wikipedia.org/wiki/I_Think_We%27re_All_Bozos_on_This_Bus">https://en.wikipedia.org/wiki/I_Think_We%27re_All_Bozos_on_This_Bus</a></p></li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_adv_sql.php.html#top">Top</a> | <a
+      href="lc3_adv_new_script.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adventures.php.html#contents">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

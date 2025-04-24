@@ -1,0 +1,54 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>kill man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for kill">
+  <meta name="keywords" content="Manual page, kill command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    kill - Send a signal to a job.
+
+SYNOPSIS
+    kill [-s sigspec | -n signum | -sigspec] pid | jobspec ... or kill -l [sigspec]
+
+DESCRIPTION
+    Send a signal to a job.
+    
+    Send the processes identified by PID or JOBSPEC the signal named by
+    SIGSPEC or SIGNUM.  If neither SIGSPEC nor SIGNUM is present, then
+    SIGTERM is assumed.
+    
+    Options:
+      -s sig	SIG is a signal name
+      -n sig	SIG is a signal number
+      -l	list the signal names; if arguments follow `-l' they are
+    		assumed to be signal numbers for which names should be listed
+      -L	synonym for -l
+    
+    Kill is a shell builtin for two reasons: it allows job IDs to be used
+    instead of process IDs, and allows processes to be killed if the limit
+    on processes that you can create is reached.
+    
+    Exit Status:
+    Returns success unless an invalid option is given or an error occurs.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

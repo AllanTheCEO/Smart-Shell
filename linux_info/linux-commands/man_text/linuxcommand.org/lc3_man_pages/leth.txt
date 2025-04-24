@@ -1,0 +1,58 @@
+  
+NAME
+    let - Evaluate arithmetic expressions.
+
+SYNOPSIS
+    let arg [arg ...]
+
+DESCRIPTION
+    Evaluate arithmetic expressions.
+    
+    Evaluate each ARG as an arithmetic expression.  Evaluation is done in
+    fixed-width integers with no check for overflow, though division by 0
+    is trapped and flagged as an error.  The following list of operators is
+    grouped into levels of equal-precedence operators.  The levels are listed
+    in order of decreasing precedence.
+    
+    	id++, id--	variable post-increment, post-decrement
+    	++id, --id	variable pre-increment, pre-decrement
+    	-, +		unary minus, plus
+    	!, ~		logical and bitwise negation
+    	**		exponentiation
+    	*, /, %		multiplication, division, remainder
+    	+, -		addition, subtraction
+    	&lt;&lt;, &gt;&gt;		left and right bitwise shifts
+    	&lt;=, &gt;=, &lt;, &gt;	comparison
+    	==, !=		equality, inequality
+    	&		bitwise AND
+    	^		bitwise XOR
+    	|		bitwise OR
+    	&&		logical AND
+    	||		logical OR
+    	expr ? expr : expr
+    			conditional operator
+    	=, *=, /=, %=,
+    	+=, -=, &lt;&lt;=, &gt;&gt;=,
+    	&=, ^=, |=	assignment
+    
+    Shell variables are allowed as operands.  The name of the variable
+    is replaced by its value (coerced to a fixed-width integer) within
+    an expression.  The variable need not have its integer attribute
+    turned on to be used in an expression.
+    
+    Operators are evaluated in order of precedence.  Sub-expressions in
+    parentheses are evaluated first and may override the precedence
+    rules above.
+    
+    Exit Status:
+    If the last ARG evaluates to 0, let returns 1; let returns 0 otherwise.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

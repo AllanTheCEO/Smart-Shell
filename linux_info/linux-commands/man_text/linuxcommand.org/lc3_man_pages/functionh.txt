@@ -1,0 +1,27 @@
+  
+NAME
+    function - Define shell function.
+
+SYNOPSIS
+    function name { COMMANDS ; } or name () { COMMANDS ; }
+
+DESCRIPTION
+    Define shell function.
+    
+    Create a shell function named NAME.  When invoked as a simple command,
+    NAME runs COMMANDs in the calling shell's context.  When NAME is invoked,
+    the arguments are passed to the function as $1...$n, and the function's
+    name is in $FUNCNAME.
+    
+    Exit Status:
+    Returns success unless NAME is readonly.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

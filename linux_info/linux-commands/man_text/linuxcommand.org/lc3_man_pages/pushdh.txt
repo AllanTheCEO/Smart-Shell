@@ -1,0 +1,45 @@
+  
+NAME
+    pushd - Add directories to stack.
+
+SYNOPSIS
+    pushd [-n] [+N | -N | dir]
+
+DESCRIPTION
+    Add directories to stack.
+    
+    Adds a directory to the top of the directory stack, or rotates
+    the stack, making the new top of the stack the current working
+    directory.  With no arguments, exchanges the top two directories.
+    
+    Options:
+      -n	Suppresses the normal change of directory when adding
+    		directories to the stack, so only the stack is manipulated.
+    
+    Arguments:
+      +N	Rotates the stack so that the Nth directory (counting
+    		from the left of the list shown by `dirs', starting with
+    		zero) is at the top.
+    
+      -N	Rotates the stack so that the Nth directory (counting
+    		from the right of the list shown by `dirs', starting with
+    		zero) is at the top.
+    
+      dir	Adds DIR to the directory stack at the top, making it the
+    		new current working directory.
+    
+    The `dirs' builtin displays the directory stack.
+    
+    Exit Status:
+    Returns success unless an invalid argument is supplied or the directory
+    change fails.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

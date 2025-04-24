@@ -1,0 +1,235 @@
+<code>me@linuxbox:~$ curl -O http://linuxcommand.org/new_script.bash
+me@linuxbox:~$ mv new_script.bash ~/bin/new_script
+me@linuxbox:~$ chmod +x ~/bin/new_script</code></pre>
+<pre><code>me@linuxbox:~$ new_script --help</code></pre>
+<p>If the installation was successful, we will see the help message:</p>
+<pre><code>new_script 3.5.3
+Bash shell script template generator.
+
+Usage: new_script [-h|--help ]
+       new_script [-q|--quiet] [-s|--root] [script]
+
+  Options:
+
+  -h, --help    Display this help message and exit.
+  -q, --quiet   Quiet mode. No prompting. Outputs default script.
+  -s, --root    Output script requires root privileges to run.</code></pre>
+<pre><code>me@linuxbox:~$ new_script new_script-demo
+
+------------------------------------------------------------------------
+** Welcome to new_script version 3.5.3 **
+------------------------------------------------------------------------
+
+File &#39;new_script-demo&#39; exists. Overwrite [y/n] &gt; y</code></pre>
+<pre><code>------------------------------------------------------------------------
+** Comment Block **
+
+The purpose is a one line description of what the script does.
+------------------------------------------------------------------------
+The purpose of the script is to: &gt; demonstrate the new_script template
+
+------------------------------------------------------------------------
+The script may be licensed in one of two ways:
+1. All rights reserved (default) or
+2. GNU GPL version 3 (preferred).
+------------------------------------------------------------------------
+
+Include GPL license header [y/n]? &gt; y</code></pre>
+<pre><code>------------------------------------------------------------------------
+** Privileges **
+
+The template may optionally include code that will prevent it from
+running if the user does not have superuser (root) privileges.
+------------------------------------------------------------------------
+
+Does this script require superuser privileges [y/n]? &gt; n</code></pre>
+<pre><code>------------------------------------------------------------------------
+** Command Line Options **
+
+The generated template supports both short name (1 character), and long
+name (1 word) options. All options must have a short name. Long names
+are optional. The options &#39;h&#39; and &#39;help&#39; are provided automatically.
+
+Further, each option may have a single argument. Argument names must
+be valid variable names.
+
+Descriptions for options and option arguments should be short (less
+than 1 line) and will appear in the template&#39;s comment block and
+help_message.
+------------------------------------------------------------------------
+
+Does this script support command-line options [y/n]? &gt; y</code></pre>
+<pre><code>Option 1:
+  Enter short option name [a-z] (Enter to end) -&gt; a
+  Description of option ------------------------&gt; the first option named &#39;a&#39;
+  Enter long option name (optional) ------------&gt; option_a
+  Enter option argument (if any) ---------------&gt; 
+
+Option 2:
+  Enter short option name [a-z] (Enter to end) -&gt; b
+  Description of option ------------------------&gt; the second option named &#39;b&#39;
+  Enter long option name (optional) ------------&gt; option_b
+  Enter option argument (if any) ---------------&gt; b_argument
+  Description of argument (if any)--------------&gt; argument for option &#39;b&#39;
+
+Option 3:
+  Enter short option name [a-z] (Enter to end) -&gt; </code></pre>
+<pre><code>  1  #!/usr/bin/env bash
+  2  # ---------------------------------------------------------------------
+  3  # new_script-demo - Demonstrate the new_script template
+     
+  4  # Copyright 2021, Linux User &lt;me@linuxbox.example.com&gt;
+  5    
+  6  # This program is free software: you can redistribute it and/or modify
+  7  # it under the terms of the GNU General Public License as published by
+  8  # the Free Software Foundation, either version 3 of the License, or
+  9  # (at your option) any later version.
+     
+ 10  # This program is distributed in the hope that it will be useful,
+ 11  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ 12  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ 13  # GNU General Public License at &lt;http://www.gnu.org/licenses/&gt; for
+ 14  # more details.
+     
+ 15  # Usage: new_script-demo [-h|--help]
+ 16  #        new_script-demo [-a|--option_a] [-b|--option_b b_argument]
+     
+ 17  # Revision history:
+ 18  # 2021-05-05 Created by new_script ver. 3.5.3
+ 19  # ---------------------------------------------------------------------
+     </code></pre>
+<pre><code>export REPLYTO=me@linuxbox.example.com</code></pre>
+<p>Our script template continues with the constants and functions:</p>
+<pre><code> 20  PROGNAME=${0##*/}
+ 21  VERSION=&quot;0.1&quot;
+ 22  LIBS=     # Insert pathnames of required external shell libraries here
+     </code></pre>
+<pre><code> 23  clean_up() { # Perform pre-exit housekeeping
+ 24    return
+ 25  }
+     
+ 26  error_exit() {
+     
+ 27    local error_message=&quot;$1&quot;
+     
+ 28    printf &quot;%s: %s\n&quot; &quot;$PROGNAME&quot; &quot;${error_message:-&quot;Unknown Error&quot;}&quot; &gt;&amp;2
+ 29    clean_up
+ 30    exit 1
+ 31  }
+     
+ 32  graceful_exit() {
+ 33    clean_up
+ 34    exit
+ 35  }
+     
+ 36  signal_exit() { # Handle trapped signals
+     
+ 37    local signal=&quot;$1&quot;
+     
+ 38    case &quot;$signal&quot; in
+ 39      INT)
+ 40        error_exit &quot;Program interrupted by user&quot; ;;
+ 41      TERM)
+ 42        error_exit &quot;Program terminated&quot; ;;
+ 43      *)
+ 44        error_exit &quot;Terminating on unknown signal&quot; ;;
+ 45    esac
+ 46  }</code></pre>
+<pre><code> 47  load_libraries() { # Load external shell libraries
+     
+ 48    local i
+     
+ 49    for i in $LIBS; do
+ 50      if [[ -r &quot;$i&quot; ]]; then
+ 51        source &quot;$i&quot; || error_exit &quot;Library &#39;$i&#39; contains errors.&quot;
+ 52      else
+ 53        error_exit &quot;Required library &#39;$i&#39; not found.&quot;
+ 54      fi
+ 55    done
+ 56  }
+     </code></pre>
+<pre><code> 57  usage() {
+ 58    printf &quot;%s\n&quot; &quot;Usage: ${PROGNAME} [-h|--help]&quot;
+ 59    printf &quot;%s\n&quot; \
+         &quot;       ${PROGNAME} [-a|--option_a] [-b|--option_b b_argument]&quot;
+ 60  }
+     
+ 61  help_message() {
+ 62    cat &lt;&lt;- _EOF_
+ 63  $PROGNAME ver. $VERSION
+ 64  Demonstrate the new_script template
+     
+ 65  $(usage)
+     
+ 66    Options:
+ 67    -h, --help                  Display this help message and exit.
+ 68    -a, --option_a              The first option named &#39;a&#39;
+ 69    -b, --option_b b_argument   The second option named &#39;b&#39;
+ 70      Where &#39;b_argument&#39; is the argument for option &#39;b&#39;.
+     
+ 71  _EOF_
+ 72    return
+ 73  }</code></pre>
+<pre><code> 74  # Trap signals
+ 75  trap &quot;signal_exit TERM&quot; TERM HUP
+ 76  trap &quot;signal_exit INT&quot;  INT
+     
+ 77  load_libraries</code></pre>
+<pre><code> 78  # Parse command-line
+ 79  while [[ -n &quot;$1&quot; ]]; do
+ 80    case &quot;$1&quot; in
+ 81      -h | --help)
+ 82        help_message
+ 83        graceful_exit
+ 84        ;;
+ 85      -a | --option_a)
+ 86        echo &quot;the first option named &#39;a&#39;&quot;
+ 87        ;;
+ 88      -b | --option_b)
+ 89        echo &quot;the second option named &#39;b&#39;&quot;
+ 90        shift; b_argument=&quot;$1&quot;
+ 91        echo &quot;b_argument == $b_argument&quot;
+ 92        ;;
+ 93      --* | -*)
+ 94        usage &gt;&amp;2
+ 95        error_exit &quot;Unknown option $1&quot;
+ 96        ;;
+ 97      *)
+ 98        printf &quot;Processing argument %s...\n&quot; &quot;$1&quot;
+ 99        ;;
+100    esac
+101    shift
+102  done</code></pre>
+<pre><code>103  # Main logic
+   
+104  graceful_exit</code></pre>
+<pre><code>me@linuxbox:~$ ./new_script-demo --help
+new_script-demo ver. 0.1
+Demonstrate the new_script template
+
+Usage: new_script-demo [-h|--help]
+       new_script-demo [-a|--option_a] [-b|--option_b b_argument]
+
+  Options:
+  -h, --help                  Display this help message and exit.
+  -a, --option_a              The first option named &#39;a&#39;
+  -b, --option_b b_argument   The second option named &#39;b&#39;
+    Where &#39;b_argument&#39; is the argument for option &#39;b&#39;.
+
+me@linuxbox:~$</code></pre>
+<pre><code>me@linuxbox:~$ ./new_script-demo
+me@linuxbox:~$</code></pre>
+<pre><code>me@linuxbox:~$ ./new_script-domo -a
+the first option named &#39;a&#39;
+me@linuxbox:~$ ./new_script-demo -b test
+the second option named &#39;b&#39;
+b_argument == test
+me@linuxbox:~$ ./new_script-demo ./*
+Processing argument ./bin...
+Processing argument ./Desktop...
+Processing argument ./Disk_Images...
+Processing argument ./Documents...
+Processing argument ./Downloads...
+    .
+    .
+    .</code>

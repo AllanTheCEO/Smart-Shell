@@ -1,0 +1,283 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 9: Stay Out Of Trouble</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Common shell script problems and debugging">
+    <meta name="keywords" content="shell script debugging, shell script tracing, shell syntax errors, shell logic errors">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0080.php.html">
+    <link rel="next" href="lc3_wss0100.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0080.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0100.php.html">Next</a>
+    </div>
+<h1>Stay Out of Trouble</h1>
+
+<p>Now that our scripts are getting a little more complicated, Let's look at
+some common mistakes that we might run into. To do this, we'll create the
+following script called <code>trouble.bash</code>. Be sure to
+enter it exactly as written.</p>
+
+<div class="codeexample">#!/bin/bash
+
+number=1
+
+<code class="user">if</code> <code class="user">[</code> $number = "1" <code class="user">];</code> <code class="user">then</code>
+    <code class="user">echo</code> "Number equals 1"
+<code class="user">else</code>
+    <code class="user">echo</code> "Number does not equal 1"
+<code class="user">fi</code></div>
+
+<p>When we run this script, it should output the line "Number equals 1"
+because, well, <code>number</code> equals 1. If we don't get the expected
+output, we need to check our typing; we've made a mistake.</p>
+
+<h2>Empty Variables</h2>
+
+<p>Let's edit the script to change line 3 from:</p>
+
+<div class="codeexample">number=1</div>
+
+<p>to:</p>
+
+<div class="codeexample">number=</div>
+
+<p>and run the script again. This time we should
+get the following:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">./trouble.bash</code>
+/trouble.bash: [: =: unary operator expected.
+Number does not equal 1</div>
+
+<p>As we can see, <code class="user">bash</code> displayed an error message
+when we ran the script.  We might think that by removing the "1" on line 3 it
+created a syntax error on line 3, but it didn't. Let's look at the error
+message again:</p>
+
+<div class="display">./trouble.bash: [: =: unary operator expected</div>
+
+<p>We can see that <code>./trouble.bash</code> is reporting the
+error and the error has to do with "<code class= "user">[</code>". Remember
+that "<code class= "user">[</code>" is an abbreviation for the <code
+class="user">test</code> shell builtin. From this we can determine that the
+error is occurring on line 5 not line 3.</p>
+
+<p>First, to be clear, there is nothing wrong with line 3. <code>number=</code>
+is perfectly good syntax. We sometimes want to set a variable's value to
+nothing. We can confirm the validity of this by trying it on the command
+line:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">number=</code>
+[me@linuxbox me]$</div>
+
+<p>See, no error message. So what's wrong with line 5? It worked before.</p>
+
+<p>To understand this error, we have to see what the shell sees. Remember that
+the shell spends a lot of its life expanding text. In line 5, the shell expands
+the value of <code>number</code> where it sees <code>$number</code>. In our
+first try (when <code>number=1</code>), the shell substituted 1 for
+<code>$number</code> like so:</p>
+
+<div class="codeexample"><code class="user">if</code> <code class="user">[</code> 1 = "1" <code class="user">];</code> <code class="user">then</code></div>
+
+<p>However, when we set number to nothing (<code>number=</code>), the shell saw
+this after the expansion:</p>
+
+<div class="codeexample"><code class="user">if</code> <code class="user">[</code> = "1" <code class="user">];</code> <code class="user">then</code></div>
+
+<p>which is an error. It also explains the rest of the error message we
+received. The "<code class= "user">=</code>" is a binary operator; that is, it
+expects two items to operate upon - one on each side. What the shell is trying
+to tell us is that there is only one item and there should be a unary operator
+(like "<code class="user">!</code>") that only operates on a single item.</p>
+
+<p>To fix this problem, change line 5 to read:</p>
+
+<div class="codeexample"><code class="user">if</code> <code class="user">[</code> "$number" = "1" <code class="user">];</code> <code class="user">then</code></div>
+
+<p>Now when the shell performs the expansion it will see:</p>
+
+<div class="codeexample"><code class="user">if</code> <code class="user">[</code> "" = "1" <code class="user">];</code> <code class="user">then</code></div>
+
+<p>which correctly expresses our intent.</p>
+
+<p>This brings up two important things to remember when we are writing scripts.
+We need to consider what happens if a variable is set to equal nothing and we
+should always put double quotes around parameters that undergo expansion.</p>
+
+<h2>Missing Quotes</h2>
+
+<p>Edit line 6 to remove the trailing quote from the end of the line:</p>
+
+<div class="codeexample">   <code class="user">echo</code> "Number equals 1</div>
+
+<p>and run the script again. We should get
+this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">./trouble.bash</code>
+./trouble.bash: line 8:
+unexpected EOF while looking for matching "
+./trouble.bash: line 10 syntax error: unexpected end of file</div>
+
+<p>Here we have another instance of a mistake in one line causing a problem later
+in the script. What happened in this case was that the shell kept looking for
+the closing quotation mark to determine where the end of the string is, but ran
+off the end of the file before it found it.</p>
+
+<p>These errors can be a real pain to track down in a long script. This is one
+reason we should test our scripts frequently while we are writing so there is
+less new code to test. Also, using a text editor with syntax highlighting makes
+these bugs easier to find.</p>
+
+<h2>Isolating Problems</h2>
+
+<p>Finding bugs in scripts can sometimes be very difficult and frustrating.
+Here are a couple of techniques that are useful:</p>
+
+<p><b>Isolate blocks of code by "commenting them out."</b> This trick involves
+putting comment characters at the beginning of lines of code to stop the shell
+from reading them. We can do this to a block of code to see if a particular
+problem goes away. By doing this, we can isolate which part of a program is
+causing (or not causing) a problem.</p>
+
+<p>For example, when we were looking for our missing quotation we could have
+done this:</p>
+
+<div class="codeexample">#!/bin/bash
+
+number=1
+
+<code class="user">if</code> <code class="user">[</code> $number = "1" <code class="user">];</code> <code class="user">then</code>
+    <code class="user">echo</code> "Number equals 1
+#else
+#   echo "Number does not equal 1"
+<code class="user">fi</code></div>
+
+<p>By commenting out the <code class="user">else</code> clause and running the
+script, we could show that the problem was not in the <code class=
+"user">else</code> clause even though the error message suggested that it
+was.</p>
+
+<p><b>Use echo commands to verify assumptions.</b> As we gain experience
+tracking down bugs, we will discover that bugs are often not where we first
+expect to find them. A common problem will be that we will make a false
+assumption about the performance of our program. A problem will develop at a
+certain point in the program and we assume the problem is there. This is
+often incorrect. To combat this, we can place <code class= "user">echo</code>
+commands in the code while we are debugging, to produce messages that confirm
+the program is doing what is expected. There are two kinds of messages that we
+can insert.</p>
+
+<p>The first type simply announces that we have reached a certain point in the
+program. We saw this in our earlier discussion on stubbing. It is useful to
+know that program flow is happening the way we expect.</p>
+
+<p>The second type displays the value of a variable (or variables) used in a
+calculation or test. We will often find that a portion of a program will
+fail because something that we assumed was correct earlier in the program is,
+in fact, incorrect and is causing our program to fail later on.</p>
+
+<h2>Watching Our Script Run</h2>
+
+<p>It is possible to have <code class= "user">bash</code> show us what it is
+doing when we run our script. To do this, add a "<code class= "user">-x</code>"
+to the first line of the script, like this:</p>
+
+<div class="codeexample">#!/bin/bash -x</div>
+
+<p>Now, when we run the script, bash will display each line (with expansions
+performed) as it executes it. This technique is called <i>tracing</i>. Here is
+what it looks like:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">./trouble.bash</code>
++ number=1
++ '[' 1 = 1 ']'
++ echo 'Number equals 1'
+Number equals 1</div>
+
+<p>Alternately, we can use the <code class=
+"user">set</code> command within the script to turn
+tracing on and off. Use <code class="user">set
+-x</code> to turn tracing on and <code class="user">set
++x</code> to turn tracing off. For example.:</p>
+
+<div class="codeexample">#!/bin/bash
+
+number=1
+
+<code class="user">set</code> -x
+<code class="user">if</code> <code class="user">[</code> $number = "1" <code
+class="user">];</code> <code class="user">then</code>
+    <code class="user">echo</code> "Number equals 1"
+<code class="user">else</code>
+    <code class="user">echo</code> "Number does not equal 1"
+<code class="user">fi</code>
+<code class="user">set</code> +x</div>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0090.php.html#top">Top</a> | <a
+      href="lc3_wss0080.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0100.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+<code>me@linuxbox ~ $ photo2mail image.jpg</code></pre>
+<p>In its simplest form, <code>photo2mail</code> reads the file <code>image.jpg</code> and creates a new image file called <code>image-1024.jpg</code> in the same directory as the original.</p>
+<pre><code>me@linuxbox ~ $ photo2mail -s 800 image.jpg</code></pre>
+<pre><code>me@linuxbox ~ $ photo2mail -d ../resized image.jpg</code></pre>
+<p>By including the <code>-d</code> option, an alternate directory for output can be specified.</p>
+<pre><code>me@linuxbox ~ $ photo2mail -j image.png</code>

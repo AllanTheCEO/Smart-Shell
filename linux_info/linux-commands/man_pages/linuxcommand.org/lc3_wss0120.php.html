@@ -1,0 +1,489 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 12: Positional Parameters</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash scripting: handling comand line options and arguments">
+    <meta name="keywords" content="bash positional parameters, bash command line arguments">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0110.php.html">
+    <link rel="next" href="lc3_wss0130.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0110.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0130.php.html">Next</a>
+    </div>
+<h1>Positional Parameters</h1>
+
+<p> When we last left our script, it looked something like this: </p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce a system information HTML file
+
+##### Constants
+
+TITLE="System Information for $HOSTNAME"
+RIGHT_NOW="$(date +"%x %r %Z")"
+TIME_STAMP="Updated on $RIGHT_NOW by $USER"
+
+##### Functions
+
+system_info()
+{
+    <code class="user">echo</code> "&lt;h2&gt;System release info&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;p&gt;Function not yet implemented&lt;/p&gt;"
+
+}   # end of system_info
+
+
+show_uptime()
+{
+    <code class="user">echo</code> "&lt;h2&gt;System uptime&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    uptime
+    <code class="user">echo</code> "&lt;/pre&gt;"
+
+}   # end of show_uptime
+
+
+drive_space()
+{
+    <code class="user">echo</code> "&lt;h2&gt;Filesystem space&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    df
+    <code class="user">echo</code> "&lt;/pre&gt;"
+
+}   # end of drive_space
+
+
+home_space()
+{
+    # Only the superuser can get this information
+
+    <code class="user">if [</code> "$(id -u)" = "0" <code class="user">]; then</code>
+        <code class="user">echo</code> "&lt;h2&gt;Home directory space by user&lt;/h2&gt;"
+        <code class="user">echo</code> "&lt;pre&gt;"
+        <code class="user">echo</code> "Bytes Directory"
+        du -s /home/* | sort -nr
+        <code class="user">echo</code> "&lt;/pre&gt;"
+    <code class="user">fi</code>
+
+}   # end of home_space
+
+
+
+##### Main
+
+cat &lt;&lt;- _EOF_
+  &lt;html&gt;
+  &lt;head&gt;
+      &lt;title&gt;$TITLE&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+      &lt;h1&gt;$TITLE&lt;/h1&gt;
+      &lt;p&gt;$TIME_STAMP&lt;/p&gt;
+      $(system_info)
+      $(show_uptime)
+      $(drive_space)
+      $(home_space)
+  &lt;/body&gt;
+  &lt;/html&gt;
+_EOF_</div>
+
+<p> We have most things working, but there are several more features we can
+add: </p>
+
+<ol>
+<li>
+  We should be able to specify the name of the output file
+  on the command line, as well as set a default
+  output file name if no name is specified.<br>
+  <br>
+</li>
+<li>
+  Let's offer an interactive mode that will
+  prompt for a file name and warn the user if the
+  file exists and prompt the user to overwrite
+  it.<br>
+  <br>
+</li>
+<li>
+  Naturally, we want to have a help option that
+  will display a usage message.
+</li>
+</ol>
+
+<p> All of these features involve using command line options and arguments. To
+handle options on the command line, we use a facility in the shell called
+<i>positional parameters</i>. Positional parameters are a series of special
+variables (<code>$0</code> through <code>$9</code>) that contain the contents
+of the command line.  </p>
+
+<p>
+Let's imagine the following command line:
+</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">some_program word1 word2 word3</code></div>
+
+<p> If <code>some_program</code> were a bash shell script, we could read each
+item on the command line because the positional parameters contain the
+following: </p>
+
+<ul>
+  <li>
+    $0 would contain "some_program"
+  </li>
+  <li>
+    $1 would contain "word1"
+  </li>
+  <li>
+    $2 would contain "word2"
+  </li>
+  <li>
+    $3 would contain "word3"
+  </li>
+  </ul>
+
+<p> Here is a script we can use to try this out: </p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">echo</code> "Positional Parameters"
+<code class="user">echo</code> '$0 = ' $0
+<code class="user">echo</code> '$1 = ' $1
+<code class="user">echo</code> '$2 = ' $2
+<code class="user">echo</code> '$3 = ' $3</div>
+
+<h2>Detecting Command Line Arguments</h2>
+
+<p> Often, we will want to check to see if we have comand line arguments on
+which to act. There are a couple of ways to do this. First, we could simply
+check to see if <code>$1</code> contains anything like so: </p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">if [</code> "$1" != "" <code class="user">]; then</code>
+    <code class="user">echo</code> "Positional parameter 1 contains something"
+<code class="user">else
+    echo</code> "Positional parameter 1 is empty"
+<code class="user">fi</code></div>
+
+<p> Second, the shell maintains a variable called <code>$#</code> that contains
+the number of items on the command line in addition to the name of the command
+(<code>$0</code>).  </p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">if [</code> $# -gt 0 <code class="user">]; then</code>
+    <code class="user">echo</code> "Your command line contains $# arguments"
+<code class="user">else</code>
+    <code class="user">echo</code> "Your command line contains no arguments"
+<code class="user">fi</code></div>
+
+<h2>Command Line Options</h2>
+
+<p> As we discussed before, many programs, particularly ones from <a href=
+"http://www.gnu.org">the GNU Project</a>, support both short and long command
+line options. For example, to display a help message for many of these
+programs, we may use either the "<code>-h</code>" option or the longer
+"<code>--help</code>" option. Long option names are typically preceded by a
+double dash. We will adopt this convention for our scripts.  </p>
+
+<p> Here is the code we will use to process our command line: </p>
+
+<div class="codeexample">interactive=
+filename=~/sysinfo_page.html
+
+<code class="user">while [</code> "$1" != "" <code class="user">]; do</code>
+    <code class="user">case</code> $1 in
+        -f | --file )           <code class="user">shift</code>
+                                filename="$1"
+                                ;;
+        -i | --interactive )    interactive=1
+                                ;;
+        -h | --help )           usage
+                                <code class="user">exit</code>
+                                ;;
+        * )                     usage
+                                <code class="user">exit</code> 1
+    <code class="user">esac
+    shift
+done</code></div>
+
+<p>This code is a little tricky, so we need to explain it.</p>
+
+<p>The first two lines are pretty easy. We set the variable
+<code>interactive</code> to be empty. This will indicate that the interactive
+mode has not been requested. Then we set the variable <code>filename</code> to
+contain a default file name.  If nothing else is specified on the command line,
+this file name will be used.  </p>
+
+<p>After these two variables are set, we have default settings, in case the
+user does not specify any options.</p>
+
+<p>Next, we construct a <code class="user">while</code> loop that will cycle
+through all the items on the command line and process each one with <code
+class="user">case</code>. The <code class="user">case</code> will detect each
+possible option and process it accordingly.</p>
+
+<p>Now the tricky part. How does that loop work? It relies on the magic of
+<code class= "user">shift</code>.</p>
+
+<p><code class="user">shift</code> is a shell builtin that operates on the
+positional parameters. Each time we invoke <code class="user">shift</code>, it
+"shifts" all the positional parameters down by one. <code>$2</code> becomes
+<code>$1</code>, <code>$3</code> becomes <code>$2</code>, <code>$4</code>
+becomes <code>$3</code>, and so on. Try this:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">echo</code> "You start with $# positional parameters"
+
+# Loop until all parameters are used up
+<code class="user">while [</code> "$1" != "" <code class="user">]; do</code>
+    <code class="user">echo</code> "Parameter 1 equals $1"
+    <code class="user">echo</code> "You now have $# positional parameters"
+
+    # Shift all the parameters down by one
+    <code class="user">shift
+
+done</code></div>
+
+<h2>Getting an Option's Argument</h2>
+
+<p> Our "<code>-f</code>" option requires a valid file name as an argument. We
+use <code class= "user">shift</code> again to get the next item from the
+command line and assign it to <code>filename</code>. Later we will have to
+check the content of <code>filename</code> to make sure it is valid.  </p>
+
+<h2>Integrating the Command Line Processor into the Script</h2>
+
+<p> We will have to move a few things around and add a usage function to get
+this new routine integrated into our script. We'll also add some test code to
+verify that the command line processor is working correctly. Our script now
+looks like this:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# sysinfo_page - A script to produce a system information HTML file
+
+##### Constants
+
+TITLE="System Information for $HOSTNAME"
+RIGHT_NOW="$(date +"%x %r %Z")"
+TIME_STAMP="Updated on $RIGHT_NOW by $USER"
+
+##### Functions
+
+system_info()
+{
+    <code class="user">echo</code> "&lt;h2&gt;System release info&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;p&gt;Function not yet implemented&lt;/p&gt;"
+
+}   # end of system_info
+
+
+show_uptime()
+{
+    <code class="user">echo</code> "&lt;h2&gt;System uptime&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    uptime
+    <code class="user">echo</code> "&lt;/pre&gt;"
+
+}   # end of show_uptime
+
+
+drive_space()
+{
+    <code class="user">echo</code> "&lt;h2&gt;Filesystem space&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    df
+    <code class="user">echo</code> "&lt;/pre&gt;"
+
+}   # end of drive_space
+
+
+home_space()
+{
+    # Only the superuser can get this information
+
+    <code class="user">if [</code> "$(id -u)" = "0" <code class="user">]; then</code>
+        <code class="user">echo</code> "&lt;h2&gt;Home directory space by user&lt;/h2&gt;"
+        <code class="user">echo</code> "&lt;pre&gt;"
+        <code class="user">echo</code> "Bytes Directory"
+        du -s /home/* | sort -nr
+        <code class="user">echo</code> "&lt;/pre&gt;"
+    <code class="user">fi</code>
+
+}   # end of home_space
+
+
+write_page()
+{
+    cat &lt;&lt;- _EOF_
+    &lt;html&gt;
+        &lt;head&gt;
+        &lt;title&gt;$TITLE&lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+        &lt;h1&gt;$TITLE&lt;/h1&gt;
+        &lt;p&gt;$TIME_STAMP&lt;/p&gt;
+        $(system_info)
+        $(show_uptime)
+        $(drive_space)
+        $(home_space)
+        &lt;/body&gt;
+    &lt;/html&gt;
+_EOF_
+
+}
+
+usage()
+{
+    <code class="user">echo</code> "usage: sysinfo_page [[[-f file ] [-i]] | [-h]]"
+}
+
+
+##### Main
+
+interactive=
+filename=~/sysinfo_page.html
+
+<code class="user">while [</code> "$1" != "" <code class="user">]; do</code>
+    <code class="user">case</code> $1 in
+        -f | --file )           <code class="user">shift</code>
+                                filename=$1
+                                ;;
+        -i | --interactive )    interactive=1
+                                ;;
+        -h | --help )           usage
+                                <code class="user">exit</code>
+                                ;;
+        * )                     usage
+                                <code class="user">exit</code> 1
+    <code class="user">esac</code>
+    <code class="user">shift
+done</code>
+
+
+# Test code to verify command line processing
+
+<code class="user">if [</code> "$interactive" = "1" <code class="user">]; then</code>
+  <code class="user">echo</code> "interactive is on"
+<code class="user">else</code>
+  <code class="user">echo</code> "interactive is off"
+<code class="user">fi</code>
+<code class="user">echo</code> "output file = $filename"
+
+
+# Write page (comment out until testing is complete)
+
+# write_page &gt; $filename</div>
+
+<h2>Adding Interactive Mode</h2>
+
+<p>The interactive mode is implemented with the following code:</p>
+
+<div class="codeexample"><code class="user">if [</code> "$interactive" = "1" <code class="user">]; then</code>
+
+    response=
+
+    <code class="user">read</code> -p "Enter name of output file [$filename] &gt; " response
+    <code class="user">if [</code> -n "$response" <code class="user">]; then</code>
+        filename="$response"
+    <code class="user">fi</code>
+
+    <code class="user">if [</code> -f $filename <code class="user">]; then</code>
+        <code class="user">echo</code> -n "Output file exists. Overwrite? (y/n) &gt; "
+        <code class="user">read</code> response
+        <code class="user">if [</code> "$response" != "y" <code class="user">]; then</code>
+            <code class="user">echo</code> "Exiting program."
+            <code class="user">exit</code> 1
+        <code class="user">fi
+    fi
+fi</code></div>
+
+<p>First, we check if the interactive mode is on, otherwise we don't have
+anything to do. Next, we ask the user for the file name. Notice the way the
+prompt is worded:</p>
+
+<div class="codeexample">"Enter name of output file [$filename] &gt; "</div>
+
+<p>We display the current value of <code>filename</code> since, the way this
+routine is coded, if the user just presses the enter key, the default value of
+<code>filename</code> will be used. This is accomplished in the next two lines
+where the value of <code>response</code> is checked. If <code>response</code>
+is not empty, then <code>filename</code> is assigned the value of
+<code>response</code>. Otherwise, <code>filename</code> is left unchanged,
+preserving its default value.</p>
+
+<p>After we have the name of the output file, we check if it already exists. If
+it does, we prompt the user. If the user response is not "y," we give up and
+exit, otherwise we can proceed.</p>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0120.php.html#top">Top</a> | <a
+      href="lc3_wss0110.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0130.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

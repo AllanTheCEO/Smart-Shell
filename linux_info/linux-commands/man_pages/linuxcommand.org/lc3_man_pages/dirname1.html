@@ -1,0 +1,73 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>dirname man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for dirname">
+  <meta name="keywords" content="Manual page, dirname command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#shell" style="color: white;">Back to Contents</a>
+  <pre>
+DIRNAME(1)                    User Commands                    DIRNAME(1)
+
+NAME
+       dirname - strip last component from file name
+
+SYNOPSIS
+       dirname [OPTION] NAME...
+
+DESCRIPTION
+       Output  each  NAME  with its last non-slash component and trailing
+       slashes removed; if NAME contains no /'s, output '.' (meaning  the
+       current directory).
+
+       -z, --zero
+              end each output line with NUL, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+EXAMPLES
+       dirname /usr/bin/
+              -&gt; "/usr"
+
+       dirname dir1/str dir2/str
+              -&gt; "dir1" followed by "dir2"
+
+       dirname stdio.h
+              -&gt; "."
+
+AUTHOR
+       Written by David MacKenzie and Jim Meyering.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report   any   translation   bugs   to    &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright  ©  2020 Free Software Foundation, Inc.  License GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       basename(1), readlink(1)
+
+       Full       documentation       &lt;https://www.gnu.org/software/core‐
+       utils/dirname&gt;
+       or available locally via: info '(coreutils) dirname invocation'
+
+GNU coreutils 8.32              April 2020                     DIRNAME(1)
+</pre></body></html>

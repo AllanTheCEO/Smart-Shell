@@ -1,0 +1,233 @@
+<code>me@linuxbox: ~ $ top</code></pre>
+<figure>
+<img src="images/adventure_termmux_screen_initial.png" alt="Initial screen window" ><figcaption>Initial screen window</figcaption>
+</figure>
+<p>So far, so good. Now, let’s create another window. To do this, we type <code>Ctrl-a</code> followed by the character “c”. Our terminal screen should clear and we should see a new shell prompt. So what just happened to our first window with <code>top</code> running in it? It’s still there, running in the background. We can return to the first window by typing <code>Ctrl-a p</code> (think “p” for “previous”).</p>
+<p>Before we go any further, let’s talk about the keyboard. Controlling screen is pretty simple. Every command consists of <code>Ctrl-a</code> (called the “command prefix” or “escape sequence”) followed by another character. We have already seen two such commands: <code>Ctrl-a c</code> to create a new window, and <code>Ctrl-a p</code> to switch from the current window to the previous one. Typing the command <code>Ctrl-a ?</code> will display a list of all the commands.</p>
+<p>GNU screen has several commands for switching from one window to another. Like the “previous” command, there is a “next” command <code>Ctrl-a n</code>. Windows are numbered, starting with 0, and may be chosen directly by typing <code>Ctrl-a</code> followed by a numeral from 0 to 9. It is also possible list all the windows by typing <code>Ctrl-a &quot;</code>. This command will display a list of windows, where we can choose a window.</p>
+<figure>
+<img src="images/adventure_termmux_screen_window_list.png" alt="Screen window list" ><figcaption>Screen window list</figcaption>
+</figure>
+<p>As we can see, windows have names. The default name for a window is the name of the program the window was running at the time of its creation, hence both of our windows are named “bash”. Let’s change that. Since we are running <code>top</code> in our first window, let’s make its name reflect that. Switch to the first window using any of the methods we have discussed, and type the command <code>Ctrl-a A</code> and we will be prompted for a window name. Simple.</p>
+<p>Okay, so we have created some windows, how do we destroy them? A window is destroyed whenever we terminate the program running in it. After all windows are destroyed, screen itself will terminate. Since both of our windows are running bash, we need only exit each respective shell to end our screen session. In the case of a program that refuses to terminate gracefully, <code>Ctrl-a k</code> will do the trick.</p>
+<p>Let’s terminate the shell running <code>top</code> by typing <code>q</code> to exit <code>top</code> and then enter <code>exit</code> to terminate <code>bash</code>, thereby destroying the first window. We are now taken to the remaining window still running its own copy of <code>bash</code>. We can confirm this by typing <code>Ctrl-a &quot;</code> to view the window list again.</p>
+<p>It’s possible to create windows and run programs without an underlying shell. To do this, we enter <code>screen</code> followed by the name of the program we wish to run, for example:</p>
+<pre><code>me@linuxbox: ~ $ screen vim ~/.bashrc</code></pre>
+<pre><code># This is a comment
+
+# Set some key bindings
+
+bind k              # Un-bind the &quot;k&quot; key (set it to do nothing)
+bind K kill         # Make `Ctrl-a K` destroy the current window
+bind } history      # Make `Ctrl-a }` copy and paste the current
+                    # command line
+
+# Define windows 7, 8, and 9 at startup
+
+screen -t &quot;mdnght cmdr&quot; 7 mc
+screen -t htop 8 htop
+screen -t syslog 9 tailf /var/log/syslog</code></pre>
+<pre><code>me@linuxbox: ~ $ tmux new -s &quot;my session&quot; -n &quot;window 1&quot;</code></pre>
+<p>Once the program starts, we are presented with a shell prompt and a pretty status bar at the bottom of the window.</p>
+<figure>
+<img src="images/adventure_termmux_tmux_initial.png" alt="Initial tmux window" ><figcaption>Initial tmux window</figcaption>
+</figure>
+<h3 id="multiple-windows-1">Multiple Windows</h3>
+<p>tmux uses the keyboard in a similar fashion to screen, but rather than using <code>Ctrl-a</code> as the command prefix, tmux uses <code>Ctrl-b</code>. This is good since <code>Ctrl-a</code> is used when editing the command line in bash to move the cursor to the beginning of the line.</p>
+<p>Here are the basic commands for creating windows and navigating them:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>tmux window commands</caption>
+<colgroup>
+<col style="width: 16%" >
+<col style="width: 81%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>Ctrl-b ?</code></td>
+<td style="text-align: left;">Show the list of key bindings (i.e., help)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Ctrl-b c</code></td>
+<td style="text-align: left;">Create a new window</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Ctrl-b n</code></td>
+<td style="text-align: left;">Go to next window</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Ctrl-b p</code></td>
+<td style="text-align: left;">Go to previous window</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Ctrl-b 0</code></td>
+<td style="text-align: left;">Go to window 0. Numbers 1-9 are similar.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Ctrl-b w</code></td>
+<td style="text-align: left;">Show window list. The status bar lists windows, too.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Ctrl-b ,</code></td>
+<td style="text-align: left;">Rename the current window</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="multiple-panes">Multiple Panes</h3>
+<p>Like screen, tmux can divide the terminal display into sections called panes. However, unlike the implementation of regions in screen, panes in tmux do not merely provide viewports to various windows. In tmux they are complete pseudo-terminals associated with the window. Thus a single tmux window can contain multiple terminals.</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>tmux pane commands</caption>
+<colgroup>
+<col style="width: 27%" >
+<col style="width: 70%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>Ctrl-b &quot;</code></td>
+<td style="text-align: left;">Split pane horizontally</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Ctrl-b %</code></td>
+<td style="text-align: left;">Split pane vertically</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Ctrl-b arrow</code></td>
+<td style="text-align: left;">Move to adjoining pane</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Ctrl-b Ctrl-arrow</code></td>
+<td style="text-align: left;">Resize pane by 1 character</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Ctrl-b Alt-arrow</code></td>
+<td style="text-align: left;">Resize pane by 5 characters</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Ctrl-b x</code></td>
+<td style="text-align: left;">Destroy current pane</td>
+</tr>
+</tbody>
+</table></div>
+<p>We can demonstrate the behavior of panes by creating a session and a couple of windows. First, we will create a session, name it, and name the initial window:</p>
+<pre><code>me@linuxbox: ~ $ tmux new -s PaneDemo -n Window0</code></pre>
+<pre><code>me@linuxbox: ~ $ tmux neww -n Window1</code></pre>
+<p>We could have done this second step with <code>Ctrl-b</code> commands, but seeing the command-line method prepares us for something coming up a little later.</p>
+<p>Assuming that all has gone well, we now find ourselves in a tmux session named “PaneDemo” and a window named “Window1”. Now we will split the window in two horizontally by typing <code>Ctrl-b &quot;</code>. We still have only two windows (Window0 and Window1), but now have two shell prompts on Window1. We can switch back and forth between the two panes by typing <code>Ctrl-b</code> followed by up arrow or down arrow.</p>
+<p>Just for fun, let’s type <code>Ctrl-b t</code> and a digital clock appears in the current pane. It’s just a cute thing that <code>tmux</code> can do.</p>
+<figure>
+<img src="images/adventure_termmux_tmux_clock.png" alt="Multiple panes" ><figcaption>Multiple panes</figcaption>
+</figure>
+<p>We can terminate the clock display by typing <code>q</code>. If we move to the first window by typing <code>Ctrl-b 0</code>, we see that the panes remain associated with Window1 and have no effect on Window0.</p>
+<p>Returning to Window1, let’s adjust the size of the panes. We do this by typing <code>Ctrl-b Alt-arrow</code> to move the boundary up or down by 5 lines. Typing <code>Ctrl-b Ctrl-arrow</code> will move the boundary by 1 line.</p>
+<p>It’s possible to break a pane out into a new window of its own. This is done by typing <code>Ctrl-b !</code>.</p>
+<p><code>Ctrl-b x</code> is used to destroy a pane. Note that, unlike screen, destroying a pane in tmux also destroys the pseudo-terminal running within it, along with any associated programs.</p>
+<h3 id="copy-mode">Copy Mode</h3>
+<p>Like screen, tmux has a copy mode. It is invoked by typing <code>Ctrl-b [</code>. In copy mode, we can move the cursor freely within the scrollback buffer. To mark text for copying, we first type <code>Ctrl-space</code> to begin selection, then move the cursor to make our selection. Finally, we type <code>Alt-w</code> to copy the selected text.</p>
+<p>Admittedly, this procedure is a little awkward. A little later we’ll customize <code>tmux</code> to make the copy mode act more like the vim’s visual copying mode.</p>
+<figure>
+<img src="images/adventure_termmux_tmux_marked_text.png" alt="Text marked for copying" ><figcaption>Text marked for copying</figcaption>
+</figure>
+<p>As with the digital clock, we return to normal mode by typing “q”. Now we can paste our copied text by typing <code>Ctrl-b ]</code>.</p>
+<h3 id="detaching-sessions-1">Detaching Sessions</h3>
+<p>With tmux it’s easier to manage multiple sessions than with screen. First, we can give sessions descriptive names, either during creation, as we saw with our “PaneDemo” example above, or by renaming an existing session with <code>Ctrl-b $</code>. Second, it’s easy to switch sessions on-the-fly by typing <code>Ctrl-b s</code> and choosing a session from the presented list.</p>
+<p>While we are in a session, we can type <code>Ctrl-b d</code> to detach it and, in essence, put tmux into the background. This is useful if we want to create new a session by entering the <code>tmux new</code> command.</p>
+<p>If we start a new terminal (or log in from a remote terminal) and wish to attach an existing session to it, we can issue the command <code>tmux ls</code> to display a list of available sessions. To attach a session, we enter the command <code>tmux attach -d -t &lt;session_name&gt;</code>. The “-d” option causes the session to be detached from its previous terminal. Without this option, the session will be attached to both its previous terminal and the new terminal. If only one session is running, a <code>tmux attach</code> will connect to it and leave any existing connections intact.</p>
+<h3 id="customizing-tmux">Customizing tmux</h3>
+<p>As we would expect, tmux is <em>extremely</em> configurable. When tmux starts, it reads the files <code>/etc/tmux.conf</code> and <code>~./.tmux.conf</code> if they exist. It is also possible to start tmux with the <code>-f</code> option and specify an alternate configuration file. This way, we can have multiple custom configurations.</p>
+<p>The number of configuration commands is extensive, just as it is with screen. The tmux man page has the full list.</p>
+<p>As an example, here is a hypothetical configuration file that changes the command prefix key from <code>Ctrl-b</code> to <code>Ctrl-a</code> and creates a new session with 4 windows:</p>
+<pre><code># Sample tmux.conf file
+
+# Change the command prefix from Ctrl-b to Ctrl-a
+unbind-key C-b
+set-option -g prefix C-a
+bind-key C-a send-prefix
+
+#####
+# Create session with 4 windows
+#####
+
+# Create session and first window
+new-session -d -s MySession
+
+# Create second window and vertically split it
+new-window
+split-window -d -h
+
+# Create third window (and name it) running Midnight Commander
+new-window -d -n MdnghtCmdr mc
+
+# Create fourth window (and name it) running htop
+new-window -d -n htop htop
+
+# Give focus to the first window in the session
+select-window -t 0</code></pre>
+<pre><code># Change bindings for pane-splitting from &quot; and % to | and -
+unbind &#39;&quot;&#39;
+unbind %
+bind | split-window -h
+bind - split-window -v
+
+# Enable mouse control (clickable windows, panes, resizable panes)
+set -g mouse on
+
+# Set color support to allow visual mode highlighting to work in vim
+set -g default-terminal &quot;screen-256color&quot;
+
+# Make copy work like vi
+# Start copy ^b-[
+# Use vi movement keys (arrows, etc.)
+# Select with v, V
+# Yank and end copy mode with y
+# Paste with ^b-]
+# View all vi key bindings with ^b-: followed with list-keys -T copy-mode-vi
+set-window-option -g mode-keys vi
+bind-key -T copy-mode-vi &#39;v&#39; send -X begin-selection
+bind-key -T copy-mode-vi &#39;y&#39; send -X copy-selection-and-cancel</code></pre>
+<pre><code>  F1                            * Used by X11 *
+    Shift-F1                    Display this help
+  F2                            Create a new window
+    Shift-F2                    Create a horizontal split
+    Ctrl-F2                     Create a vertical split
+    Ctrl-Shift-F2               Create a new session
+  F3/F4                         Move focus among windows
+    Shift-F3/F4                 Move focus among splits
+    Ctrl-F3/F4                  Move a split
+    Ctrl-Shift-F3/F4            Move a window
+    Alt-Up/Down                 Move focus among sessions
+    Shift-Left/Right/Up/Down    Move focus among splits
+    Ctrl-Shift-Left/Right       Move focus among windows
+    Ctrl-Left/Right/Up/Down     Resize a split
+  F5                            Reload profile, refresh status
+    Shift-F5                    Toggle through status lines
+    Ctrl-F5                     Reconnect ssh/gpg/dbus sockets
+    Ctrl-Shift-F5               Change status bar&#39;s color randomly
+  F6                            Detach session and then logout
+    Shift-F6                    Detach session and do not logout
+    Ctrl-F6                     Kill split in focus
+  F7                            Enter scrollback history
+    Alt-PageUp/PageDown         Enter and move through scrollback
+  F8                            Change the current window&#39;s name
+    Shift-F8                    Toggle through split arrangements
+    Ctrl-F8                     Restore a split-pane layout
+    Ctrl-Shift-F8               Save the current split-pane layout
+  F9                            Launch byobu-config window
+  F10                           * Used by X11 *
+  F11                           * Used by X11 *
+    Alt-F11                     Expand split to a full window
+    Shift-F11                   Join window into a horizontal split
+    Ctrl-F11                    Join window into a vertical split
+  F12                           Escape sequence
+    Shift-F12                   Toggle on/off Byobu&#39;s keybindings
+    Ctrl-Shift-F12              Modrian squares</code>

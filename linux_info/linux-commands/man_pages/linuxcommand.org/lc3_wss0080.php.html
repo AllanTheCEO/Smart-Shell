@@ -1,0 +1,444 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 8: Flow Control - Part 1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Shell script flow control - if/test">
+    <meta name="keywords" content="shell script flow control, if statement, test command, exit status, exit statment, [], [[]]">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0070.php.html">
+    <link rel="next" href="lc3_wss0090.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0070.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0090.php.html">Next</a>
+    </div>
+<h1>Flow Control - Part 1</h1>
+
+<p>In this lesson, we will look at how to add intelligence to our scripts. So
+far, our project script has only consisted of a sequence of commands that
+starts at the first line and continues line by line until it reaches the end.
+Most programs do much more than this. They make decisions and perform different
+actions depending on conditions.</p>
+
+<p>The shell provides several commands that we can use to control the flow of
+execution in our program. In this lesson, we will look at the following:</p>
+
+<ul>
+  <li><code class="user"><a href="lc3_man_pages/ifh.html">if</a></code></li>
+  <li><code class="user"><a href="lc3_man_pages/testh.html">test</a></code></li>
+  <li><code class="user"><a href="lc3_man_pages/exith.html">exit</a></code></li>
+</ul>
+
+<h2>if</h2>
+
+<p>The first command we will look at is <code class= "user">if</code>. The
+<code class="user">if</code> command is fairly simple on the surface; it makes
+a decision based on the <i>exit status</i> of a command. The <code class=
+"user">if</code> command's syntax looks like this:</p>
+
+<div class="codeexample">if commands; then
+    commands
+[elif commands; then
+    commands...]
+[else
+    commands]
+fi</div>
+
+<p>where <i>commands</i> is a list of commands. This is a little confusing at
+first glance. But before we can clear this up, we have to look at how the shell
+evaluates the success or failure of a command.</p>
+
+<h2>Exit Status</h2>
+
+<p>Commands (including the scripts and shell functions we write) issue a value
+to the system when they terminate, called an exit status. This value, which is
+an integer in the range of 0 to 255, indicates the success or failure of the
+command’s execution. By convention, a value of zero indicates success and any
+other value indicates failure. The shell provides a parameter that we can use
+to examine the exit status. Here we see it in action:</p>
+
+<div class="display">[me@linuxbox ~]$ <code class="cmd">ls -d /usr/bin</code>
+/usr/bin
+[me@linuxbox ~]$ <code class="cmd">echo $?</code>
+0
+[me@linuxbox ~]$ <code class="cmd">ls -d /bin/usr</code>
+ls: cannot access /bin/usr: No such file or directory
+[me@linuxbox ~]$ <code class="cmd">echo $?</code>
+2</div>
+
+<p>In this example, we execute the <code class="user">ls</code> command twice.
+The first time, the command executes successfully. If we display the value of
+the parameter <code class="user">$?</code>, we see that it is zero.  We execute
+the ls command a second time, producing an error and examine the parameter
+<code class="user">$?</code> again. This time it contains a 2, indicating that
+the command encountered an error. Some commands use different exit status
+values to provide diagnostics for errors, while many commands simply exit with
+a value of one when they fail. Man pages often include a section entitled “Exit
+Status,” describing what codes are used. However, a zero always indicates
+success.</p>
+
+<p>The shell provides two extremely simple builtin commands that do nothing
+except terminate with either a zero or one exit status. The <code
+class="user">true</code> command always executes successfully and the <code
+class="user">false</code> command always executes unsuccessfully:</p>
+
+<div class="display">[me@linuxbox~]$ <code class="cmd">true</code>
+[me@linuxbox~]$ <code class="cmd">echo $?</code>
+0
+[me@linuxbox~]$ <code class="cmd">false</code>
+[me@linuxbox~]$ <code class="cmd">echo $?</code>
+1</div>
+
+<p>We can use these commands to see how the <code class="user">if</code>
+statement works. What the <code class="user">if</code> statement really does is
+evaluate the success or failure of commands:</p>
+
+<div class="display">[me@linuxbox ~]$ <code class="cmd">if true; then echo "It's true."; fi</code>
+It's true.
+[me@linuxbox ~]$ <code class="cmd">if false; then echo "It's true."; fi</code>
+[me@linuxbox ~]$</div>
+
+<p>The command <code>echo "It's true."</code> is executed when the command
+following <code class="user">if</code> executes successfully, and is not
+executed when the command following <code class="user">if</code> does not
+execute successfully.
+
+<h2>test</h2>
+
+<p>The <code class="user">test</code> command is used most often with the <code
+class="user">if</code> command to perform true/false decisions. The command is
+unusual in that it has two different syntactic forms:</p>
+
+<div class="codeexample"># First form
+
+<code class="user">test</code> <i>expression</i>
+
+# Second form
+
+<code class="user">[</code> <i>expression</i> <code class="user">]</code></div>
+
+<p>The <code class="user">test</code> command works simply. If the given
+expression is true, <code class= "user">test</code> exits with a status of
+zero; otherwise it exits with a status of 1.</p>
+
+<p>The neat feature of <code class="user">test</code> is the variety of
+expressions we can create. Here is an example:</p>
+
+<div class="codeexample"><code class="user">if [</code> -f .bash_profile <code class="user">]; then</code>
+    <code class="user">echo</code> "You have a .bash_profile. Things are fine."
+<code class="user">else</code>
+    <code class="user">echo</code> "Yikes! You have no .bash_profile!"
+<code class="user">fi</code></div>
+
+<p>In this example, we use the expression "<code>-f
+.bash_profile</code> ". This expression asks, "Is .bash_profile a file?" If the
+expression is true, then <code class="user">test</code> exits with a zero
+(indicating true) and the <code class="user">if</code> command executes the
+command(s) following the word <code class= "user">then</code>. If the
+expression is false, then <code class="user">test</code> exits with a status of
+one and the <code class="user">if</code> command executes the command(s)
+following the word <code class="user">else</code>.</p>
+
+<p>Here is a partial list of the conditions that <code class="user">test</code>
+can evaluate. Since <code class="user">test</code> is a shell builtin, use
+"<code class="user">help test</code>" to see a complete list.
+
+</p>
+
+<div style="overflow-x: auto"><table>
+  <tr>
+    <th><strong>Expression</strong></th>
+    <th><strong>Description</strong></th>
+  </tr>
+
+  <tr>
+    <td>-d <i>file</i></td>
+    <td>True if <i>file</i> is a directory.</td>
+  </tr>
+
+  <tr>
+    <td>-e <i>file</i></td>
+    <td>True if <i>file</i> exists.</td>
+  </tr>
+
+  <tr>
+    <td>-f <i>file</i></td>
+    <td>True if <i>file</i> exists and is a regular file.</td>
+  </tr>
+
+  <tr>
+    <td>-L <i>file</i></td>
+    <td>True if <i>file</i> is a symbolic link.</td>
+  </tr>
+
+  <tr>
+    <td>-r <i>file</i></td>
+    <td>True if <i>file</i> is a file readable by you.</td>
+  </tr>
+
+  <tr>
+    <td>-w <i>file</i></td>
+    <td>True if <i>file</i> is a file writable by you.</td>
+  </tr>
+
+  <tr>
+    <td>-x <i>file</i></td>
+    <td>True if <i>file</i> is a file executable by you.</td>
+  </tr>
+
+  <tr>
+    <td><i>file1</i> -nt <i>file2</i></td>
+    <td>True if <i>file1</i> is newer than (according to modification time) <i>file2</i>.</td>
+  </tr>
+
+  <tr>
+    <td> <i>file1</i> -ot <i>file2</i></td>
+    <td>True if <i>file1</i> is older than <i>file2</i>.</td>
+  </tr>
+
+  <tr>
+    <td>-z <i>string</i></td>
+    <td>True if <i>string</i> is empty.</td>
+  </tr>
+
+  <tr>
+    <td>-n <i>string</i></td>
+    <td>True if <i>string</i> is not empty.</td>
+  </tr>
+
+  <tr>
+    <td><i>string1</i>&nbsp;=&nbsp;<i>string2</i></td>
+    <td>True if <i>string1</i> equals <i>string2.</i></td>
+  </tr>
+
+  <tr>
+    <td><i>string1</i>&nbsp;!=&nbsp;<i>string2</i></td>
+    <td>True if <i>string1</i> does not equal <i>string2.</i></td>
+  </tr>
+</table></div>
+
+<p>Before we go on, We need to explain the rest of the example above, since it
+also reveals more important ideas.</p>
+
+<p>In the first line of the script, we see the <code class="user">if</code>
+command followed by the <code class="user">test</code> command, followed by a
+semicolon, and finally the word <code class= "user">then</code>. Most people
+choose to use the <code class= "user">[ <i>expression</i> ]</code> form of the
+<code class="user">test</code> command since it's easier to read. Notice that
+the spaces required between the "<code class="user">[</code>" and the beginning
+of the expression are required. Likewise, the space between the end of the
+expression and the trailing "<code class="user">]</code>".</p>
+
+<p>The semicolon is a command separator. Using it allows us to put more than
+one command on a line.  For example:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">clear; ls</code></div>
+
+<p>will clear the screen and execute the ls command.</p>
+
+<p>We use the semicolon as we did to allow us to put the word <code
+class="user">then</code> on the same line as the <code class="user">if</code>
+command, because it's easier to read that way.</p>
+
+<p>On the second line, there is our old friend <code class="user">echo</code>.
+The only thing of note on this line is the indentation. Again for the benefit
+of readability, it is traditional to indent all blocks of conditional code;
+that is, any code that will only be executed if certain conditions are met. The
+shell does not require this; it is done to make the code easier to read.</p>
+
+<p>In other words, we could write the following and get the same results:</p>
+
+<div class="codeexample"># Preferred form
+
+<code class="user">if [</code> -f .bash_profile <code class="user">]</code>; <code class="user">then</code>
+    <code class="user">echo</code> "You have a .bash_profile. Things are fine."
+<code class="user">else</code>
+    <code class="user">echo</code> "Yikes! You have no .bash_profile!"
+<code class="user">fi</code>
+
+# Another alternate form
+
+<code class="user">if</code> <code class=
+"user">[</code> -f .bash_profile <code class="user">]</code>
+<code class="user">then</code> <code class=
+"user">echo</code> "You have a .bash_profile. Things are fine."
+<code class="user">else</code> <code class=
+"user">echo</code> "Yikes! You have no .bash_profile!"
+<code class="user">fi</code></div>
+
+<h2>exit</h2>
+
+<p>In order to be good script writers, we must set the exit status when our
+scripts finish. To do this, use the <code class="user">exit</code> command.
+The <code class="user">exit</code> command causes the script to terminate
+immediately and set the exit status to whatever value is given as an argument.
+For example:</p>
+
+<div class="codeexample"><code class="user">exit</code> 0</div>
+
+<p>exits our script and sets the exit status to 0 (success), whereas</p>
+
+<div class="codeexample"><code class="user">exit</code> 1</div>
+
+<p>exits your script and sets the exit status to 1
+(failure).</p>
+
+<h2>Testing for Root</h2>
+
+<p>When we last left our script, we required that it be run with superuser
+privileges. This is because the <code class="user">home_space</code> function
+needs to examine the size of each user's home directory, and only the superuser
+is allowed to do that.</p>
+
+<p>But what happens if a regular user runs our script? It produces a lot of
+ugly error messages.  What if we could put something in the script to stop it
+if a regular user attempts to run it?</p>
+
+<p>The <code class="user"><a href= "lc3_man_pages/id1.html">id</a></code>
+command can tell us who the current user is. When executed with the "-u"
+option, it prints the numeric user id of the current user.</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">id -u</code>
+501
+[me@linuxbox me]$ <code class="cmd">sudo -i</code>
+Password for me:
+[root@linuxbox ~]# <code class="cmd">id -u</code>
+0
+[root@linuxbox ~]# <code class="cmd">exit</code></div>
+
+<p>If the superuser executes <code class="user">id
+-u</code>, the command will output "0." This fact can
+be the basis of our test:</p>
+
+<div class="codeexample"><code class="user">if</code> <code class="user">[</code> "$(id -u)" = "0" <code class="user">];</code> <code class="user">then</code>
+    <code class="user">echo</code> "superuser"
+<code class="user">fi</code></div>
+
+<p>In this example, if the output of the command <code class="user">id
+-u</code> is equal to the string "0", then print the string "superuser."</p>
+
+<p>While this code will detect if the user is the superuser, it does not really
+solve the problem yet. We want to stop the script if the user is not the
+superuser, so we will code it like so:</p>
+
+<div class="codeexample"><code class="user">if</code> <code class="user">[</code> "$(id -u)" != "0" <code class="user">];</code> <code class="user">then</code>
+    <code class="user">echo</code> "You must be the superuser to run this script" &gt;&amp;2
+    <code class="user">exit</code> 1
+<code class="user">fi</code></div>
+
+<p>With this code, if the output of the <code class= "user">id -u</code>
+command is not equal to "0", then the script prints a descriptive error
+message, exits, and sets the exit status to 1, indicating to the operating
+system that the script executed unsuccessfully.</p>
+
+<p>Notice the "&gt;&amp;2" at the end of the <code class="user">echo</code>
+command. This is another form of I/O direction. We will often see this in
+routines that display error messages. If this redirection were not done, the
+error message would go to standard output. With this redirection, the message
+is sent to <i>standard error</i>. Since we are executing our script and
+redirecting its standard output to a file, we want the error messages separated
+from the normal output.</p>
+
+<p>We could put this routine near the beginning of our script so it has a
+chance to detect a possible error before things get under way, but in order to
+run this script as an ordinary user, we will use the same idea and modify the
+<code>home_space</code> function to test for proper privileges instead, like
+so:</p>
+
+<div class="codeexample"><code class="user">function</code> home_space {
+    # Only the superuser can get this information
+
+    <code class="user">if [</code> "$(id -u)" = "0" <code class="user">]; then</code>
+        <code class="user">echo</code> "&lt;h2&gt;Home directory space by user&lt;/h2&gt;"
+        <code class="user">echo</code> "&lt;pre&gt;"
+        <code class="user">echo</code> "Bytes Directory"
+            du -s /home/* | sort -nr
+        <code class="user">echo</code> "&lt;/pre&gt;"
+    <code class="user">fi</code>
+
+}   # end of home_space</div>
+
+<p>This way, if an ordinary user runs the script, the troublesome code will be
+passed over, rather than executed and the problem will be solved.</p>
+
+<h2>Further Reading</h2>
+
+<ul>
+
+  <li>Chapter 27 in <a href="tlcl.php.html"><i>The Linux Command Line</i></a> covers
+  this topic in more detail including the <code>[[ ]]</code> construct, the
+  modern replacement for the <code>test</code> command, and the <code>((
+  ))</code> construct for performing arithmetic truth tests.</li>
+
+  <li>To learn more about stylistic conventions and best coding practices for
+  bash scripts, see the <a href="lc3_adv_standards.php.html"><i>Coding
+  Standards</i></a> adventure.</li>
+  
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0080.php.html#top">Top</a> | <a
+      href="lc3_wss0070.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0090.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

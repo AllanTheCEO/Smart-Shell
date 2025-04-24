@@ -1,0 +1,25 @@
+  
+NAME
+    eval - Execute arguments as a shell command.
+
+SYNOPSIS
+    eval [arg ...]
+
+DESCRIPTION
+    Execute arguments as a shell command.
+    
+    Combine ARGs into a single string, use the result as input to the shell,
+    and execute the resulting commands.
+    
+    Exit Status:
+    Returns exit status of command or success if command is null.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

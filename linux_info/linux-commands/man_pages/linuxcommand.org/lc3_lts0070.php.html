@@ -1,0 +1,359 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Learning the shell - Lesson 7: I/O Redirection</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="In this tutorial we look at input/output (I/O) redirection.">
+    <meta name="keywords" content="linux, shell, bash, I/O redierction, standard input, stdin, standard output, stdout, standard error, stderr, pipelines, /dev/null, filters, head, tail, grep, cat">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_lts0060.php.html">
+    <link rel="next" href="lc3_lts0080.php.html">
+    <link rel="contents" href="lc3_learning_the_shell.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_lts0060.php.html">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="lc3_lts0080.php.html">Next</a>
+    </div>
+<h1>I/O Redirection</h1>
+
+<p>In this lesson, we will explore a powerful feature used by command line
+programs called <i>input/output redirection</i>. As we have seen, many commands
+such as <code class="user">ls</code> print their output on the display. This
+does not have to be the case, however. By using some special notations we can
+<i>redirect</i> the output of many commands to files, devices, and even to the
+input of other commands.</p>
+
+<h2>Standard Output</h2>
+
+<p>Most command line programs that display their results do so by sending their
+results to a facility called <i>standard output</i>. By default, standard
+output directs its contents to the display. To redirect standard output to a
+file, the "&gt;" character is used like this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">ls &gt; file_list.txt</code></div>
+
+<p>In this example, the <code class="user">ls</code> command is executed and
+the results are written in a file named <code>file_list.txt</code>. Since the
+output of <code class="user">ls</code> was redirected to the file, no results
+appear on the display.</p>
+
+<p>Each time the command above is repeated, <code>file_list.txt</code> is
+overwritten from the beginning with the output of the command <code class=
+"user">ls</code>. To have the new results <i>appended</i> to the file instead,
+we use "&gt;&gt;" like this:</p>
+
+<div class="display">[me@linuxbox me]$<code class="cmd">ls &gt;&gt; file_list.txt</code></div>
+
+<p>When the results are appended, the new results are added to the end of the
+file, thus making the file longer each time the command is repeated. If the
+file does not exist when we attempt to append the redirected output, the file
+will be created.</p>
+
+<h2>Standard Input</h2>
+
+<p>Many commands can accept input from a facility called <i>standard input</i>.
+By default, standard input gets its contents from the keyboard, but like
+standard output, it can be redirected. To redirect standard input from a file
+instead of the keyboard, the "&lt;" character is used like this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">sort &lt; file_list.txt</code></div>
+
+<p>In the example above, we used the <code class= "user"><a
+href="lc3_man_pages/sort1.html">sort</a></code> command to process the contents
+of <code>file_list.txt</code>.  The results are output on the display since the
+standard output was not redirected.  We could redirect standard output to
+another file like this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">sort &lt; file_list.txt &gt; sorted_file_list.txt</code></div>
+
+<p>As we can see, a command can have both its input and output redirected. Be
+aware that the order of the redirection does not matter. The only requirement
+is that the redirection operators (the "&lt;" and "&gt;") must appear after the
+other options and arguments in the command.</p>
+
+<h2>Pipelines</h2>
+
+<p>The most useful and powerful thing we can do with I/O redirection is to
+connect multiple commands together to form what are called <i>pipelines</i>.
+With pipelines, the standard output of one command is fed into the standard
+input of another. Here is a very useful example:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">ls -l | less</code></div>
+
+<p>In this example, the output of the <code class= "user">ls</code> command is
+fed into <code class= "user">less</code>. By using this <code class="user">"|
+less"</code> trick, we can make any command have scrolling output.</p>
+
+<p>By connecting commands together, we can accomplish amazing feats. Here are
+some examples to try:<br> <br> </p>
+
+<div style="overflow-x: auto"><table>
+  <caption>Examples of commands used together with pipelines</caption>
+
+  <tr>
+    <th><strong>Command</strong></th>
+    <th><strong>What it does</strong></th>
+  </tr>
+
+  <tr>
+    <td><span style="white-space: nowrap"><code class="user">ls -lt | <a href="lc3_man_pages/head1.html">head</a></code></span></td>
+
+    <td>Displays the 10 newest files in the current directory.</td>
+  </tr>
+
+  <tr>
+    <td><span style="white-space: nowrap"><code class="user"><a href="lc3_man_pages/du1.html">du</a> | sort -nr</code></span></td>
+
+    <td> Displays a list of directories and how
+    much space they consume, sorted from the
+    largest to the smallest.</td>
+  </tr>
+
+  <tr>
+    <td><span style="white-space: nowrap"><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/find1.html">find</a> . -type f -print | <a href="lc3_man_pages/wc1.html">wc</a> -l</code></span></td>
+
+    <td>Displays the total number of files in the
+    current working directory and all of its
+    subdirectories.</td>
+  </tr>
+</table></div>
+
+<h2>Filters</h2>
+
+<p>One kind of program frequently used in pipelines is called a <i>filter</i>.
+Filters take standard input and perform an operation upon it and send the
+results to standard output. In this way, they can be combined to process
+information in powerful ways. Here are some of the common programs that can act
+as filters:<br><br></p>
+
+<div style="overflow-x: auto"><table>
+  <caption>
+    Common filter commands
+  </caption>
+
+  <tr>
+    <th><strong>Program</strong></th>
+    <th><strong>What it does</strong></th>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sort1.html">sort</a></code></td>
+
+    <td>Sorts standard input then outputs the
+    sorted result on standard output.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/uniq1.html">uniq</a></code></td>
+
+    <td>Given a sorted stream of data from
+    standard input, it removes duplicate lines of
+    data (i.e., it makes sure that every line is
+    unique).</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/grep1.html">grep</a></code></td>
+
+    <td>Examines each line of data it receives
+    from standard input and outputs every line
+    that contains a specified pattern of
+    characters.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/fmt1.html">fmt</a></code></td>
+
+    <td>Reads text from standard input, then
+    outputs formatted text on standard
+    output.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/pr1.html">pr</a></code></td>
+
+    <td>Takes text input from standard input and
+    splits the data into pages with page breaks,
+    headers and footers in preparation for
+    printing.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/head1.html">head</a></code></td>
+
+    <td>Outputs the first few lines of its input.
+    Useful for getting the header of a file.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tail1.html">tail</a></code></td>
+
+    <td>Outputs the last few lines of its input.
+    Useful for things like getting the most
+    recent entries from a log file.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tr1.html">tr</a></code></td>
+
+    <td>Translates characters. Can be used to
+    perform tasks such as upper/lowercase
+    conversions or changing line termination
+    characters from one type to another (for
+    example, converting DOS text files into Unix
+    style text files).</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sed1.html">sed</a></code></td>
+
+    <td>Stream editor. Can perform more
+    sophisticated text translations than <code
+    class="user">tr</code>.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/awk1.html">awk</a></code></td>
+
+    <td>An entire programming language designed
+    for constructing filters. Extremely
+    powerful.</td>
+  </tr>
+</table></div>
+<br>
+
+<div class="sidebar">
+<h2>Performing tasks with pipelines</h2>
+
+<ol>
+  <li>
+    <p><strong>Printing from the command line.</strong> Linux
+    provides a program called <code class="user"><a
+    href="lc3_man_pages/lpr1.html">lpr</a></code> that
+    accepts standard input and sends it to the
+    printer. It is often used with pipes and
+    filters. Here are a couple of examples:</p>
+
+<pre>cat poorly_formatted_report.txt | fmt | pr | lpr
+
+cat unsorted_list_with_dupes.txt | sort | uniq | pr | lpr</pre>
+
+    <p>In the first example, we use <code class=
+    "user">cat</code> to read the file and output it
+    to standard output, which is piped into the
+    standard input of <code class="user">fmt.
+    fmt</code> formats the text into neat paragraphs
+    and outputs it to standard output, which is
+    piped into the standard input of <code class=
+    "user">pr. pr</code> splits the text neatly into
+    pages and outputs it to standard output, which
+    is piped into the standard input of <code class=
+    "user">lpr. lpr</code> takes its standard input
+    and sends it to the printer.</p>
+
+    <p>The second example starts with an unsorted
+    list of data with duplicate entries. First, <code
+    class="user">cat</code> sends the list into <code
+    class="user">sort</code> which sorts it and feeds
+    it into <code class="user">uniq</code> which
+    removes any duplicates. Next <code class=
+    "user">pr</code> and <code class="user">lpr</code>
+    are used to paginate and print the list.</p>
+  </li>
+
+  <li>
+    <p><strong>Viewing the contents of tar files</strong>
+    Often you will see software distributed as a
+    <i>gzipped tar file</i>. This is a traditional
+    Unix style tape archive file (created with <code
+    class="user"><a href=
+    "lc3_man_pages/tar1.html">tar</a></code>) that has
+    been compressed with <code class="user"><a href=
+    "lc3_man_pages/gzip1.html">gzip</a></code>. You can
+    recognize these files by their traditional file
+    extensions, ".tar.gz" or ".tgz". You can use the
+    following command to view the directory of such
+    a file on a Linux system:</p>
+
+<pre>tar tzvf name_of_file.tar.gz | less</pre>
+  </li>
+</ol>
+</div>
+
+<h2>Further Reading</h2>
+
+<ul>
+  <li>Chapter 6 of <a href="tlcl.php.html"><i>The Linux Command Line</i></a> covers
+  this topic in more detail.</li>
+
+  <li>Chapters 19 through 21 of <i>The Linux Command Line</i> provide an in-depth look
+  at the text processing tools available in Linux.</li>
+
+  <li>To learn more about the AWK programming language, consider the <a
+  href="lc3_adv_awk.php.html">AWK adventure</a>.</li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_lts0070.php.html#top">Top</a> | <a
+      href="lc3_lts0060.php.html">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="lc3_lts0080.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

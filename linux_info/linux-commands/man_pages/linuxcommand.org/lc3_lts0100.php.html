@@ -1,0 +1,368 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Learning the shell - Lesson 10: Job Control</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="In this tutorial we see how to manage processes with the Linux command line">
+    <meta name="keywords" content="processes, process id, pid, ps command, top command, kill command, signals, SIGTERM, SIGKILL, SIGHUP, SIGINT, control-c, ctrl-c, control-z, ctrl-z, jobs command, fg command, bg command">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_lts0090.php.html">
+    <link rel="next" href="lc3_writing_shell_scripts.php.html">
+    <link rel="contents" href="lc3_learning_the_shell.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_lts0090.php.html">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="lc3_writing_shell_scripts.php.html">Next</a>
+    </div>
+<h1>Job Control</h1>
+
+<p>In the previous lesson, we looked at some of the implications of Linux being
+a multi-user operating system. In this lesson, we will examine the multitasking
+nature of Linux, and how it is controlled with the command line interface.</p>
+
+<p>As with any multitasking operating system, Linux executes multiple,
+simultaneous processes. Well, they appear simultaneous, anyway. Actually, a
+single processor core can only execute one process at a time but the Linux
+kernel manages to give each process its turn at the processor and each appears
+to be running at the same time.</p>
+
+<p>There are several commands that are used to control processes. They are:</p>
+
+<ul>
+  <li><code class="user"><a href=
+  "lc3_man_pages/ps1.html">ps</a></code> - list the
+  processes running on the system</li>
+
+  <li><code class="user"><a href=
+  "lc3_man_pages/killh.html">kill</a></code> - send a
+  signal to one or more processes (usually to
+  "kill" a process)</li>
+
+  <li><code class="user"><a href=
+  "lc3_man_pages/jobsh.html">jobs</a></code> - an
+  alternate way of listing your own processes</li>
+
+  <li><code class="user"><a href=
+  "lc3_man_pages/bgh.html">bg</a></code> - put a process
+  in the background</li>
+
+  <li><code class="user"><a href=
+  "lc3_man_pages/fgh.html">fg</a></code> - put a process
+  in the foreground</li>
+</ul>
+
+<h2>A Practical Example</h2>
+
+<p>While it may seem that this subject is rather obscure, it can be very
+practical for the average user who mostly works with the graphical user
+interface. Though it might not be apparent, most (if not all) graphical
+programs can be launched from the command line. Here's an example: there is a
+small program supplied with the X Window system called <code
+class="user">xload</code> which displays a graph representing system load. We
+can execute this program by typing the following:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">xload</code></div>
+
+<p>Notice that the small <code class= "user">xload</code> window appears and
+begins to display the system load graph. On systems where <code class=
+"user">xload</code> is not available, try <code class= "user">gedit</code>
+instead. Notice also that our prompt did not reappear after the program
+launched. The shell is waiting for the program to finish before control
+returns. If we close the <code class="user">xload</code> window, the <code
+class="user">xload</code> program terminates and the prompt returns.</p>
+
+<h2>Putting a Program into the Background</h2>
+
+<p>Now, in order to make life a little easier, we are going to launch the <code
+class="user">xload</code> program again, but this time we will put it in the
+background so that the prompt will return. To do this, we execute xload like
+this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">xload &amp;</code>
+[1] 1223
+[me@linuxbox me]$</div>
+
+<p>In this case, the prompt returned because the process was put in the
+background.</p>
+
+<p>Now imagine that we forgot to use the "&amp;" symbol to put the program into
+the background.  There is still hope. We can type <code>Ctrl-z</code> and the
+process will be suspended. We can verify this by seeing that the program's
+window is frozen. The process still exists, but is idle. To resume the process
+in the background, type the <code class="user">bg</code> command (short for
+background). Here is an example:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">xload</code>
+[2]+ Stopped xload
+
+[me@linuxbox me]$ <code class="cmd">bg</code>
+[2]+ xload &amp;</div>
+
+<h2>Listing Running Processes</h2>
+
+<p>Now that we have a process in the background, it would be helpful to display
+a list of the processes we have launched. To do this, we can use either the
+<code class="user">jobs</code> command or the more powerful <code
+class="user">ps</code> command.</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">jobs</code>
+[1]+ Running xload&amp;
+
+[me@linuxbox me]$ <code class="cmd">ps</code>
+PID  TTY   TIME     CMD
+1211 pts/4 00:00:00 bash
+1246 pts/4 00:00:00 xload
+1247 pts/4 00:00:00 ps
+
+[me@linuxbox me]$</div>
+
+<h2>Killing a Process</h2>
+
+<p>Suppose that we have a program that becomes unresponsive; how do we get rid
+of it? We use the <code class= "user">kill</code> command, of course. Let's try
+this out on <code class="user">xload</code>. First, we need to identify the
+process we want to kill. We can use either <code class="user">jobs</code> or
+<code class="user">ps</code>, to do this. If we use <code
+class="user">jobs</code> we will get back a job number. With <code class=
+"user">ps</code>, we are given a <i>process id</i> (PID).  We will do it both
+ways:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">xload &amp;</code>
+[1] 1292
+
+[me@linuxbox me]$ <code class="cmd">jobs</code>
+[1]+ Running xload&amp;
+
+[me@linuxbox me]$ <code class="cmd">kill %1</code>
+
+[me@linuxbox me]$ <code class="cmd">xload &amp;</code>
+[2] 1293
+[1] Terminated xload
+
+[me@linuxbox me]$ <code class="cmd">ps</code>
+PID  TTY   TIME     CMD
+1280 pts/5 00:00:00 bash
+1293 pts/5 00:00:00 xload
+1294 pts/5 00:00:00 ps
+
+[me@linuxbox me]$ <code class="cmd">kill 1293</code>
+[2]+ Terminated xload
+
+[me@linuxbox me]$</div>
+
+<h2>A Little More About kill</h2>
+
+<p>While the <code class="user">kill</code> command is used to "kill"
+processes, its real purpose is to send <i>signals</i> to processes. Most of the
+time the signal is intended to tell the process to go away, but there is more
+to it than that. Programs (if they are properly written) listen for signals
+from the operating system and respond to them, most often to allow some
+graceful method of terminating.  For example, a text editor might listen for
+any signal that indicates that the user is logging off, or that the computer is
+shutting down. When it receives this signal, it could save the work in progress
+before it exits. The <code class="user">kill</code> command can send a variety
+of signals to processes.  Typing:</p>
+
+<pre>kill -l</pre>
+
+<p>will print a list of the signals it supports.  Many are rather obscure,
+but several are handy to know:<br> <br> </p>
+
+<div style="overflow-x: auto"><table>
+  <tr>
+    <td>
+    <strong>Signal&nbsp;#</strong>
+    </td>
+
+    <td>
+    <strong>Name</strong>
+    </td>
+
+    <td>
+    <strong>Description</strong>
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>1</strong></td>
+
+    <td><strong>SIGHUP</strong></td>
+
+    <td>
+    Hang up signal. Programs can listen for
+    this signal and act upon it. This signal is sent
+    to processes running in a terminal when you close
+    the terminal.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>2</strong></td>
+
+    <td><strong>SIGINT</strong></td>
+
+    <td>
+    Interrupt signal. This signal is given
+    to processes to interrupt them.
+    Programs can process this signal and act upon
+    it. We can also issue this signal directly
+    by typing <code>Ctrl-c</code> in the terminal window
+    where the program is running.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>15</strong></td>
+
+    <td><strong>SIGTERM</strong></td>
+
+    <td>
+    Termination signal. This signal is given
+    to processes to terminate them. Again,
+    programs can process this signal and act upon
+    it. This is the default signal sent by the <code class=
+    "user">kill</code> command if no signal is
+    specified.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>9</strong></td>
+
+    <td><strong>SIGKILL</strong></td>
+
+    <td>
+    Kill signal. This signal causes the
+    immediate termination of the process by the
+    Linux kernel. Programs cannot listen for this
+    signal.
+    </td>
+  </tr>
+</table></div>
+
+<p>Now let's suppose that we have a program that
+is hopelessly hung and we want
+to get rid of it. Here's what we do:</p>
+
+<ol>
+  <li>Use the <code class="user">ps</code> command to
+  get the process id (PID) of the process we want
+  to terminate.</li>
+
+  <li>Issue a <code class="user">kill</code> command
+  for that PID.</li>
+
+  <li>If the process refuses to terminate (i.e., it
+  is ignoring the signal), send increasingly harsh
+  signals until it does terminate.</li>
+</ol>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">ps x | grep bad_program</code>
+PID  TTY   STAT TIME COMMAND
+2931 pts/5 SN   0:00 bad_program
+
+[me@linuxbox me]$ <code class="cmd">kill -SIGTERM 2931</code>
+
+[me@linuxbox me]$ <code class="cmd">kill -SIGKILL 2931</code></div>
+
+<p>In the example above we used the <code class= "user">ps</code> command with
+the x option to list all of our processes (even those not launched from the
+current terminal). In addition, we piped the output of the <code
+class="user">ps</code> command into <code class="user">grep</code> to list only
+list the program we are interested in.  Next, we used <code
+class="user">kill</code> to issue a SIGTERM signal to the troublesome program.
+In actual practice, it is more common to do it in the following way since the
+default signal sent by <code class="user">kill</code> is SIGTERM and <code
+class= "user">kill</code> can also use the signal number instead of the signal
+name:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">kill 2931</code></div>
+
+<p>Then, if the process does not terminate, force
+it with the SIGKILL signal:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">kill -9 2931</code></div>
+
+<h2>That's It!</h2>
+
+<p>This concludes the "Learning the Shell" series of lessons. In the next
+series, "Writing Shell Scripts," we will look at how to automate tasks with the
+shell.</p>
+
+<h2>Further Reading</h2>
+
+<ul>
+
+  <li>For a more in-depth treatment of the topic, see Chapter 10 in <a
+  href="tlcl.php.html"><i>The Linux Command Line</i></a>.</li>
+
+  <li><a href="https://youtu.be/Q07PhW5sCEk"><i>1963 Timesharing: A Solution to
+  Computer Bottlenecks</i></a>, a fascinating YouTube video from the Computer History
+  Museum describing the first timesharing operating system and how it works.
+  It's basically the same method used by all modern computers.</li>
+
+</ul>
+
+    <div class="pagenav">
+      <a
+      href="lc3_lts0100.php.html#top">Top</a> | <a
+      href="lc3_lts0090.php.html">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="lc3_writing_shell_scripts.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

@@ -1,0 +1,381 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Learning the shell - Lesson 4: A Guided Tour</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="In this tutorial, we look at the contents of many of the standard directories found on a Linux system.">
+    <meta name="keywords" content="linux, shell, bash, directory hierarchy standard, /boot, /etc, /usr/bin, /sbin, /usr/local, /var, /lib, /root, /home, /tmp, /dev, /proc, symbolic links">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="https://linuxcommand.org/lc3_lts0030.php">
+    <link rel="next" href="https://linuxcommand.org/lc3_lts0050.php">
+    <link rel="contents" href="lc3_learning_the_shell.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="https://linuxcommand.org/lc3_lts0030.php">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="https://linuxcommand.org/lc3_lts0050.php">Next</a>
+    </div>
+<h1>A Guided Tour</h1>
+
+<p>It's time to take our tour. The table below lists some interesting places to
+explore. This is by no means a complete list, but it should prove to be an
+interesting adventure. For each of the directories listed below, do the
+following:</p>
+
+<ul>
+  <li><code class="user">cd</code> into each directory.</li>
+  <li>Use <code class="user">ls</code> to list the contents of the directory.</li>
+  <li>If there is an interesting file, use the <code class="user">file</code> command to determine its contents.</li>
+  <li>For text files, use <code class="user">less</code> to view them.</li>
+</ul>
+
+<div style="overflow-x: auto"><table>
+  <caption>Interesting directories and their contents</caption>
+
+  <tr>
+    <th><strong>Directory</strong></th>
+    <th><strong>Description</strong></th>
+  </tr>
+
+  <tr>
+    <td><code class="user">/</code></td>
+    <td>The root directory where the file system
+    begins. The root directory will probably
+    contain only subdirectories.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/boot</code></td>
+    <td>This is where the Linux kernel and boot loader
+    files are kept. The kernel is a file called <code class="user">vmlinuz</code>.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/etc</code></td>
+    <td>The <code class="user">/etc</code> directory
+    contains the configuration files for the
+    system. All of the files in <code class="user">/etc</code> should be text files. Some points of
+    interest are:
+
+    <dl>
+      <dt><code class="user">/etc/passwd</code></dt>
+
+      <dd>The <code class="user">passwd</code> file
+      contains the essential information for each
+      user. This is where user accounts are defined.</dd>
+
+      <dt><code class="user">/etc/fstab</code></dt>
+
+      <dd>The <code class="user">fstab</code> file
+      contains a table of devices that get mounted
+      when the system boots.  This file defines
+      the system's disk drives.</dd>
+
+      <dt><code class="user">/etc/hosts</code></dt>
+
+      <dd>This file lists the network host names
+      and IP addresses that are intrinsically known
+      to the system.</dd>
+
+      <dt><code class="user">/etc/init.d</code></dt>
+
+      <dd>This directory contains the scripts
+      that start various system services 
+      at boot time.</dd>
+    </dl>
+    </td>
+  </tr>
+
+  <tr>
+    <td><span style="white-space: nowrap"><code class="user">/bin, /usr/bin</code></span></td>
+    <td>These two directories contain most of the programs for the 
+    system. The <code class="user">/bin</code> directory has the essential
+    programs that the system requires to operate,
+    while <code class="user">/usr/bin</code> contains
+    applications for the system's users.</td>
+  </tr>
+
+  <tr>
+    <td><span style="white-space: nowrap"><code class="user">/sbin, /usr/sbin</code></span></td>
+    <td>The <code class="user">sbin</code> directories
+    contain programs for system administration, mostly for use by the superuser.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/usr</code></td>
+    <td>The <code class="user">/usr</code> directory
+    contains a variety of things that support
+    user applications. Some highlights:
+
+    <dl>
+      <dt><code class="user">/usr/share/X11</code></dt>
+      <dd>Support files for the X Window system</dd>
+
+      <dt><code class="user">/usr/share/dict</code></dt>
+      <dd>Dictionaries for the spelling checker.  Yes, Linux comes with a
+      spelling checker. See <a href= "https://linuxcommand.org/lc3_man_pages/look1.html"><code class=
+      "user">look</code></a> and <a href= "lc3_man_pages/aspell1.html"><code
+      class= "user">aspell</code></a>.</dd>
+
+      <dt><code class="user">/usr/share/doc</code></dt>
+      <dd>Various documentation files in a
+      variety of formats.</dd>
+
+      <dt><code class="user">/usr/share/man</code></dt>
+      <dd>The man pages are kept here.</dd>
+
+    </dl>
+    </td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/usr/local</code></td>
+    <td><code class="user">/usr/local</code> and its
+    subdirectories are used for the installation
+    of software and other files for use on the
+    local machine. What this really means is that
+    software that is not part of the official
+    distribution (which usually goes in <code
+    class="user">/usr/bin</code>) goes here.<br><br>
+
+    When you find interesting programs to
+    install on your system, they should be
+    installed in one of the <code class="user">/usr/local</code> directories. Most
+    often, the directory of choice is <code class="user">/usr/local/bin</code>.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/var</code></td>
+    <td>The <code class="user">/var</code> directory
+    contains files that change as the system is
+    running. This includes:
+
+    <dl>
+      <dt><code class="user">/var/log</code></dt>
+      <dd>Directory that contains log files.  These are updated as the system
+      runs. It's a good idea to view the files in this directory from time to
+      time, to monitor the health of your system.</dd>
+
+      <dt><code class="user">/var/spool</code></dt>
+      <dd>This directory is used to hold files that are queued for some
+      process, such as mail messages and print jobs. When a user's mail first
+      arrives on the local system (assuming it has local mail, a rare occurrence
+      on modern machines that are not mail servers), the messages are first
+      stored in <code class= "user">/var/spool/mail</code></dd>
+    </dl>
+    </td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/lib</code></td>
+    <td>The shared libraries (similar to DLLs in
+    that other operating system) are kept
+    here.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/home</code></td>
+    <td><code class="user">/home</code> is where users
+    keep their personal work. In general, this is
+    the only place users are allowed to write
+    files. This keeps things nice and clean :-)</td>
+  </tr>
+
+  <tr>
+    <td><code class= "user">/root</code></td>
+    <td>This is the superuser's home directory.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/tmp</code></td>
+    <td><code class="user">/tmp</code> is a directory
+    in which programs can write their temporary files.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/dev</code></td>
+    <td>The <code class="user">/dev</code> directory
+    is a special directory, since it does not
+    really contain files in the usual sense.
+    Rather, it contains devices that are available
+    to the system. In Linux (like Unix), devices
+    are treated like files. You can read and
+    write devices as though they were files. For
+    example <code class="user">/dev/fd0</code> is the
+    first floppy disk drive, <code class=
+    "user">/dev/sda</code> is the first hard
+    drive. All the devices that the kernel
+    understands are represented here.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/proc</code></td>
+    <td>The <code class="user">/proc</code> directory
+    is also special. This directory does not
+    contain files. In fact, this directory does
+    not really exist at all. It is entirely
+    virtual. The <code class="user">/proc</code>
+    directory contains little peep holes into the
+    kernel itself. There are a group of numbered
+    entries in this directory that correspond to
+    all the processes running on the system. In
+    addition, there are a number of named entries
+    that permit access to the current
+    configuration of the system. Many of these
+    entries can be viewed. Try viewing <code class=
+    "user">/proc/cpuinfo</code>. This entry will
+    tell you what the kernel thinks of the system's
+    CPU.</td>
+  </tr>
+
+  <tr>
+    <td><code class="user">/media</code></td>
+    <td>Finally, we come to <code class="user">/media</code>, a normal directory which is
+    used in a special way. The <code class="user">/media</code> directory is used for
+    <i>mount points</i>. As we learned in the <a href="https://linuxcommand.org/lc3_lts0020.php">second lesson</a>, the
+    different physical storage devices (like hard
+    disk drives) are attached to the file system
+    tree in various places. This process of
+    attaching a device to the tree is called
+    <i>mounting</i>. For a device to be
+    available, it must first be mounted.<br><br>
+
+    When your system boots, it reads a list of mounting instructions in the
+    <code class="user">/etc/fstab</code> file, which describes which device is
+    mounted at which mount point in the directory tree. This takes care of the
+    hard drives, but we may also have devices that are considered temporary,
+    such as optical disks and USB storage devices. Since these are removable, they do not
+    stay mounted all the time. The <code class="user">/media</code> directory
+    is used by the automatic device mounting mechanisms found in modern desktop
+    oriented Linux distributions.  To see what devices and mount points are
+    used, type <a href="https://linuxcommand.org/lc3_man_pages/mount8.html"> <code
+    class="user">mount</code></a>.</td>
+  </tr>
+</table></div><br>
+
+<div class="sidebar">
+<h2>A weird kind of file...</h2>
+
+<p>During your tour, you probably noticed a strange kind of directory entry,
+particularly in the <code class="user">/lib</code> directory. When listed with
+<code class="user">ls -l</code>, you might have seen something like this:</p>
+
+<pre>lrwxrwxrwx     25 Jul  3 16:42 System.map -&gt; /boot/System.map-4.0.36-3
+-rw-r--r-- 105911 Oct 13  2018 System.map-4.0.36-0.7
+-rw-r--r-- 105935 Dec 29  2018 System.map-4.0.36-3
+-rw-r--r-- 181986 Dec 11  2019 initrd-4.0.36-0.7.img
+-rw-r--r-- 182001 Dec 11  2019 initrd-4.0.36.img
+lrwxrwxrwx     26 Jul  3 16:42 module-info -&gt; /boot/module-info-4.0.36-3
+-rw-r--r--  11773 Oct 13  2018 module-info-4.0.36-0.7
+-rw-r--r--  11773 Dec 29  2018 module-info-4.0.36-3
+lrwxrwxrwx     16 Dec 11  2019 vmlinuz -&gt; vmlinuz-4.0.36-3
+-rw-r--r-- 454325 Oct 13  2018 vmlinuz-4.0.36-0.7
+-rw-r--r-- 454434 Dec 29  2018 vmlinuz-4.0.36-3</pre>
+
+<p>Notice the files, <code>System.map,
+module-info</code> and <code>vmlinuz</code>. See the
+strange notation after the file names?</p>
+
+<p>Files such as this are called <i>symbolic
+links</i>. Symbolic links are a special type of
+file that points to another file. With symbolic
+links, it is possible for a single file to have
+multiple names. Here's how it works: Whenever the
+system is given a file name that is a symbolic
+link, it transparently maps it to the file it is
+pointing to.</p>
+
+<p>Just what is this good for? This is a very handy
+feature. Let's consider the directory listing above
+(which is the <code>/boot</code> directory of an old
+system). This system has had multiple
+versions of the Linux kernel installed. We can see
+this from the files <code>vmlinuz-4.0.36-0.7</code> and
+<code>vmlinuz-4.0.36-3</code>. These file names suggest
+that both version 4.0.36-0.7 and 4.0.36-3 are
+installed. Because the file names contain the
+version it is easy to see the differences in the
+directory listing. However, this would be confusing
+to programs that rely on a fixed name for the
+kernel file. These programs might expect the kernel
+to simply be called <code>"vmlinuz"</code>. Here is
+where the beauty of the symbolic link comes in. By
+creating a symbolic link called <code>vmlinuz</code>
+that points to <code>vmlinuz-4.0.36-3</code>, we have
+solved the problem.</p>
+
+<p>To create symbolic links, we use the <a href=
+"lc3_man_pages/ln1.html"><code class="user">ln</code></a>
+command.</p>
+</div>
+
+<h2>Further Reading</h2>
+
+<ul>
+  <li>To learn more about the organization of the Linux filesystem, consult
+  the <a href="https://refspecs.linuxfoundation.org/fhs.shtml">Filesystem Hierarchy Standard</a></li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_lts0040.php.html#top">Top</a> | <a
+      href="https://linuxcommand.org/lc3_lts0030.php">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="https://linuxcommand.org/lc3_lts0050.php">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

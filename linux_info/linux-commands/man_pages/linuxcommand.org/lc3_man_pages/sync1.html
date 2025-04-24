@@ -1,0 +1,70 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>sync man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for sync">
+  <meta name="keywords" content="Manual page, sync command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#file" style="color: white;">Back to Contents</a>
+  <pre>
+SYNC(1)                       User Commands                       SYNC(1)
+
+NAME
+       sync - Synchronize cached writes to persistent storage
+
+SYNOPSIS
+       sync [OPTION] [FILE]...
+
+DESCRIPTION
+       Synchronize cached writes to persistent storage
+
+       If  one or more files are specified, sync only them, or their con‐
+       taining file systems.
+
+       -d, --data
+              sync only file data, no unneeded metadata
+
+       -f, --file-system
+              sync the file systems that contain the files
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+BUGS
+       Persistence guarantees vary per  system.   See  the  system  calls
+       below for more details.
+
+AUTHOR
+       Written by Jim Meyering and Giuseppe Scrivano.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report   any   translation   bugs   to    &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright  ©  2020 Free Software Foundation, Inc.  License GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       fdatasync(2), fsync(2), sync(2), syncfs(2)
+
+       Full documentation &lt;https://www.gnu.org/software/coreutils/sync&gt;
+       or available locally via: info '(coreutils) sync invocation'
+
+GNU coreutils 8.32              April 2020                        SYNC(1)
+</pre></body></html>

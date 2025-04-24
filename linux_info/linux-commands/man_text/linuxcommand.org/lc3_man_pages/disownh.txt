@@ -1,0 +1,31 @@
+  
+NAME
+    disown - Remove jobs from current shell.
+
+SYNOPSIS
+    disown [-h] [-ar] [jobspec ... | pid ...]
+
+DESCRIPTION
+    Remove jobs from current shell.
+    
+    Removes each JOBSPEC argument from the table of active jobs.  Without
+    any JOBSPECs, the shell uses its notion of the current job.
+    
+    Options:
+      -a	remove all jobs if JOBSPEC is not supplied
+      -h	mark each JOBSPEC so that SIGHUP is not sent to the job if the
+    		shell receives a SIGHUP
+      -r	remove only running jobs
+    
+    Exit Status:
+    Returns success unless an invalid option or JOBSPEC is given.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

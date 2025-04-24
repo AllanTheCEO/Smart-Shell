@@ -1,0 +1,34 @@
+<code>exec 1&gt; output.txt</code></pre>
+<p>from that point on, every command using standard output would send its data to <code>output.txt</code>. It should be noted that if this trick is performed by a script, it is no longer possible to redirect that script’s output at runtime using the command line. For example, if we had the following script:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="co"># exec-test - Test external redirection and exec</span></a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="bu">exec</span> <span class="op">1&gt;</span> ~/foo1.txt</a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="bu">echo</span> <span class="st">&quot;Boo.&quot;</span></a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="co"># End of script</span></a></code></pre></div>
+<pre><code>me@linuxbox ~ $ ./exec-test &gt; ~/foo2.txt</code></pre>
+<p>the attempted redirection would have no effect. The word “Boo” would still be written to the file <code>foo1.txt</code>, not <code>foo2.txt</code> as specified on the command line. This is because the redirection performed inside the script via <code>exec</code> is performed after the redirection on the command line, and thus, takes precedence.</p>
+<p>Another way we can use <code>exec</code> is to open and close additional file descriptors. While we most often use descriptors 0, 1, and 2, it is possible to use others. Here are examples of opening and closing file descriptor 3:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># Open fd 3</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="bu">exec</span> <span class="op">3&gt;</span> some_file.txt</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co"># Close fd 3</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="bu">exec</span> <span class="op">3&gt;</span><span class="kw">&amp;</span><span class="ex">-</span></a></code></pre></div>
+<pre><code>me@linuxbox ~ $ find /usr/share | ./counter-exec &gt; ~/find_list.txt</code></pre>
+<p>In this pipeline example, we generate a list of files using <code>find</code>, and then count them before writing the list in a file named <code>find_list.txt</code>.</p>
+<p>The script works by reading a line from the standard input and writing the <code>REPLY</code> variable (which contains the line of text from <code>read</code>) to standard output. The <code>printf</code> format specifier contains a series of six backspaces and a formatted integer that is always six digits long padded with leading zeros.</p>
+<h2 id="devtty">/dev/tty</h2>
+<p>The mysterious part of the script above is the <code>exec</code>. The <code>exec</code> is used to open a file using file descriptor 3 which is set to point to <code>/dev/tty</code>. <code>/dev/tty</code> is one of several <em>special files</em> that we can access from the shell. Special files are usually not “real” files in the sense that they are files that exists on a physical disk. Rather, they are virtual like the files in the <code>/proc</code> directory. The <code>/dev/tty</code> file is a device that always points to a program’s <em>controlling terminal</em>, that is, the terminal that is responsible for launching the program. If we run the command <code>ps aux</code> on our system, we will see a listing of every process. At the top of the listing is a column labeled “TTY” (short for “Teletype” reflecting its historical roots) that contains the name of the controlling terminal. Most entries in this column will contain “?” meaning that the process has no controlling terminal (the process was not launched interactively), but others will contain a name like “pts/1” which refers to the device <code>/dev/pts/1</code>. The term “pty” means <em>pseudo-terminal</em>, the type of terminal used by terminal emulators rather than actual physical terminals.</p>
+<h2 id="noclobber">Noclobber</h2>
+<p>When the shell encounters a command with output redirection, such as:</p>
+<p><em>command</em> &gt; <em>file</em></p>
+<p>the first thing that happens is that the output stream is started by either creating <em>file</em> or, if <em>file</em> already exists, truncating it to zero length. This means that if <em>command</em> completely fails or doesn’t even exist, <em>file</em> will end up with zero length. This can be a safety issue for new users who might overwrite (or truncate) a valuable file.</p>
+<p>To avoid this, we can do one of two things. First we can use the “&gt;&gt;” operator instead of “&gt;” so that output will be appended to the end of <em>file</em> rather than the beginning. Second, we can set the “noclobber” shell option which prevents redirection from overwriting an existing file. To activate this, we enter:</p>
+<pre><code>set -o noclobber</code></pre>
+<pre><code>bash: file: cannot overwrite existing file</code></pre>
+<p>The effect of the <code>noclobber</code> option can be overridden by using the <code>&gt;|</code> redirection operator like so:</p>
+<p><em>command</em> <code>&gt;|</code> <em>file</em></p>
+<p>To turn off the noclobber option we enter this command:</p>
+<pre><code>set +o noclobber</code>

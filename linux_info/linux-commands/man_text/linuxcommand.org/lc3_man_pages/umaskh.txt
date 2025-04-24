@@ -1,0 +1,32 @@
+  
+NAME
+    umask - Display or set file mode mask.
+
+SYNOPSIS
+    umask [-p] [-S] [mode]
+
+DESCRIPTION
+    Display or set file mode mask.
+    
+    Sets the user file-creation mask to MODE.  If MODE is omitted, prints
+    the current value of the mask.
+    
+    If MODE begins with a digit, it is interpreted as an octal number;
+    otherwise it is a symbolic mode string like that accepted by chmod(1).
+    
+    Options:
+      -p	if MODE is omitted, output in a form that may be reused as input
+      -S	makes the output symbolic; otherwise an octal number is output
+    
+    Exit Status:
+    Returns success unless MODE is invalid or an invalid option is given.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

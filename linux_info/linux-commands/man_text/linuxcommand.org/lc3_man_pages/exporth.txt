@@ -1,0 +1,32 @@
+  
+NAME
+    export - Set export attribute for shell variables.
+
+SYNOPSIS
+    export [-fn] [name[=value] ...] or export -p
+
+DESCRIPTION
+    Set export attribute for shell variables.
+    
+    Marks each NAME for automatic export to the environment of subsequently
+    executed commands.  If VALUE is supplied, assign VALUE before exporting.
+    
+    Options:
+      -f	refer to shell functions
+      -n	remove the export property from each NAME
+      -p	display a list of all exported variables and functions
+    
+    An argument of `--' disables further option processing.
+    
+    Exit Status:
+    Returns success unless an invalid option is given or NAME is invalid.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

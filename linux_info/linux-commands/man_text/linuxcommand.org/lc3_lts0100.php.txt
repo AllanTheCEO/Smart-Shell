@@ -1,0 +1,161 @@
+kill -l</pre>
+
+<p>will print a list of the signals it supports.  Many are rather obscure,
+but several are handy to know:<br> <br> </p>
+
+<div style="overflow-x: auto"><table>
+  <tr>
+    <td>
+    <strong>Signal&nbsp;#</strong>
+    </td>
+
+    <td>
+    <strong>Name</strong>
+    </td>
+
+    <td>
+    <strong>Description</strong>
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>1</strong></td>
+
+    <td><strong>SIGHUP</strong></td>
+
+    <td>
+    Hang up signal. Programs can listen for
+    this signal and act upon it. This signal is sent
+    to processes running in a terminal when you close
+    the terminal.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>2</strong></td>
+
+    <td><strong>SIGINT</strong></td>
+
+    <td>
+    Interrupt signal. This signal is given
+    to processes to interrupt them.
+    Programs can process this signal and act upon
+    it. We can also issue this signal directly
+    by typing <code>Ctrl-c</code> in the terminal window
+    where the program is running.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>15</strong></td>
+
+    <td><strong>SIGTERM</strong></td>
+
+    <td>
+    Termination signal. This signal is given
+    to processes to terminate them. Again,
+    programs can process this signal and act upon
+    it. This is the default signal sent by the <code class=
+    "user">kill</code> command if no signal is
+    specified.
+    </td>
+  </tr>
+
+  <tr>
+    <td><strong>9</strong></td>
+
+    <td><strong>SIGKILL</strong></td>
+
+    <td>
+    Kill signal. This signal causes the
+    immediate termination of the process by the
+    Linux kernel. Programs cannot listen for this
+    signal.
+    </td>
+  </tr>
+</table></div>
+
+<p>Now let's suppose that we have a program that
+is hopelessly hung and we want
+to get rid of it. Here's what we do:</p>
+
+<ol>
+  <li>Use the <code class="user">ps</code> command to
+  get the process id (PID) of the process we want
+  to terminate.</li>
+
+  <li>Issue a <code class="user">kill</code> command
+  for that PID.</li>
+
+  <li>If the process refuses to terminate (i.e., it
+  is ignoring the signal), send increasingly harsh
+  signals until it does terminate.</li>
+</ol>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">ps x | grep bad_program</code>
+PID  TTY   STAT TIME COMMAND
+2931 pts/5 SN   0:00 bad_program
+
+[me@linuxbox me]$ <code class="cmd">kill -SIGTERM 2931</code>
+
+[me@linuxbox me]$ <code class="cmd">kill -SIGKILL 2931</code></div>
+
+<p>In the example above we used the <code class= "user">ps</code> command with
+the x option to list all of our processes (even those not launched from the
+current terminal). In addition, we piped the output of the <code
+class="user">ps</code> command into <code class="user">grep</code> to list only
+list the program we are interested in.  Next, we used <code
+class="user">kill</code> to issue a SIGTERM signal to the troublesome program.
+In actual practice, it is more common to do it in the following way since the
+default signal sent by <code class="user">kill</code> is SIGTERM and <code
+class= "user">kill</code> can also use the signal number instead of the signal
+name:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">kill 2931</code></div>
+
+<p>Then, if the process does not terminate, force
+it with the SIGKILL signal:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">kill -9 2931</code></div>
+
+<h2>That's It!</h2>
+
+<p>This concludes the "Learning the Shell" series of lessons. In the next
+series, "Writing Shell Scripts," we will look at how to automate tasks with the
+shell.</p>
+
+<h2>Further Reading</h2>
+
+<ul>
+
+  <li>For a more in-depth treatment of the topic, see Chapter 10 in <a
+  href="tlcl.php.html"><i>The Linux Command Line</i></a>.</li>
+
+  <li><a href="https://youtu.be/Q07PhW5sCEk"><i>1963 Timesharing: A Solution to
+  Computer Bottlenecks</i></a>, a fascinating YouTube video from the Computer History
+  Museum describing the first timesharing operating system and how it works.
+  It's basically the same method used by all modern computers.</li>
+
+</ul>
+
+    <div class="pagenav">
+      <a
+      href="lc3_lts0100.php.html#top">Top</a> | <a
+      href="lc3_lts0090.php.html">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="lc3_writing_shell_scripts.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

@@ -1,0 +1,647 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Linux Command Line Adventure: AWK</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="AWK Programming Tutorial">
+    <meta name="keywords" content="awk, programming, text processing, tutorial, reporting, data processing">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_adv_dialog.php.html">
+    <link rel="next" href="lc3_adv_othershells.php.html">
+    <link rel="contents" href="lc3_adventures.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_adv_dialog.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_othershells.php.html">Next</a>
+    </div>
+<h1 id="awk">AWK</h1>
+<p>One of the great things we can do in the shell is embed other programming languages within the body of our scripts. We have seen hints of this with the stream editor <code>sed</code>, and the arbitrary precision calculator program <code>bc</code>. By using the shell’s single quoting mechanism to isolate text from shell expansion, we can freely express other programming languages, provided we have a suitable language interpreter to execute them.</p>
+<p>In this adventure, we are going to look at one such program, <code>awk</code>.</p>
+<h2 id="history">History</h2>
+<p>The AWK programming language is truly one of the classic tools used in Unix. It dates back to the very earliest days of the Unix tradition. It was originally developed in the late 1970’s at Bell Telephone Laboratories by Alfred Aho, Peter Weinberger, and Brian Kernighan. The name “AWK” comes from the last names of the three authors. It underwent major improvements in 1985 with the release of <code>nawk</code> or “new awk.” It is that version that we still use today, though it is usually just called <code>awk</code>.</p>
+<h2 id="availability">Availability</h2>
+<p><code>awk</code> is a standard program found in most every Linux distribution. Two free/open source versions of the program are in common use. One is called <code>mawk</code> (short for Mike’s awk, named for its original author, Mike Brennan) and <code>gawk</code> (GNU awk). Both versions fully implement the 1985 <code>nawk</code> standard as well as add a variety of extensions. For our purposes, either version is fine, since we will be focusing on the traditional <code>nawk</code> features. In most distributions, the name <code>awk</code> is symbolically linked to either <code>mawk</code> or <code>gawk</code>.</p>
+<h2 id="so-whats-it-good-for">So, What’s it Good For?</h2>
+<p>Though AWK is fairly general purpose, it is really designed to create <em>filters</em>, that is, programs that accept standard input, transform data, and send it to standard output. In particular, AWK is very good at processing <em>columnar data</em>. This makes it a good choice for developing report generators, and tools that are used to re-format data. Since it has strong regular expression support, it’s good for very small text extraction and reformatting problems, too. Like <code>sed</code>, many AWK programs are just one line long.</p>
+<p>In recent years, AWK has fallen a bit out of fashion, being supplanted by other, newer, interpreted languages such as <em>Perl</em> and <em>python</em>, but AWK still has some advantages:</p>
+<ul>
+<li><p>It’s easy to learn. The language is not overly complex and has a syntax much like the C programming language, so learning it will be useful in the future when we study other languages and tools.</p></li>
+<li><p>It really excels at a solving certain types of problems.</p></li>
+</ul>
+<h2 id="how-it-works">How it Works</h2>
+<p>The structure of an AWK program is somewhat unique among programming languages. Programs consist of a series of one or more <em>pattern</em> and <em>action</em> pairs. Before we get into that though, let’s look at what the typical AWK program does.</p>
+<p>We already know that the typical AWK program acts as a filter. It reads data from standard input, and outputs filtered data on standard output. It reads data one <em>record</em> at a time. By default, a record is a line of text terminated by a newline character. Each time a record is read, AWK automatically separates the record into <em>fields</em>. Fields are, again by default, separated by whitespace. Each field is assigned to a variable, which is given a numeric name. Variable $1 is the first field, $2 is the second field, and so on. $0 signifies the entire record. In addition, a variable named NF is set containing the number of fields detected in the record.</p>
+<p>Pattern/action pairs are tests and corresponding actions to be performed on each record. If the pattern is true, then the action is performed. When the list of patterns is exhausted, the AWK program reads the next record and the process is repeated.</p>
+<p>Let’s try a really simple case. We’ll filter the output of an <code>ls</code> command:</p>
+<p><code>me@linuxbox ~ $ ls -l /usr/bin | awk '{print $0}'</code></p>
+<p>The AWK program is contained within the single quotes following the <code>awk</code> command. Single quotes are important because we do not want the shell to attempt any expansion on the AWK program, since its syntax has nothing to do with the shell. For example, <code>$0</code> represents the value of the entire record the AWK program read on standard input. In AWK, the <code>$</code> means “field” and is not a trigger for parameter expansion as it is in the shell.</p>
+<p>Our example program consists of a single action with no pattern present. This is allowed and it means that every record matches the pattern. When we run this command, it simply outputs every line of input much like the <code>cat</code> command.</p>
+<p>If we look at a typical line of output from <code>ls -l</code>, we see that it consists of 9 fields, each separated from its neighbor by one or more whitespace characters:</p>
+<p><code>-rwxr-xr-x 1 root root         265 Apr 17  2012 zxpdf</code></p>
+<p>Let’s add a pattern to our program so it will only print lines with more than 9 fields:</p>
+<p><code>me@linuxbox ~ $ ls -l /usr/bin | awk 'NF &gt; 9 {print $0}'</code></p>
+<p>We now see a list of symbolic links in <code>/usr/bin</code> since those directory listings contain more than 9 fields. This pattern will also match entries with file names containing embedded spaces, since they too will have more than 9 fields.</p>
+<h3 id="special-patterns">Special Patterns</h3>
+<p>Patterns in AWK can have many forms. There are conditional expressions like we have just seen. There are also regular expressions, as we would expect. There are two special patterns called BEGIN and END. The BEGIN pattern carries out its corresponding action before the first record is read. This is useful for initializing variables, or printing headers at the beginning of output. Likewise, the END pattern performs its corresponding action after the last record is read from the input file. This is good for outputting summaries once the input has been processed.</p>
+<p>Let’s try a more elaborate example. We’ll assume for the moment that the directory does not contain any file names with embedded spaces (though this is <em>never</em> a safe assumption). We could use the following script to list symbolic links:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="co"># Print a directory report</span></a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="fu">ls</span> -l /usr/bin <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="st">    BEGIN {</span></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="st">        print &quot;Directory Report&quot;</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="st">        print &quot;================&quot;</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="st">    }</span></a>
+<a class="sourceLine" id="cb1-10" title="10"></a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="st">    NF &gt; 9 {</span></a>
+<a class="sourceLine" id="cb1-12" title="12"><span class="st">        print $9, &quot;is a symbolic link to&quot;, $NF</span></a>
+<a class="sourceLine" id="cb1-13" title="13"><span class="st">    }</span></a>
+<a class="sourceLine" id="cb1-14" title="14"></a>
+<a class="sourceLine" id="cb1-15" title="15"><span class="st">    END {</span></a>
+<a class="sourceLine" id="cb1-16" title="16"><span class="st">        print &quot;=============&quot;</span></a>
+<a class="sourceLine" id="cb1-17" title="17"><span class="st">        print &quot;End Of Report&quot;</span></a>
+<a class="sourceLine" id="cb1-18" title="18"><span class="st">    }</span></a>
+<a class="sourceLine" id="cb1-19" title="19"></a>
+<a class="sourceLine" id="cb1-20" title="20"><span class="st">&#39;</span></a></code></pre></div>
+<p>In this example, we have 3 pattern/action pairs in our AWK program. The first is a BEGIN pattern and its action that prints the report header. We can spread the action over several lines, though the opening brace “{” of the action must appear on the same line as the pattern.</p>
+<p>The second pattern tests the current record to see if it contains more than 9 fields and, if true, the 9th field is printed, followed by some text and the final field in the record. Notice how this was done. The NF variable is preceded by a “$”, thus it refers to the NFth field rather than the value of NF itself.</p>
+<p>Lastly, we have an END pattern. Its corresponding action prints the “End Of Report” message once all of the lines of input have been read.</p>
+<h2 id="invocation">Invocation</h2>
+<p>There are three ways we can run an AWK program. We have already seen how to embed a program in a shell script by enclosing it inside single quotes. The second way is to place the awk script in its own file and call it from the <code>awk</code> program like so:</p>
+<p><code>awk -f program_file</code></p>
+<p>Lastly, we can use the <em>shebang</em> mechanism to make the AWK script a standalone program like a shell script:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#!/usr/bin/awk -f</span></a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="co"># Print a directory report</span></a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="cf">BEGIN</span> {</a>
+<a class="sourceLine" id="cb2-6" title="6">    <span class="kw">print</span> <span class="st">&quot;Directory Report&quot;</span></a>
+<a class="sourceLine" id="cb2-7" title="7">    <span class="kw">print</span> <span class="st">&quot;================&quot;</span></a>
+<a class="sourceLine" id="cb2-8" title="8">}</a>
+<a class="sourceLine" id="cb2-9" title="9"></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="bu">NF</span> <span class="op">&gt;</span> <span class="dv">9</span> {</a>
+<a class="sourceLine" id="cb2-11" title="11">    <span class="kw">print</span> <span class="dt">$9</span>, <span class="st">&quot;is a symbolic link to&quot;</span>, <span class="dt">$NF</span></a>
+<a class="sourceLine" id="cb2-12" title="12">}</a>
+<a class="sourceLine" id="cb2-13" title="13"></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="cf">END</span> {</a>
+<a class="sourceLine" id="cb2-15" title="15">    <span class="kw">print</span> <span class="st">&quot;=============&quot;</span></a>
+<a class="sourceLine" id="cb2-16" title="16">    <span class="kw">print</span> <span class="st">&quot;End Of Report&quot;</span></a>
+<a class="sourceLine" id="cb2-17" title="17">}</a></code></pre></div>
+<h2 id="the-language">The Language</h2>
+<p>Let’s take a look at the features and syntax of AWK programs.</p>
+<h3 id="program-format">Program Format</h3>
+<p>The formatting rules for AWK programs are pretty simple. Actions consist of one or more statements surrounded by braces ({}) with the starting brace appearing on the same line as the pattern. Blank lines are ignored. Comments begin with a pound sign (#) and may appear at the end of any line. Long statements may be broken into multiple lines using line continuation characters (a backslash followed immediately by a newline). Lists of parameters separated by commas may be broken after any comma. Here is an example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb3-1" title="1"><span class="cf">BEGIN</span> { <span class="co"># The action&#39;s opening brace must be on same line as the pattern</span></a>
+<a class="sourceLine" id="cb3-2" title="2"></a>
+<a class="sourceLine" id="cb3-3" title="3">  <span class="co"># Blank lines are ignored</span></a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5">  <span class="co"># Line continuation characters can be used to break long lines</span></a>
+<a class="sourceLine" id="cb3-6" title="6">  <span class="kw">print</span> \</a>
+<a class="sourceLine" id="cb3-7" title="7">    <span class="dt">$1</span>, <span class="co"># Parameter lists may be broken by commas</span></a>
+<a class="sourceLine" id="cb3-8" title="8">    <span class="dt">$2</span>, <span class="co"># Comments can appear at the end of any line</span></a>
+<a class="sourceLine" id="cb3-9" title="9">    <span class="dt">$3</span></a>
+<a class="sourceLine" id="cb3-10" title="10"></a>
+<a class="sourceLine" id="cb3-11" title="11">  <span class="co"># Multiple statements can appear on one line if separated by</span></a>
+<a class="sourceLine" id="cb3-12" title="12">  <span class="co"># a semicolon</span></a>
+<a class="sourceLine" id="cb3-13" title="13">  <span class="kw">print</span> <span class="st">&quot;String 1&quot;</span>; <span class="kw">print</span> <span class="st">&quot;String 2&quot;</span></a>
+<a class="sourceLine" id="cb3-14" title="14"></a>
+<a class="sourceLine" id="cb3-15" title="15">} <span class="co"># Closing brace for action</span></a></code></pre></div>
+<h3 id="patterns">Patterns</h3>
+<p>Here are the most common types of patterns used in AWK:</p>
+<h4 id="begin-and-end">BEGIN and END</h4>
+<p>As we saw earlier, the BEGIN and END patterns perform actions before the first record is read and after the last record is read, respectively.</p>
+<h4 id="relational-expression">relational-expression</h4>
+<p>Relational expressions are used to test values. For example, we can test for equivalence:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb4-1" title="1"><span class="dt">$1</span> <span class="op">==</span> <span class="st">&quot;Fedora&quot;</span></a></code></pre></div>
+<p>or for relations such as:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb5-1" title="1"><span class="dt">$3</span> <span class="op">&gt;=</span> <span class="dv">50</span></a></code></pre></div>
+<p>It is also possible to perform calculations like:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb6-1" title="1"><span class="dt">$1</span> <span class="op">*</span> <span class="dt">$2</span> <span class="op">&lt;</span> <span class="dv">100</span></a></code></pre></div>
+<h4 id="regular-expression">/regular-expression/</h4>
+<p>AWK supports extended regular expressions like those supported by <code>egrep</code>. Patterns using regular expression can be expressed in two ways. First, we can enclose a regular expression in slashes and a match is attempted on the entire record. If a finer level of control is needed, we can provide an expression containing the string to be matched using the following syntax:</p>
+<p>expression ~ /regexp/</p>
+<p>For example, if we only wanted to attempt a match on the third field in a record, we could do this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb7-1" title="1"><span class="dt">$3</span> <span class="op">~</span> <span class="ot">/^[</span><span class="ss">567</span><span class="ot">]/</span></a></code></pre></div>
+<p>From this, we can think of the “~” as meaning “matches” or “contains”, thus we can read the pattern above as “field 3 matches the regular expression <code>^[567]</code>”.</p>
+<h4 id="pattern-logical-operator-pattern">pattern logical-operator pattern</h4>
+<p>It is possible to combine patterns together using the logical operators || and &amp;&amp;, meaning OR and AND, respectively. For example, if we want to test a record to see if the first field is a number greater than 100 and the last field is the word “Debit”, we can do this:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb8-1" title="1"><span class="dt">$1</span> <span class="op">&gt;</span> <span class="dv">100</span> <span class="op">&amp;&amp;</span> <span class="dt">$NF</span> <span class="op">==</span> <span class="st">&quot;Debit&quot;</span></a></code></pre></div>
+<h4 id="pattern">! pattern</h4>
+<p>It is also possible to negate a pattern, so that only records that do not match a specified pattern are selected.</p>
+<h4 id="pattern-pattern">pattern, pattern</h4>
+<p>Two patterns separated by a comma is called a <em>range pattern</em>. With it, once the first pattern is matched, every subsequent record matches until the second pattern is matched. Thus, this type of pattern will select a range of records. Let’s imagine that we have a list of records and that the first field in each record contains a sequential record number:</p>
+<pre><code>0001    field   field   field
+0002    field   field   field
+0003    field   field   field</code></pre>
+<p>and so on. And let’s say that we want to extract records 0050 through 0100, inclusive. To do so, we could use a range pattern like this:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb10-1" title="1"><span class="dt">$1</span> <span class="op">==</span> <span class="st">&quot;0050&quot;</span>, <span class="dt">$1</span> <span class="op">==</span> <span class="st">&quot;0100&quot;</span></a></code></pre></div>
+<h3 id="fields-and-records">Fields and Records</h3>
+<p>The AWK language is so useful because of its ability to automatically separate fields and records. While the default is to separate records by newlines and fields by whitespace, this can be adjusted. The <code>/etc/passwrd</code> file, for example, does not separate its fields with whitespace; rather, it uses colons (:). AWK has a built in variable named FS (field separator) that defines the delimiter separating fields in a record. Here is an AWK program that will list the user ID and the user’s name from the file:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb11-1" title="1"><span class="cf">BEGIN</span> { <span class="bu">FS</span> <span class="op">=</span> <span class="st">&quot;:&quot;</span> }</a>
+<a class="sourceLine" id="cb11-2" title="2">{ <span class="kw">print</span> <span class="dt">$1</span>, <span class="dt">$5</span> }</a></code></pre></div>
+<p>This program has two pattern/action pairs. The first action is performed before the first record is read and sets the input field separator to be the colon character.</p>
+<p>The second pair contains only an action and no pattern. This will match every record. The action prints the first and fifth fields from each record.</p>
+<p>The FS variable may contain a regular expression, so really powerful methods can be used to separate fields.</p>
+<p>Records are normally separated by newlines, but this can be adjusted too. The built-in variable RS (record separator) defines how records are delimited. A common type of record consists of multiple lines of data separated by one or more blank lines. AWK has a shortcut for specifying the record separator in this case. We just define RS to be an empty string:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb12-1" title="1"><span class="bu">RS</span> <span class="op">=</span> <span class="st">&quot;&quot;</span></a></code></pre></div>
+<p>Note that when this is done, newlines, in addition to any other specified characters, will always be treated as field separators regardless of how the FS variable is set. When we process multi-line records, we will often want to treat each line as a separate field, so doing this is often desirable:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb13-1" title="1"><span class="cf">BEGIN</span> { <span class="bu">FS</span> <span class="op">=</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>; <span class="bu">RS</span> <span class="op">=</span> <span class="st">&quot;&quot;</span> }</a></code></pre></div>
+<h3 id="variables-and-data-types">Variables and Data Types</h3>
+<p>AWK treats data as either a string or a number, depending on its context. This can sometimes become an issue with numbers. AWK will often treat numbers as strings unless something specifically “numeric” is done with them.</p>
+<p>We can force AWK to treat a string of digits as a number by performing some arithmetic on it. This is most easily done by adding zero to the number:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb14-1" title="1">n <span class="op">=</span> <span class="dv">105</span> <span class="op">+</span> <span class="dv">0</span></a></code></pre></div>
+<p>Likewise, we can get AWK to treat a string of digits as a string by concatenating an empty string:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb15-1" title="1">s <span class="op">=</span> <span class="dv">105</span> <span class="st">&quot;&quot;</span></a></code></pre></div>
+<p>String concatenation in AWK is performed using a space character as an operator - an unusual feature of the language.</p>
+<p>Variables are created as they are encountered (no prior declaration is required), just like the shell. Variable names in AWK follow the same rules as the shell. Names may consist of letters, numbers, and underscore characters. Like the shell, the first character of a variable name must not be a number. Variable names are case sensitive.</p>
+<h3 id="built-in-variables">Built-in Variables</h3>
+<p>We have already looked at a few of AWK’s built-in variables. Here is a list of the most useful ones:</p>
+<h4 id="fs---field-separator">FS - Field separator</h4>
+<p>This variable contains a regular expression that is used to separate a record into fields. Its initial value separates fields with whitespace. AWK supports a shortcut to return this variable to its original value:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb16-1" title="1"><span class="bu">FS</span> <span class="op">=</span> <span class="st">&quot; &quot;</span></a></code></pre></div>
+<p>The value of FS can also be set using the -F option on the command line. For example, we can quickly extract the user name and UID fields from the <code>/etc/passwd</code> file like this:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb17-1" title="1">awk <span class="op">-</span>F<span class="op">:</span> &#39;{<span class="kw">print</span> <span class="dt">$1</span>, <span class="dt">$3</span>}&#39; <span class="op">/</span>etc<span class="op">/</span>passwd</a></code></pre></div>
+<h4 id="nf---number-of-fields">NF - Number of fields</h4>
+<p>This variable updates each time a record is read. We can easily access the last field in the record by referring to $NF.</p>
+<h4 id="nr---record-number">NR - Record number</h4>
+<p>This variable increments each time a record is read, thus it contains the total number of records read from the input stream. Using this variable, we could easily simulate a <code>wc -l</code> command with:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb18-1" title="1">awk &#39;END {<span class="kw">print</span> <span class="bu">NR</span>}&#39;</a></code></pre></div>
+<p>or number the lines in a file with:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb19-1" title="1">awk &#39;{<span class="kw">print</span> <span class="bu">NR</span>, <span class="dt">$0</span>}&#39;</a></code></pre></div>
+<h4 id="ofs---output-field-separator">OFS - Output field separator</h4>
+<p>This string is used to separate fields when printing output. The default is a single space. Setting this can be handy when reformatting data. For example, we could easily change a table of values to a CSV (comma separated values) file by setting OFS to equal “,”. To demonstrate, here is a program that reads our directory listing and outputs a CSV stream:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb20-1" title="1">ls <span class="op">-</span>l <span class="op">|</span> awk &#39;BEGIN {<span class="bu">OFS</span> <span class="op">=</span> <span class="st">&quot;,&quot;</span>}</a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="bu">NF</span> <span class="op">==</span> <span class="dv">9</span> {<span class="kw">print</span> <span class="dt">$1</span>,<span class="dt">$2</span>,<span class="dt">$3</span>,<span class="dt">$4</span>,<span class="dt">$5</span>,<span class="dt">$6</span>,<span class="dt">$7</span>,<span class="dt">$8</span>,<span class="dt">$9</span>}&#39;</a></code></pre></div>
+<p>We set the pattern to only match input lines containing 9 fields. This eliminates symbolic links and other weird file names from the data to be processed.</p>
+<p>Each line of the resulting output would resemble this:</p>
+<p><code>-rwxr-xr-x,1,root,root,100984,Jan,11,2015,a2p</code></p>
+<p>If we had omitted setting OFS, the print statement would use the default value (a single space):</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb21-1" title="1">ls <span class="op">-</span>l <span class="op">|</span> awk &#39;NF <span class="op">==</span> <span class="dv">9</span> {<span class="kw">print</span> <span class="dt">$1</span>,<span class="dt">$2</span>,<span class="dt">$3</span>,<span class="dt">$4</span>,<span class="dt">$5</span>,<span class="dt">$6</span>,<span class="dt">$7</span>,<span class="dt">$8</span>,<span class="dt">$9</span>}&#39;</a></code></pre></div>
+<p>Which would result in each line of output resembling this:</p>
+<p><code>-rwxr-xr-x 1 root root 100984 Jan 11 2015 a2p</code></p>
+<h4 id="ors---output-record-separator">ORS - Output record separator</h4>
+<p>This is the string used to separate records when printing output. The default is a newline character. We could use this variable to easily double-space a file by setting ORS to equal two newlines:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb22-1" title="1">ls <span class="op">-</span>l <span class="op">|</span> awk &#39;BEGIN {<span class="bu">ORS</span> <span class="op">=</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>} {<span class="kw">print</span>}&#39;</a></code></pre></div>
+<h4 id="rs---record-separator">RS - Record separator</h4>
+<p>When reading input, AWK interprets this string as the end of record marker. The default value is a newline.</p>
+<h4 id="filename">FILENAME</h4>
+<p>If AWK is reading its input from a file specified on the command line, then this variable contains the name of the file.</p>
+<h4 id="fnr---file-record-number">FNR - File record number</h4>
+<p>When reading input from a file specified on the command line, AWK sets this variable to the number of the record read from that file.</p>
+<h3 id="arrays">Arrays</h3>
+<p>Single-dimensional arrays are supported in AWK. Data contained in array elements may be either numbers or strings. Array indexes may also be either strings (for <em>associative arrays</em>) or numbers.</p>
+<p>Assigning values to array elements is done like this:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb23-1" title="1">a[<span class="dv">1</span>] <span class="op">=</span> <span class="dv">5</span>        <span class="co"># Numeric index</span></a>
+<a class="sourceLine" id="cb23-2" title="2">a[<span class="st">&quot;five&quot;</span>] <span class="op">=</span> <span class="dv">5</span>   <span class="co"># String index</span></a></code></pre></div>
+<p>Though AWK only supports single dimension arrays (like bash), it also provides a mechanism to simulate multi-dimensional arrays. When assigning an array index, it is possible to use this form to represent more than one dimension:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb24-1" title="1">a[j,k] <span class="op">=</span> <span class="st">&quot;foo&quot;</span></a></code></pre></div>
+<p>When AWK sees this construct, it builds an index consisting of the strings <code>j</code> and <code>k</code> separated by the contents of the built-in variable SUBSEP. By default, SUBSEP is set to “\034” (character 34 octal, 28 decimal). This ASCII control code is fairly obscure and thus unlikely to appear in ordinary text, so it’s pretty safe for AWK to use.</p>
+<p>Note that both <code>mawk</code> and <code>gawk</code> implement language extensions to support multi-dimensional arrays in a more formal way. Consult their respective documentation for details. If a portability is needed, use the method above rather than the implementation-specific feature.</p>
+<p>We can delete arrays and array elements this way:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">delete</span> a[i]     <span class="co"># delete a single element</span></a>
+<a class="sourceLine" id="cb25-2" title="2"><span class="kw">delete</span> a        <span class="co"># delete array a</span></a></code></pre></div>
+<h3 id="arithmetic-and-logical-expressions">Arithmetic and Logical Expressions</h3>
+<p>AWK supports a pretty complete set of arithmetic and logical operators:</p>
+<div style="overflow-x:auto"><table style="width:99%;">
+<caption>Arithmetic and logical operators</caption>
+<colgroup>
+<col style="width: 20%" >
+<col style="width: 77%" >
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Operators</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Assignment</td>
+<td><code>=  +=  -=  *=  /=  %=  ^=  ++  --</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Relational</td>
+<td><code>&lt;  &gt;   &lt;=  &gt;=  ==  !=</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Arithmetic</td>
+<td><code>+  -   *   /   %   ^</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Matching</td>
+<td><code>~  !~</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Array</td>
+<td><code>in</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Logical</td>
+<td><code>||  &amp;&amp;</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>These operators behave like those in the shell; however, unlike the shell, which is limited to integer arithmetic, AWK arithmetic is floating point. This makes AWK a good way to do more complex arithmetic than the shell alone.</p>
+<p>Arithmetic and logical expressions can be used in both patterns and actions. Here’s an example that counts the number of lines containing exactly 9 fields:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb26-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;NF <span class="op">==</span> <span class="dv">9</span> {count<span class="op">++</span>} <span class="cf">END</span> {<span class="kw">print</span> count}&#39;</a></code></pre></div>
+<p>This AWK program consists of 2 pattern/action pairs. The first one matches lines where the number of fields is equal to 9. The action creates and increments a variable named <code>count</code>. Each time a line with exactly 9 fields is encountered in the input stream, <code>count</code> is incremented by 1.</p>
+<p>The second pair matches when the end of the input stream is reached and the resulting action prints the final value of <code>count</code>.</p>
+<p>Using this basic form, let’s try something a little more useful; a program that calculates the total size of the files in the list:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb27-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;NF <span class="op">&gt;=</span><span class="dv">9</span> {total <span class="op">+=</span> <span class="dt">$5</span>} <span class="cf">END</span> {<span class="kw">print</span> total}&#39;</a></code></pre></div>
+<p>Here is a slight variation (with shortened variable names to make it a little more concise) that calculates the average size of the files:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb28-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;NF <span class="op">&gt;=</span><span class="dv">9</span> {c<span class="op">++</span>; t <span class="op">+=</span> <span class="dt">$5</span>} <span class="cf">END</span> {<span class="kw">print</span> t <span class="op">/</span> c}&#39;</a></code></pre></div>
+<h3 id="flow-control">Flow Control</h3>
+<p>AWK has many of the same flow control statements that we’ve seen previously in the shell (with the notable exception of case, though we can think of an AWK program as one big case statement inside a loop) but the syntax more closely resembles that of the C programming language. Actions in AWK often contain complex logic consisting of various statements and flow control instructions. A statement in this context can be a simple statement like:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb29-1" title="1">a <span class="op">=</span> a <span class="op">+</span> <span class="dv">1</span></a></code></pre></div>
+<p>Or a compound statement enclosed in braces such as:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb30-1" title="1">{a <span class="op">=</span> a <span class="op">+</span> <span class="dv">1</span>; b <span class="op">=</span> b <span class="op">*</span> a}</a></code></pre></div>
+<h4 id="if-expression-statement">if ( <em>expression</em> ) <em>statement</em><br >
+</h4>
+<p>if ( <em>expression</em> ) <em>statement</em> else <em>statement</em></p>
+<p>The <em>if/then/else</em> construct in AWK behaves the way we would expect. AWK evaluates an expression in parenthesis and if the result is non-zero, the statement is carried out. We can see this behavior by executing the following commands:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb31-1" title="1">awk &#39;BEGIN {<span class="cf">if</span> (<span class="dv">1</span>) <span class="kw">print</span> <span class="st">&quot;true&quot;</span>; <span class="cf">else</span> <span class="kw">print</span> <span class="st">&quot;false&quot;</span>}&#39;</a>
+<a class="sourceLine" id="cb31-2" title="2">awk &#39;BEGIN {<span class="cf">if</span> (<span class="dv">0</span>) <span class="kw">print</span> <span class="st">&quot;true&quot;</span>; <span class="cf">else</span> <span class="kw">print</span> <span class="st">&quot;false&quot;</span>}&#39;</a></code></pre></div>
+<p>Relational expressions such as <code>(a &lt; b</code>) will also evaluate to 0 or 1.</p>
+<p>In the example below, we construct a primitive report generator that counts the number of lines that have been output and, if the number exceeds the length of a page, a formfeed character is output and the line counter is reset:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb32-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;</a>
+<a class="sourceLine" id="cb32-2" title="2"><span class="cf">BEGIN</span> {</a>
+<a class="sourceLine" id="cb32-3" title="3">    line_count <span class="op">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb32-4" title="4">    page_length <span class="op">=</span> <span class="dv">60</span></a>
+<a class="sourceLine" id="cb32-5" title="5">}</a>
+<a class="sourceLine" id="cb32-6" title="6"></a>
+<a class="sourceLine" id="cb32-7" title="7">{</a>
+<a class="sourceLine" id="cb32-8" title="8">    line_count<span class="op">++</span></a>
+<a class="sourceLine" id="cb32-9" title="9">    <span class="cf">if</span> (line_count <span class="op">&lt;</span> page_length)</a>
+<a class="sourceLine" id="cb32-10" title="10">        <span class="kw">print</span></a>
+<a class="sourceLine" id="cb32-11" title="11">    <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb32-12" title="12">        <span class="kw">print</span> <span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span> <span class="dt">$0</span></a>
+<a class="sourceLine" id="cb32-13" title="13">        line_count <span class="op">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb32-14" title="14">    }</a>
+<a class="sourceLine" id="cb32-15" title="15">}</a>
+<a class="sourceLine" id="cb32-16" title="16">&#39;</a></code></pre></div>
+<p>While the above might be the most obvious way to code this, our knowledge of how evaluations are actually performed, allows us to code this example in a slightly more concise way by using some arithmetic:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb33-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;</a>
+<a class="sourceLine" id="cb33-2" title="2"><span class="cf">BEGIN</span> {</a>
+<a class="sourceLine" id="cb33-3" title="3">    page_length <span class="op">=</span> <span class="dv">60</span></a>
+<a class="sourceLine" id="cb33-4" title="4">}</a>
+<a class="sourceLine" id="cb33-5" title="5"></a>
+<a class="sourceLine" id="cb33-6" title="6">{</a>
+<a class="sourceLine" id="cb33-7" title="7">    <span class="cf">if</span> (<span class="bu">NR</span> <span class="op">%</span> page_length)</a>
+<a class="sourceLine" id="cb33-8" title="8">        <span class="kw">print</span></a>
+<a class="sourceLine" id="cb33-9" title="9">    <span class="cf">else</span></a>
+<a class="sourceLine" id="cb33-10" title="10">        <span class="kw">print</span> <span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span> <span class="dt">$0</span></a>
+<a class="sourceLine" id="cb33-11" title="11">}</a>
+<a class="sourceLine" id="cb33-12" title="12">&#39;</a></code></pre></div>
+<p>Here we exploit the fact that the page boundaries will always fall on even multiples of the page length. If <code>page_length</code> equals 60 then the page boundaries will fall on lines 60, 120, 180, 240, and so on. All we have to do is calculate the remainder (modulo) on the number of lines processed in the input stream (<code>NR</code>) divided by the page length and see if the result is zero, and thus an even multiple.</p>
+<p>AWK supports an expression that’s useful for testing membership in an array:</p>
+<p><code>(var in array)</code></p>
+<p>where <em>var</em> is an index value and <em>array</em> is an array variable. Using this expression tests if the index <em>var</em> exists in the specified array. This method of testing for array membership avoids the problem of inadvertently creating the index by testing it with methods such as:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb34-1" title="1"><span class="cf">if</span> (array[var] <span class="op">!=</span> <span class="st">&quot;&quot;</span>)</a></code></pre></div>
+<p>When the test is attempted this way, the array element <code>var</code> is created, since AWK creates variables simply by their use. When the <code>(var in array)</code> form is used, no variable is created.</p>
+<p>To test for array membership in a multi-dimensional array, the following syntax is used:</p>
+<p><code>((var1,var2) in array)</code></p>
+<h4 id="for-expression-expression-expression-statement">for ( <em>expression</em> ; <em>expression</em> ; <em>expression</em> ) <em>statement</em></h4>
+<p>The <em>for</em> loop in AWK closely resembles the corresponding one in the C programming language. It is comprised of 3 expressions. The first expression is usually used to initialize a counter variable, the second defines when the loop is completed, and the third defines how the loop is incremented or advanced at each iteration. Here is a demonstration using a for loop to print fields in reverse order:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb35-1" title="1">ls <span class="op">-</span>l <span class="op">|</span> awk &#39;{s <span class="op">=</span> <span class="st">&quot;&quot;</span>; <span class="cf">for</span> (i <span class="op">=</span> <span class="bu">NF</span>; i <span class="op">&gt;</span> <span class="dv">0</span>; i<span class="op">--</span>) s <span class="op">=</span> s <span class="dt">$i</span> <span class="bu">OFS</span>; <span class="kw">print</span> s}&#39;</a></code></pre></div>
+<p>In this example we create an empty string named <code>s</code>, then begin a loop that starts with the number of fields in the current input line (<code>i = NF</code>) and counts down (<code>i--</code>) until we reach the first field (<code>i &gt; 0</code>). Each iteration of the loop causes the current field and the output field separator to be concatenated to the string <code>s</code> (<code>s  = s $i OFS</code>). After the loop concludes, we print the resulting value of string <code>s</code>.</p>
+<h4 id="for-var-in-array-statement">for ( <em>var</em> in <em>array</em> ) <em>statement</em></h4>
+<p>AWK has a special flow control statement for traversing the indexes of an array. Here is an example of what it does:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb36-1" title="1">awk &#39;BEGIN {<span class="cf">for</span> (i<span class="op">=</span><span class="dv">0</span>; i<span class="op">&lt;</span><span class="dv">10</span>; i<span class="op">++</span>) a[i]<span class="op">=</span><span class="st">&quot;foo&quot;</span>; <span class="cf">for</span> (i <span class="kw">in</span> a) <span class="kw">print</span> i}&#39;</a></code></pre></div>
+<p>In this program, we have a single BEGIN pattern/action that performs the entire exercise without the need for an input stream. We first create an array <code>a</code> and add 10 elements, each containing the string “foo”. Next, we use <code>for (i in a)</code> to loop through all the indexes in the array and print each index. It is important to note that the order of the arrays in memory is <em>implementation dependent</em>, meaning that it could be anything, so we cannot rely on the results being in any particular order. We’ll look at how to address this problem a little later.</p>
+<p>Even without sorted order, this type of loop is useful if we need to process every element in an array. For example, we could delete every element of an array like this:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb37-1" title="1"><span class="cf">for</span> (i <span class="kw">in</span> a) <span class="kw">delete</span> a[i]</a></code></pre></div>
+<h4 id="while-expression-statement">while ( <em>expression</em> ) <em>statement</em><br >
+</h4>
+<p>do <em>statement</em> while ( <em>expression</em> )</p>
+<p>The <em>while</em> and <em>do</em> loops in AWK are pretty straightforward. We determine a condition that must be maintained for the loop to continue. We can demonstrate this using our field reversal program (we’ll type it out in multiple lines to make the logic easier to follow):</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb38-1" title="1">ls <span class="op">-</span>l <span class="op">|</span> awk &#39;{</a>
+<a class="sourceLine" id="cb38-2" title="2">    s <span class="op">=</span> <span class="st">&quot;&quot;</span></a>
+<a class="sourceLine" id="cb38-3" title="3">    i <span class="op">=</span> <span class="bu">NF</span></a>
+<a class="sourceLine" id="cb38-4" title="4">    <span class="cf">while</span> (i <span class="op">&gt;</span> <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb38-5" title="5">        s <span class="op">=</span> s <span class="dt">$i</span> <span class="bu">OFS</span></a>
+<a class="sourceLine" id="cb38-6" title="6">        i<span class="op">--</span></a>
+<a class="sourceLine" id="cb38-7" title="7">    }</a>
+<a class="sourceLine" id="cb38-8" title="8">    <span class="kw">print</span> s</a>
+<a class="sourceLine" id="cb38-9" title="9">}&#39;</a></code></pre></div>
+<p>The do loop is similar to the while loop; however the do loop will always execute its statement at least once, whereas the while loop will only execute its statement if the initial condition is met.</p>
+<h4 id="break">break<br >
+</h4>
+<p>continue<br >
+next</p>
+<p>The <code>break</code>, <code>continue</code>, and <code>next</code> keywords are used to “escape” from loops. <code>break</code> and <code>continue</code> behave like their corresponding commands in the shell. <code>continue</code> tells AWK to stop and continue with the next iteration of the current loop. <code>break</code> tells AWK to exit the current loop entirely. The <code>next</code> keyword tells AWK to skip the remainder of the current program and begin processing the next record of input.</p>
+<h4 id="exit-expression">exit <em>expression</em></h4>
+<p>As with the shell, we can tell AWK to exit and provide an optional expression that sets AWK’s exit status.</p>
+<h3 id="regular-expressions">Regular Expressions</h3>
+<p>Regular expressions in AWK work like those in <code>egrep</code>, a topic we covered in Chapter 19 of TLCL. It is important to note that back references are not supported and that some versions of AWK (most notably mawk versions prior to 1.3.4) do not support POSIX character classes.</p>
+<p>Regular expressions are most often used in patterns, but they are also used in some of the built-in variables such as FS and RS, and they have various roles in the string functions which we will discuss shortly.</p>
+<p>Let’s try using some simple regular expressions to tally the different file types in our directory listing (we’ll make clever use of an associative array too).</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb39-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;</a>
+<a class="sourceLine" id="cb39-2" title="2"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">-</span><span class="ot">/</span> {t[<span class="st">&quot;Regular Files&quot;</span>]<span class="op">++</span>}</a>
+<a class="sourceLine" id="cb39-3" title="3"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">d</span><span class="ot">/</span> {t[<span class="st">&quot;Directories&quot;</span>]<span class="op">++</span>}</a>
+<a class="sourceLine" id="cb39-4" title="4"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">l</span><span class="ot">/</span> {t[<span class="st">&quot;Symbolic Links&quot;</span>]<span class="op">++</span>}</a>
+<a class="sourceLine" id="cb39-5" title="5"><span class="cf">END</span> {<span class="cf">for</span> (i <span class="kw">in</span> t) <span class="kw">print</span> i <span class="st">&quot;:</span><span class="sc">\t</span><span class="st">&quot;</span> t[i]}</a>
+<a class="sourceLine" id="cb39-6" title="6">&#39;</a></code></pre></div>
+<p>In this program, we use regular expressions to identify the first character of the first field and increment the corresponding element in array <code>t</code>. Since we can use strings as array indexes in AWK, we spell out the file type as the index. This makes printing the results in the END action easy, as we only have to traverse the array with <code>for (i in t)</code> to obtain both the name and the accumulated total for each type.</p>
+<h3 id="output-functions">Output Functions</h3>
+<h4 id="print-expr1-expr2-expr3">print <em>expr1, expr2, expr3,…</em></h4>
+<p>As we have seen, <code>print</code> accepts a comma-separated list of arguments. An argument can be any valid expression; however, if an expression contains a relational operator, the entire argument list must be enclosed in parentheses.</p>
+<p>The commas are important, because they tell AWK to separate output items with the output field separator (OFS). If omitted, AWK will interpret the members of the argument list as a single expression of string concatenation.</p>
+<h4 id="printfformat-expr1-expr2-expr3">printf(<em>format, expr1, expr2, expr3,…</em>)</h4>
+<p>In AWK, <code>printf</code> is like the corresponding shell built-in (see TLCL Chapter 21 for details). It formats its list of arguments based the contents of a <em>format string</em>. Here is an example where we output a list of files and their sizes in kilobytes:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb40-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;{<span class="kw">printf</span>(<span class="st">&quot;%-30s%8.2fK</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="dt">$9</span>, <span class="dt">$5</span> <span class="op">/</span> <span class="dv">1024</span>)}&#39;</a></code></pre></div>
+<h3 id="writing-to-files-and-pipelines">Writing to Files and Pipelines</h3>
+<p>In addition to sending output to stdout, we can also send output to files and pipelines.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb41-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;</a>
+<a class="sourceLine" id="cb41-2" title="2"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">-</span><span class="ot">/</span> {<span class="kw">print</span> <span class="dt">$0</span> <span class="op">&gt;</span> <span class="st">&quot;regfiles.txt&quot;</span>}</a>
+<a class="sourceLine" id="cb41-3" title="3"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">d</span><span class="ot">/</span> {<span class="kw">print</span> <span class="dt">$0</span> <span class="op">&gt;</span> <span class="st">&quot;directories.txt&quot;</span>}</a>
+<a class="sourceLine" id="cb41-4" title="4"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">l</span><span class="ot">/</span> {<span class="kw">print</span> <span class="dt">$0</span> <span class="op">&gt;</span> <span class="st">&quot;symlinks.txt&quot;</span>}</a>
+<a class="sourceLine" id="cb41-5" title="5">&#39;</a></code></pre></div>
+<p>Here we see a program that writes separate lists of regular files, directories, and symbolic links.</p>
+<p>AWK also provides a <code>&gt;&gt;</code> operator for appending to files, but since AWK only opens a file once per program execution, the <code>&gt;</code> causes AWK to open the file at the beginning of execution and truncate the file to zero length much like we see with the shell. However, once the file is open, it stays open and each subsequent write appends contents to the file. The <code>&gt;&gt;</code> operator behaves in the same manner, but when the file is initially opened it is not truncated and all content is appended (i.e., it preserves the contents of an existing file).</p>
+<p>AWK also allows output to be sent to pipelines. Consider this program, where we read our directory into an array and then output the entire array:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb42-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;</a>
+<a class="sourceLine" id="cb42-2" title="2"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">-</span><span class="ot">/</span> {a[<span class="dt">$9</span>] <span class="op">=</span> <span class="dt">$5</span>}</a>
+<a class="sourceLine" id="cb42-3" title="3"><span class="cf">END</span> {<span class="cf">for</span> (i <span class="kw">in</span> a)</a>
+<a class="sourceLine" id="cb42-4" title="4">    {<span class="kw">print</span> a[i] <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span> i}</a>
+<a class="sourceLine" id="cb42-5" title="5">}</a>
+<a class="sourceLine" id="cb42-6" title="6">&#39;</a></code></pre></div>
+<p>If we run this program, we notice that the array is output in a seemingly random “implementation dependent” order. To correct this, we can pipe the output through <code>sort</code>:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb43-1" title="1">ls <span class="op">-</span>l <span class="op">/</span>usr<span class="op">/</span>bin <span class="op">|</span> awk &#39;</a>
+<a class="sourceLine" id="cb43-2" title="2"><span class="dt">$1</span> <span class="op">~</span> <span class="ot">/^</span><span class="ss">-</span><span class="ot">/</span> {a[<span class="dt">$9</span>] <span class="op">=</span> <span class="dt">$5</span>}</a>
+<a class="sourceLine" id="cb43-3" title="3"><span class="cf">END</span> {<span class="cf">for</span> (i <span class="kw">in</span> a)</a>
+<a class="sourceLine" id="cb43-4" title="4">    {<span class="kw">print</span> a[i] <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span> i <span class="op">|</span> <span class="st">&quot;sort -nr&quot;</span>}</a>
+<a class="sourceLine" id="cb43-5" title="5">}</a>
+<a class="sourceLine" id="cb43-6" title="6">&#39;</a></code></pre></div>
+<h3 id="reading-data">Reading Data</h3>
+<p>As we have seen, AWK programs most often process data supplied from standard input. However, we can also specify input files on the command line:</p>
+<p><code>awk 'program' file...</code></p>
+<p>Knowing this, we can, for example, create an AWK program that simulates the <code>cat</code> command:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb44-1" title="1">awk &#39;{<span class="kw">print</span> <span class="dt">$0</span>}&#39; file1 file2 file3</a></code></pre></div>
+<p>or <code>wc</code>:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb45-1" title="1">awk &#39;{chars <span class="op">+=</span> <span class="fu">length</span>(<span class="dt">$0</span>); words <span class="op">+=</span> <span class="bu">NF</span>}</a>
+<a class="sourceLine" id="cb45-2" title="2">    <span class="cf">END</span> {<span class="kw">print</span> <span class="bu">NR</span>, words, chars <span class="op">+</span> <span class="bu">NR</span>}&#39; file1</a></code></pre></div>
+<p>This program has a couple of interesting features. First, it uses the AWK string function <code>length</code> to obtain the number of characters in a string. This is one of many string functions that AWK provides, and we will talk more about them in a bit. The second feature is the <code>chars + NR</code> expression at the end. This is done because <code>length($0)</code> does not count the newline character at the end of each line, so we have to add them to make the character count come out the same as real <code>wc</code>.</p>
+<p>Even if we don’t include a filenames on the command line for AWK to input, we can tell AWK to read data from a file specified from within a program. Normally we don’t need to do this, but there are some cases where this might be handy. For example, if we wanted to insert one file inside of another, we could use the <code>getline</code> function in AWK. Here’s an example that adds a header and footer to an existing body text file:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb46-1" title="1">awk &#39;</a>
+<a class="sourceLine" id="cb46-2" title="2">    <span class="cf">BEGIN</span> {</a>
+<a class="sourceLine" id="cb46-3" title="3">        <span class="cf">while</span> (<span class="kw">getline</span> <span class="op">&lt;</span><span class="st">&quot;header.txt&quot;</span> <span class="op">&gt;</span> <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb46-4" title="4">            <span class="kw">print</span> <span class="dt">$0</span></a>
+<a class="sourceLine" id="cb46-5" title="5">        }</a>
+<a class="sourceLine" id="cb46-6" title="6">    }</a>
+<a class="sourceLine" id="cb46-7" title="7">    {<span class="kw">print</span>}</a>
+<a class="sourceLine" id="cb46-8" title="8">    <span class="cf">END</span> {</a>
+<a class="sourceLine" id="cb46-9" title="9">        <span class="cf">while</span> (<span class="kw">getline</span> <span class="op">&lt;</span><span class="st">&quot;footer.txt&quot;</span> <span class="op">&gt;</span> <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb46-10" title="10">            <span class="kw">print</span> <span class="dt">$0</span></a>
+<a class="sourceLine" id="cb46-11" title="11">        }</a>
+<a class="sourceLine" id="cb46-12" title="12">    } </a>
+<a class="sourceLine" id="cb46-13" title="13">&#39; <span class="op">&lt;</span> body.txt <span class="op">&gt;</span> finished_file.txt</a></code></pre></div>
+<p><code>getline</code> is quite flexible and can be used in a variety of ways:</p>
+<h4 id="getline">getline</h4>
+<p>In its most basic form, <code>getline</code> reads the next record from the current input stream. <code>$0</code>, <code>NF</code>, <code>NR</code>, and <code>FNR</code> are set.</p>
+<h4 id="getline-var">getline <em>var</em></h4>
+<p>Reads the next record from the current input stream and assigns its contents to the variable <em>var</em>. <em>var</em>, <code>NR</code>, and <code>FNR</code> are set.</p>
+<h4 id="getline-file">getline &lt;<em>file</em></h4>
+<p>Reads a record from <em>file</em>. <code>$0</code> and <code>NF</code> are set. It’s important to check for errors when reading from files. In the earlier example above, we specified a while loop as follows:</p>
+<p><code>while (getline &lt;&quot;header.txt&quot; &gt; 0)</code></p>
+<p>As we can see, <code>getline</code> is reading from the file <code>header.txt</code>, but what does the “&gt; 0” mean? The answer is that, like most functions, <code>getline</code> returns a value. A positive value means success, zero means EOF (end of file), and a negative value means some other file-related problem, such as file not found has occurred. If we did not check the return value, we might end up with an infinite loop.</p>
+<h4 id="getline-var-file">getline <em>var</em> &lt;<em>file</em></h4>
+<p>Reads the next record from <em>file</em> and assigns its contents to the variable <em>var</em>. Only <em>var</em> is set.</p>
+<h4 id="command-getline"><em>command</em> | getline</h4>
+<p>Reads the next record from the output of <em>command</em>. <code>$0</code> and <code>NF</code> are set. Here is an example where we use AWK to parse the output of the <code>date</code> command:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb47-1" title="1">awk &#39;</a>
+<a class="sourceLine" id="cb47-2" title="2">    <span class="cf">BEGIN</span> {</a>
+<a class="sourceLine" id="cb47-3" title="3">        <span class="st">&quot;date&quot;</span> <span class="op">|</span> <span class="kw">getline</span></a>
+<a class="sourceLine" id="cb47-4" title="4">        <span class="kw">print</span> <span class="dt">$4</span></a>
+<a class="sourceLine" id="cb47-5" title="5">    }</a>
+<a class="sourceLine" id="cb47-6" title="6">&#39;</a></code></pre></div>
+<h4 id="command-getline-var"><em>command</em> | getline <em>var</em></h4>
+<p>Reads the next record from the output of <em>command</em> and assigns its contents to the variable <em>var</em>. Only <em>var</em> is set.</p>
+<h3 id="string-functions">String Functions</h3>
+<p>As one would expect, AWK has many functions used to manipulate strings and what’s more, many of them support regular expressions. This makes AWK’s string handling very powerful.</p>
+<h4 id="gsubr-s-t">gsub(<em>r</em>, <em>s</em>, <em>t</em>)</h4>
+<p>Globally replaces any substring matching regular expression <em>r</em> contained within the target string <em>t</em> with the string <em>s</em>. The target string is optional. If omitted, <code>$0</code> is used as the target string. The function returns the number of substitutions made.</p>
+<h4 id="indexs1-s2">index(<em>s1</em>, <em>s2</em>)</h4>
+<p>Returns the leftmost position of string <em>s2</em> within string <em>s1</em>. If <em>s2</em> does not appear within <em>s1</em>, the function returns 0.</p>
+<h4 id="lengths">length(<em>s</em>)</h4>
+<p>Returns the number of characters in string <em>s</em>.</p>
+<h4 id="matchs-r">match(<em>s</em>, <em>r</em>)</h4>
+<p>Returns the leftmost position of a substring matching regular expression <em>r</em> within string <em>s</em>. Returns 0 if no match is found. This function also sets the internal variables <code>RSTART</code> and <code>RLENGTH</code>.</p>
+<h4 id="splits-a-fs">split(<em>s</em>, <em>a</em>, <em>fs</em>)</h4>
+<p>Splits string <em>s</em> into fields and stores each field in an element of array <em>a</em>. Fields are split according to field separator <em>fs</em>. For example, if we wanted to break a phone number such as 800-555-1212 into 3 fields separated by the “-” character, we could do this:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb48-1" title="1">phone<span class="op">=</span><span class="st">&quot;800-555-1212&quot;</span></a>
+<a class="sourceLine" id="cb48-2" title="2"><span class="fu">split</span>(phone, fields, <span class="st">&quot;-&quot;</span>)</a></code></pre></div>
+<p>After doing so, the array <code>fields</code> will contain the following elements:</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb49-1" title="1">fields[<span class="dv">1</span>] <span class="op">=</span> <span class="st">&quot;800&quot;</span></a>
+<a class="sourceLine" id="cb49-2" title="2">fields[<span class="dv">2</span>] <span class="op">=</span> <span class="st">&quot;555&quot;</span></a>
+<a class="sourceLine" id="cb49-3" title="3">fields[<span class="dv">3</span>] <span class="op">=</span> <span class="st">&quot;1212&quot;</span></a></code></pre></div>
+<h4 id="sprintffmt-exprs">sprintf(<em>fmt</em>, <em>exprs</em>)</h4>
+<p>This function behaves like <code>printf</code>, except instead of outputting a formatted string, it returns a formatted string containing the list of expressions to the caller. Use this function to assign a formatted string to a variable:</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb50-1" title="1">area_code <span class="op">=</span> <span class="st">&quot;800&quot;</span></a>
+<a class="sourceLine" id="cb50-2" title="2">exchange <span class="op">=</span> <span class="st">&quot;555&quot;</span></a>
+<a class="sourceLine" id="cb50-3" title="3">number <span class="op">=</span> <span class="st">&quot;1212&quot;</span></a>
+<a class="sourceLine" id="cb50-4" title="4">phone_number <span class="op">=</span> <span class="fu">sprintf</span>(<span class="st">&quot;(%s) %s-%s&quot;</span>, area_code, exchange, number)</a></code></pre></div>
+<h4 id="subr-s-t">sub(<em>r</em>, <em>s</em>, <em>t</em>)</h4>
+<p>Behaves like <code>gsub</code>, except only the first leftmost replacement is made. Like <code>gsub</code>, the target string <em>t</em> is optional. If omitted, <code>$0</code> is used as the target string.</p>
+<h4 id="substrs-p-l">substr(<em>s</em>, <em>p</em>, <em>l</em>)</h4>
+<p>Returns the substring contained within string <em>s</em> starting at position <em>p</em> with length <em>l</em>.</p>
+<h3 id="arithmetic-functions">Arithmetic Functions</h3>
+<p>AWK has the usual set of arithmetic functions. A word of caution about math in AWK: it has limitations in terms of both number size and precision of floating point operations. This is particularly true of <code>mawk</code>. For tasks involving extensive calculation, <code>gawk</code> would be preferred. The <code>gawk</code> documentation provides a good discussion of the issues involved.</p>
+<h4 id="atan2y-x">atan2(<em>y</em>, <em>x</em>)</h4>
+<p>Returns the arctangent of <em>y/x</em> in radians.</p>
+<h4 id="cosx">cos(<em>x</em>)</h4>
+<p>Returns the cosine of <em>x</em>, with <em>x</em> in radians.</p>
+<h4 id="expx">exp(<em>x</em>)</h4>
+<p>Returns the exponential of <em>x</em>, that is e^<em>x</em>.</p>
+<h4 id="intx">int(<em>x</em>)</h4>
+<p>Returns the integer portion of <em>x</em>. For example if <em>x</em> = 1.9, 1 is returned.</p>
+<h4 id="logx">log(<em>x</em>)</h4>
+<p>Returns the natural logarithm of <em>x</em>. <em>x</em> must be positive.</p>
+<h4 id="rand">rand()</h4>
+<p>Returns a random floating point value <em>n</em> such that 0 &lt;= <em>n</em> &lt; 1. This is a value between 0 and 1 where a value of 0 is possible but not 1. In AWK, random numbers always follow the same sequence of values unless the seed for the random number generator is first set using the <code>srand()</code> function (see below).</p>
+<h4 id="sinx">sin(<em>x</em>)</h4>
+<p>Returns the sine of <em>x</em>, with <em>x</em> in radians.</p>
+<h4 id="sqrtx">sqrt(<em>x</em>)</h4>
+<p>Returns the square root of <em>x</em>.</p>
+<h4 id="srandx">srand(<em>x</em>)</h4>
+<p>Sets the seed for the random number generator to <em>x</em>. If <em>x</em> is omitted, then the time of day is used as the seed. To generate a random integer in the range of 1 to <em>n</em>, we can use code like this:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb51-1" title="1"><span class="fu">srand</span>()</a>
+<a class="sourceLine" id="cb51-2" title="2"><span class="co"># Generate a random integer between 1 and 6 inclusive</span></a>
+<a class="sourceLine" id="cb51-3" title="3">dice_roll <span class="op">=</span> <span class="fu">int</span>(<span class="dv">6</span> <span class="op">*</span> <span class="fu">rand</span>()) <span class="op">+</span> <span class="dv">1</span></a></code></pre></div>
+<h3 id="user-defined-functions">User Defined Functions</h3>
+<p>In addition to the built-in string and arithmetic functions, AWK supports user-defined functions much like the shell. The mechanism for passing parameters is different, and more like traditional languages such as C.</p>
+<h4 id="defining-a-function">Defining a function</h4>
+<p>A typical function definition looks like this:</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb52-1" title="1"><span class="kw">function</span> name(parameter<span class="op">-</span>list) {</a>
+<a class="sourceLine" id="cb52-2" title="2">    statements</a>
+<a class="sourceLine" id="cb52-3" title="3">    <span class="cf">return</span> expression</a>
+<a class="sourceLine" id="cb52-4" title="4">}</a></code></pre></div>
+<p>We use the keyword <code>function</code> followed by the name of the function to be defined. The name must be immediately followed by the opening left parenthesis of the parameter list. The parameter list may contain zero or more comma-separated parameters. A brace delimited code block follows with one or more statements. To specify what is returned by the function, the <code>return</code> statement is used, followed by an expression containing the value to be returned. If we were to convert our previous dice rolling example into a function, it would look like this:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb53-1" title="1"><span class="kw">function</span> dice_roll() {</a>
+<a class="sourceLine" id="cb53-2" title="2">    <span class="cf">return</span> <span class="fu">int</span>(<span class="dv">6</span> <span class="op">*</span> <span class="fu">rand</span>()) <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb53-3" title="3">}</a></code></pre></div>
+<p>Further, if we wanted to generalize our function to support different possible maximum values, we could code this:</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb54-1" title="1"><span class="kw">function</span> rand_integer(max) {</a>
+<a class="sourceLine" id="cb54-2" title="2">    <span class="cf">return</span> <span class="fu">int</span>(max <span class="op">*</span> <span class="fu">rand</span>()) <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb54-3" title="3">}</a></code></pre></div>
+<p>and then change <code>dice_roll</code> to make use of our generalized function:</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb55-1" title="1"><span class="kw">function</span> dice_roll() {</a>
+<a class="sourceLine" id="cb55-2" title="2">    <span class="cf">return</span> rand_integer(<span class="dv">6</span>)</a>
+<a class="sourceLine" id="cb55-3" title="3">}</a></code></pre></div>
+<h4 id="passing-parameters-to-functions">Passing Parameters to Functions</h4>
+<p>As we saw in the example above, we pass parameters to the function, and they are operated upon within the body of the function. Parameters fall into two general classes. First, there are the <em>scalar variables</em>, such as strings and numbers. Second are the arrays. This distinction is important in AWK because of the way that parameters are passed to functions. Scalar variables are <em>passed by value</em>, meaning that a copy of the variable is created and given to the function. This means that scalar variables act as local variables within the function and are destroyed once the function exits. Array variables, on the other hand, are <em>passed by reference</em> meaning that a pointer to the array’s starting position in memory is passed to the function. This means that the array is not treated as a local variable and that any change made to the array persists once the program exits the function. This concept of passed by value versus passed by reference shows up in a lot of programming languages so it’s important to understand it.</p>
+<h4 id="local-variables">Local Variables</h4>
+<p>One interesting limitation of AWK is that we cannot declare local variables within the body of a function. There is a workaround for this problem. We can add variables to the parameter list. Since all scalar variables in the parameter list are passed by value, they will be treated as if they are local variables. This does not apply to arrays, since they are always passed by reference. Unlike many other languages, AWK does not enforce the parameter list, thus we can add parameters that are not used by the caller of the function. In most other languages, the number and type of parameters passed during a function call must match the parameter list specified by the function’s declaration.</p>
+<p>By convention, additional parameters used as local variables in the function are preceded by additional spaces in the parameter list like so:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb56-1" title="1"><span class="kw">function</span> my_funct(param1, param2, param3,    local1, local2)</a></code></pre></div>
+<p>These additional spaces have no meaning to the language, they are there for the benefit of the human reading the code.</p>
+<p>Let’s try some short AWK programs on some numbers. First we need some data. Here’s a little AWK program that produces a table of random integers:</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb57-1" title="1"><span class="co"># random_table.awk - generate table of random numbers</span></a>
+<a class="sourceLine" id="cb57-2" title="2"></a>
+<a class="sourceLine" id="cb57-3" title="3"><span class="kw">function</span> rand_integer(max) {</a>
+<a class="sourceLine" id="cb57-4" title="4">    <span class="cf">return</span> <span class="fu">int</span>(max <span class="op">*</span> <span class="fu">rand</span>()) <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb57-5" title="5">}</a>
+<a class="sourceLine" id="cb57-6" title="6"></a>
+<a class="sourceLine" id="cb57-7" title="7"><span class="cf">BEGIN</span> {</a>
+<a class="sourceLine" id="cb57-8" title="8">    <span class="fu">srand</span>()</a>
+<a class="sourceLine" id="cb57-9" title="9">    <span class="cf">for</span> (i <span class="op">=</span> <span class="dv">0</span>; i <span class="op">&lt;</span> <span class="dv">100</span>; i<span class="op">++</span>) {</a>
+<a class="sourceLine" id="cb57-10" title="10">        <span class="cf">for</span> (j <span class="op">=</span> <span class="dv">0</span>; j <span class="op">&lt;</span> <span class="dv">5</span>; j<span class="op">++</span>) {</a>
+<a class="sourceLine" id="cb57-11" title="11">            <span class="kw">printf</span>(<span class="st">&quot;    %5d&quot;</span>, rand_integer(<span class="dv">99999</span>))</a>
+<a class="sourceLine" id="cb57-12" title="12">        }</a>
+<a class="sourceLine" id="cb57-13" title="13">        <span class="kw">printf</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb57-14" title="14">    }</a>
+<a class="sourceLine" id="cb57-15" title="15">}</a></code></pre></div>
+<p>If we store this in a file, we can run it like so:</p>
+<p><code>me@linuxbox ~ $ awk -f random_table.awk &gt; random_table.dat</code></p>
+<p>And it should produce a file containing 100 rows of 5 columns of random integers.</p>
+<h4 id="convert-a-file-into-csv-format">Convert a File Into CSV Format</h4>
+<p>One of AWK’s many strengths is file format conversion. Here we will convert our neatly arranged columns of numbers into a CSV (comma separated values) file.</p>
+<p><code>awk 'BEGIN {OFS=&quot;,&quot;} {print $1,$2,$3,$4,$5}' random_table.dat</code></p>
+<p>This is a very easy conversion. All we need to do is change the output field separator (<code>OFS</code>) and then print all of the individual fields. While it is very easy to write a CSV file, reading one can be tricky. In some cases, applications that write CSV files (including many popular spreadsheet programs) will create lines like this:</p>
+<p><code>word1, &quot;word2a, word2b&quot;, word3</code></p>
+<p>Notice the embedded comma in the second field. This throws the simple AWK solution (<code>FS=&quot;,&quot;</code>) out the window. Parsing this kind of file can be done (<code>gawk</code>, in fact has a language extension for this problem), but it’s not pretty. It is best to avoid trying to read this type of file.</p>
+<h4 id="convert-a-file-into-tsv-format">Convert a File Into TSV Format</h4>
+<p>A frequently available alternative to the CSV file is the TSV (tab separated value) file. This file format uses tab charachers as the field separators:</p>
+<p><code>awk 'BEGIN {OFS=&quot;\t&quot;} {print $1,$2,$3,$4,$5}' random_table.dat</code></p>
+<p>Again, writing these files is easy to do. We just set the output field separator to a tab character. In regards to reading, most applications that write CSV files can also write TSV files. Using TSV files avoids the embedded comma problem we often see when attempting to read CSV files.</p>
+<h4 id="print-the-total-for-each-row">Print the Total for Each Row</h4>
+<p>If all we need to do is some simple addition, this is easily done:</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb58-1" title="1">awk &#39;</a>
+<a class="sourceLine" id="cb58-2" title="2">    {</a>
+<a class="sourceLine" id="cb58-3" title="3">        t <span class="op">=</span> <span class="dt">$1</span> <span class="op">+</span> <span class="dt">$2</span> <span class="op">+</span> <span class="dt">$3</span> <span class="op">+</span> <span class="dt">$4</span> <span class="op">+</span> <span class="dt">$5</span></a>
+<a class="sourceLine" id="cb58-4" title="4">        <span class="kw">printf</span>(<span class="st">&quot;%s = %6d</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="dt">$0</span>, t)</a>
+<a class="sourceLine" id="cb58-5" title="5">    }</a>
+<a class="sourceLine" id="cb58-6" title="6">&#39; random_table.dat</a></code></pre></div>
+<h4 id="print-the-total-for-each-column">Print the Total for Each Column</h4>
+<p>Adding up the column is pretty easy, too. In this example, we use a loop and array to maintain running totals for each of the five columns in our data file:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb59-1" title="1">awk &#39;</a>
+<a class="sourceLine" id="cb59-2" title="2">    {</a>
+<a class="sourceLine" id="cb59-3" title="3">        <span class="cf">for</span> (i <span class="op">=</span> <span class="dv">1</span>; i <span class="op">&lt;=</span> <span class="dv">5</span>; i<span class="op">++</span>) {</a>
+<a class="sourceLine" id="cb59-4" title="4">            t[i] <span class="op">+=</span> <span class="dt">$i</span></a>
+<a class="sourceLine" id="cb59-5" title="5">        }</a>
+<a class="sourceLine" id="cb59-6" title="6">        <span class="kw">print</span></a>
+<a class="sourceLine" id="cb59-7" title="7">    }</a>
+<a class="sourceLine" id="cb59-8" title="8">    <span class="cf">END</span> {</a>
+<a class="sourceLine" id="cb59-9" title="9">        <span class="kw">print</span> <span class="st">&quot;  ===&quot;</span></a>
+<a class="sourceLine" id="cb59-10" title="10">        <span class="cf">for</span> (i <span class="op">=</span> <span class="dv">1</span>; i <span class="op">&lt;=</span> <span class="dv">5</span>; i<span class="op">++</span>) {</a>
+<a class="sourceLine" id="cb59-11" title="11">            <span class="kw">printf</span>(<span class="st">&quot;  %7d&quot;</span>, t[i])</a>
+<a class="sourceLine" id="cb59-12" title="12">        }</a>
+<a class="sourceLine" id="cb59-13" title="13">        <span class="kw">printf</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb59-14" title="14">     }</a>
+<a class="sourceLine" id="cb59-15" title="15">&#39; random_table.dat</a></code></pre></div>
+<h4 id="print-the-minimum-and-maximum-value-in-column-1">Print the Minimum and Maximum Value in Column 1</h4>
+<div class="sourceCode" id="cb60"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb60-1" title="1">awk &#39;</a>
+<a class="sourceLine" id="cb60-2" title="2">    <span class="cf">BEGIN</span> {min <span class="op">=</span> <span class="dv">99999</span>}</a>
+<a class="sourceLine" id="cb60-3" title="3">    <span class="dt">$1</span> <span class="op">&gt;</span> max {max <span class="op">=</span> <span class="dt">$1</span>}</a>
+<a class="sourceLine" id="cb60-4" title="4">    <span class="dt">$1</span> <span class="op">&lt;</span> min {min <span class="op">=</span> <span class="dt">$1</span>}</a>
+<a class="sourceLine" id="cb60-5" title="5">    <span class="cf">END</span> {<span class="kw">print</span> <span class="st">&quot;Max =&quot;</span>, max, <span class="st">&quot;Min =&quot;</span>, min}</a>
+<a class="sourceLine" id="cb60-6" title="6">&#39; random_table.dat</a></code></pre></div>
+<h3 id="one-last-example">One Last Example</h3>
+<p>For our last example, we’ll create a program that processes a list of pathnames and extracts the extension from each file name to keep a tally of how many files have that extension:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode awk"><code class="sourceCode awk"><a class="sourceLine" id="cb61-1" title="1"><span class="co"># file_types.awk - sorted list of file name extensions and counts</span></a>
+<a class="sourceLine" id="cb61-2" title="2"></a>
+<a class="sourceLine" id="cb61-3" title="3"><span class="cf">BEGIN</span> {<span class="bu">FS</span> <span class="op">=</span> <span class="st">&quot;.&quot;</span>}</a>
+<a class="sourceLine" id="cb61-4" title="4"></a>
+<a class="sourceLine" id="cb61-5" title="5">{types[<span class="dt">$NF</span>]<span class="op">++</span>}</a>
+<a class="sourceLine" id="cb61-6" title="6"></a>
+<a class="sourceLine" id="cb61-7" title="7"><span class="cf">END</span> {</a>
+<a class="sourceLine" id="cb61-8" title="8">    <span class="cf">for</span> (i <span class="kw">in</span> types) {</a>
+<a class="sourceLine" id="cb61-9" title="9">        <span class="kw">printf</span>(<span class="st">&quot;%6d %s</span><span class="sc">\n</span><span class="st">&quot;</span>, types[i], i) <span class="op">|</span> <span class="st">&quot;sort -nr&quot;</span></a>
+<a class="sourceLine" id="cb61-10" title="10">    }</a>
+<a class="sourceLine" id="cb61-11" title="11">}</a></code></pre></div>
+<p>To find the 10 most popular file extensions in our home directory, we can use the program like this:</p>
+<p><code>find ~ -name &quot;*.*&quot; | awk -f file_types.awk | head</code></p>
+<h2 id="summing-up">Summing Up</h2>
+<p>We really have to admire what an elegant and useful tool the authors of AWK created during the early days of Unix. So useful that its utility continues to this day. We have given AWK a brief examination in this adventure. Feel free to explore further by delving deeper into the documentation of the various AWK implementations. Also, searching the web for “AWK one-liners” will reveal many useful and clever tricks possible with AWK.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><p>The <code>nawk</code> man page provides a good reference for the baseline version of AWK. An online version is available at <a href="https://linux.die.net/man/1/nawk" class="uri">https://linux.die.net/man/1/nawk</a></p></li>
+<li><p>Many useful AWK programs are just one line long. Eric Pement has compiled an extensive list: <a href="http://www.pement.org/awk/awk1line.txt" class="uri">http://www.pement.org/awk/awk1line.txt</a></p></li>
+<li><p>In addition to its man page, <code>gawk</code> has its own book titled Gawk: Effective AWK Programming available at: <a href="https://www.gnu.org/software/gawk/manual/" class="uri">https://www.gnu.org/software/gawk/manual/</a></p></li>
+<li><p>Peteris Krumins has a nice blog post listing a variety of helpful tips for AWK users: <a href="https://catonmat.net/ten-awk-tips-tricks-and-pitfalls" class="uri">https://catonmat.net/ten-awk-tips-tricks-and-pitfalls</a></p></li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_adv_awk.php.html#top">Top</a> | <a
+      href="lc3_adv_dialog.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_othershells.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

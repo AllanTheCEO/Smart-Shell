@@ -1,0 +1,60 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>dirs man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for dirs">
+  <meta name="keywords" content="Manual page, dirs command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    dirs - Display directory stack.
+
+SYNOPSIS
+    dirs [-clpv] [+N] [-N]
+
+DESCRIPTION
+    Display directory stack.
+    
+    Display the list of currently remembered directories.  Directories
+    find their way onto the list with the `pushd' command; you can get
+    back up through the list with the `popd' command.
+    
+    Options:
+      -c	clear the directory stack by deleting all of the elements
+      -l	do not print tilde-prefixed versions of directories relative
+    		to your home directory
+      -p	print the directory stack with one entry per line
+      -v	print the directory stack with one entry per line prefixed
+    		with its position in the stack
+    
+    Arguments:
+      +N	Displays the Nth entry counting from the left of the list
+    		shown by dirs when invoked without options, starting with
+    		zero.
+    
+      -N	Displays the Nth entry counting from the right of the list
+    		shown by dirs when invoked without options, starting with
+    		zero.
+    
+    Exit Status:
+    Returns success unless an invalid option is supplied or an error occurs.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

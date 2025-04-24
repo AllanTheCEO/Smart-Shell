@@ -1,0 +1,253 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 10: Keyboard Input and Arithmetic</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Reading keyboard inpput and doing arithmetic in shell scripts">
+    <meta name="keywords" content="shell script keyboard input, read statment, shell script integer math, shell script arithmetic, arithmetic expansion">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0090.php.html">
+    <link rel="next" href="lc3_wss0110.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0090.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0110.php.html">Next</a>
+    </div>
+<h1>Keyboard Input and Arithmetic</h1>
+
+<p>Up to now, our scripts have not been interactive.  That is, they did not
+accept any input from the user. In this lesson, we will see how our scripts can
+ask questions, and get and use responses.</p>
+
+<h2>read</h2>
+
+<p>To get input from the keyboard, we use the <code class="user"><a
+href="lc3_man_pages/readh.html">read</a></code> command. The <code class=
+"user">read</code> command takes input from the keyboard and assigns it to a
+variable. Here is an example:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">echo</code> -n "Enter some text &gt; "
+<code class="user">read</code> text
+<code class="user">echo</code> "You entered: $text"</div>
+
+<p>As we can see, we displayed a prompt on line 3.  Note that "<code>-n</code>"
+given to the <code class= "user">echo</code> command causes it to keep the
+cursor on the same line; i.e., it does not output a linefeed at the end of the
+prompt.</p>
+
+<p>Next, we invoke the <code class="user">read</code> command with
+"<code>text</code>" as its argument. What this does is wait for the user to
+type something followed by the Enter key and then assign whatever was typed to
+the variable <code>text</code>.</p>
+
+<p>Here is the script in action:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">read_demo.bash</code>
+Enter some text &gt; <code class="cmd">this is some text</code>
+You entered: this is some text</div>
+
+<p>If we don't give the <code class="user">read</code> command the name of a
+variable to assign its input, it will use the environment variable
+<code>REPLY</code>.</p>
+
+<p>The <code class="user">read</code> command has several command line options.
+The three most interesting ones are <code>-p</code>, <code>-t</code> and
+<code>-s</code>.</p>
+
+<p>The <code>-p</code> option allows us to specify a prompt to precede the
+user's input. This saves the extra step of using an <code
+class="user">echo</code> to prompt the user. Here is the earlier example
+rewritten to use the <code>-p</code> option:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">read</code> -p "Enter some text &gt; " text
+<code class="user">echo</code> "You entered: $text"</div>
+
+<p>The <code>-t</code> option followed by a number of seconds provides an
+automatic timeout for the <code class="user">read</code> command. This means
+that the <code class="user">read</code> command will give up after the
+specified number of seconds if no response has been received from the user.
+This option could be used in the case of a script that must continue (perhaps
+resorting to a default response) even if the user does not answer the prompts.
+Here is the <code>-t</code> option in action:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">echo</code> -n "Hurry up and type something! &gt; "
+<code class="user">if read</code> -t 3 response; <code class="user">then</code>
+    <code class="user">echo</code> "Great, you made it in time!"
+<code class="user">else</code>
+    <code class="user">echo</code> "Sorry, you are too slow!"
+<code class="user">fi</code></div>
+
+<p>The <code>-s</code> option causes the user's typing not to be displayed.
+This is useful when we are asking the user to type in a password or other
+confidential information.</p>
+
+<h2>Arithmetic</h2>
+
+<p>Since we are working on a computer, it is natural to expect that it can
+perform some simple arithmetic. The shell provides features for <i>integer
+arithmetic</i>.</p>
+
+<p>What's an integer? That means whole numbers like 1, 2, 458, -2859. It does
+not mean fractional numbers like 0.5, .333, or 3.1415. To deal with fractional
+numbers, there is a separate program called <code class="user"><a href=
+"https://linuxcommand.org/lc3_man_pages/bc1.html">bc</a></code> which provides an arbitrary precision
+calculator language. It can be used in shell scripts, but is beyond the scope
+of this tutorial.</p>
+
+<p>Let's say we want to use the command line as a primitive calculator. We can
+do it like this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">echo $((2+2))</code></div>
+
+<p>When we surround an arithmetic expression with the double parentheses, the
+shell will perform arithmetic expansion.</p>
+
+<p>Notice that whitespace is ignored:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">echo $((2+2))</code>
+4
+[me@linuxbox me]$ <code class="cmd">echo $(( 2+2 ))</code>
+4
+[me@linuxbox me]$ <code class="cmd">echo $(( 2 + 2 ))</code>
+4</div>
+
+<p>The shell can perform a variety of common (and not so common) arithmetic
+operations. Here is an example:</p>
+
+<div class="codeexample">#!/bin/bash
+
+first_num=0
+second_num=0
+
+<code class="user">read</code> -p "Enter the first number --&gt; " first_num
+<code class="user">read</code> -p "Enter the second number -&gt; " second_num
+
+<code class="user">echo</code> "first number + second number = $((first_num + second_num))"
+<code class="user">echo</code> "first number - second number = $((first_num - second_num))"
+<code class="user">echo</code> "first number * second number = $((first_num * second_num))"
+<code class="user">echo</code> "first number / second number = $((first_num / second_num))"
+<code class="user">echo</code> "first number % second number = $((first_num % second_num))"
+<code class="user">echo</code> "first number raised to the"
+<code class="user">echo</code> "power of the second number   = $((first_num ** second_num))"</div>
+
+<p>Notice how the leading "<code>$</code>" is not needed to reference variables
+inside the arithmetic expression such as "<code>first_num +
+second_num</code>".</p>
+
+<p>Try this program out and watch how it handles division (remember, this is
+integer division) and how it handles large numbers. Numbers that get too large
+<i>overflow</i> like the odometer in a car when it exceeds the number of miles
+it was designed to count. It starts over but first it goes through all the
+negative numbers because of how integers are represented in memory. Division by
+zero (which is mathematically invalid) does cause an error.</p>
+
+<p>The first four operations, addition, subtraction, multiplication and
+division, are easily recognized but the fifth one may be unfamiliar. The
+"<code>%</code>" symbol represents remainder (also known as <i>modulo</i>).
+This operation performs division but instead of returning a quotient like
+division, it returns the remainder. While this might not seem very useful, it
+does, in fact, provide great utility when writing programs. For example, when a
+remainder operation returns zero, it indicates that the first number is an
+exact multiple of the second. This can be very handy:</p>
+
+<div class="codeexample">#!/bin/bash
+
+number=0
+
+<code class="user">read</code> -p "Enter a number &gt; " number
+
+<code class="user">echo</code> "Number is $number"
+<code class="user">if [</code> $((number % 2)) -eq 0 <code class="user">];</code> <code class="user">then</code>
+    <code class="user">echo</code> "Number is even"
+<code class="user">else</code>
+    <code class="user">echo</code> "Number is odd"
+<code class="user">fi</code> </div>
+
+<p>Or, in this program that formats an arbitrary number of seconds into hours
+and minutes:</p>
+
+<div class="codeexample">#!/bin/bash
+
+seconds=0
+
+<code class="user">read</code> -p "Enter number of seconds &gt; " seconds
+
+hours=$((seconds / 3600))
+seconds=$((seconds % 3600))
+minutes=$((seconds / 60))
+seconds=$((seconds % 60))
+
+<code class=
+"user">echo</code> "$hours hour(s) $minutes minute(s) $seconds second(s)"</div>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0100.php.html#top">Top</a> | <a
+      href="lc3_wss0090.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0110.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

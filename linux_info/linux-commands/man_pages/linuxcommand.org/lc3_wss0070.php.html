@@ -1,0 +1,168 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 8: Some Real Work</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Shell script functions">
+    <meta name="keywords" content="shell script functions, uptime command, df command">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0060.php.html">
+    <link rel="next" href="lc3_wss0080.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0060.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0080.php.html">Next</a>
+    </div>
+<h1>Some Real Work</h1>
+
+<p>In this lesson, we will develop some of our shell functions and get our
+script to produce some useful information.</p>
+
+<h2>show_uptime</h2>
+
+<p>The <code>show_uptime</code> function will display the output of the <a
+href="https://linuxcommand.org/lc3_man_pages/uptime1.html"><code class= "user">uptime</code></a>
+command. The uptime command outputs several interesting facts about the system,
+including the length of time the system has been "up" (running) since its last
+re-boot, the number of users and recent system load.</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">uptime</code>
+9:15pm up 2 days, 2:32, 2 users, load average: 0.00, 0.00, 0.00</div>
+
+<p>To get the output of the uptime command into our HTML page, we will code our
+shell function like this, replacing our temporary stubbing code with the
+finished version:</p>
+
+<div class="codeexample">show_uptime()
+{
+    <code class="user">echo</code> "&lt;h2&gt;System uptime&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    uptime
+    <code class="user">echo</code> "&lt;/pre&gt;"
+}</div>
+
+<p>As we can see, this function outputs a stream of text containing a mixture
+of HTML tags and command output. When the command substitution takes place in
+the main body of the our program, the output from our function becomes part of
+the here script.</p>
+
+<h2>drive_space</h2>
+
+<p>The drive_space function will use the <a href=
+"lc3_man_pages/df1.html"><code class="user">df</code></a> command to provide a
+summary of the space used by all of the mounted file systems.</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">df</code>
+Filesystem   1k-blocks      Used Available Use% Mounted on
+/dev/hda2       509992    225772    279080  45% /
+/dev/hda1        23324      1796     21288   8% /boot
+/dev/hda3     15739176   1748176  13832360  12% /home
+/dev/hda5      3123888   3039584     52820  99% /usr</div>
+
+<p>In terms of structure, the <code>drive_space</code> function is very similar
+to the show_uptime function:</p>
+
+<div class="codeexample">drive_space()
+{
+    <code class="user">echo</code> "&lt;h2&gt;Filesystem space&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    df
+    <code class="user">echo</code> "&lt;/pre&gt;"
+}</div>
+
+<h2>home_space</h2>
+
+<p>The <code>home_space</code> function will display the amount of space each
+user is using in his/her home directory. It will display this as a list, sorted
+in descending order by the amount of space used.</p>
+
+<div class="codeexample">home_space()
+{
+    <code class="user">echo</code> "&lt;h2&gt;Home directory space by user&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;pre&gt;"
+    <code class="user">echo</code> "Bytes Directory"
+    du -s /home/* | sort -nr
+    <code class="user">echo</code> "&lt;/pre&gt;"
+}</div>
+
+<p>Note that in order for this function to successfully execute, the script
+must be run by the superuser, since the <a href="lc3_man_pages/du1.html"><code
+class="user">du</code></a> command requires superuser privileges to examine the
+contents of the /home directory.</p>
+
+<h2>system_info</h2>
+
+<p>We're not ready to finish the <code>system_info</code> function yet. In the
+meantime, we will improve the stubbing code so it produces valid HTML:</p>
+
+<div class="codeexample">system_info()
+{
+    <code class="user">echo</code> "&lt;h2&gt;System release info&lt;/h2&gt;"
+    <code class="user">echo</code> "&lt;p&gt;Function not yet implemented&lt;/p&gt;"
+}</div>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0070.php.html#top">Top</a> | <a
+      href="lc3_wss0060.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0080.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>truncate man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for truncate">
+  <meta name="keywords" content="Manual page, truncate command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#file" style="color: white;">Back to Contents</a>
+  <pre>
+TRUNCATE(1)                   User Commands                   TRUNCATE(1)
+
+NAME
+       truncate  -  shrink  or extend the size of a file to the specified
+       size
+
+SYNOPSIS
+       truncate OPTION... FILE...
+
+DESCRIPTION
+       Shrink or extend the size of each FILE to the specified size
+
+       A FILE argument that does not exist is created.
+
+       If a FILE is larger than the specified size,  the  extra  data  is
+       lost.   If  a  FILE  is  shorter,  it  is  extended and the sparse
+       extended part (hole) reads as zero bytes.
+
+       Mandatory arguments  to  long  options  are  mandatory  for  short
+       options too.
+
+       -c, --no-create
+              do not create any files
+
+       -o, --io-blocks
+              treat SIZE as number of IO blocks instead of bytes
+
+       -r, --reference=RFILE
+              base size on RFILE
+
+       -s, --size=SIZE
+              set or adjust the file size by SIZE bytes
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       The SIZE argument is an integer and optional unit (example: 10K is
+       10*1024).  Units are K,M,G,T,P,E,Z,Y (powers of 1024) or KB,MB,...
+       (powers of 1000).  Binary prefixes can be used, too: KiB=K, MiB=M,
+       and so on.
+
+       SIZE may also be prefixed by one of the following modifying  char‐
+       acters:  '+'  extend by, '-' reduce by, '&lt;' at most, '&gt;' at least,
+       '/' round down to multiple of, '%' round up to multiple of.
+
+AUTHOR
+       Written by Padraig Brady.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report    any   translation   bugs   to   &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright © 2020 Free Software Foundation, Inc.   License  GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       dd(1), truncate(2), ftruncate(2)
+
+       Full  documentation  &lt;https://www.gnu.org/software/coreutils/trun‐
+       cate&gt;
+       or available locally via: info '(coreutils) truncate invocation'
+
+GNU coreutils 8.32              April 2020                    TRUNCATE(1)
+</pre></body></html>

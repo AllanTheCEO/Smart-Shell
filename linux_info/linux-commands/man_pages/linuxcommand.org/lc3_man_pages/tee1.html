@@ -1,0 +1,83 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>tee man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for tee">
+  <meta name="keywords" content="Manual page, tee command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#shell" style="color: white;">Back to Contents</a>
+  <pre>
+TEE(1)                        User Commands                        TEE(1)
+
+NAME
+       tee  -  read  from standard input and write to standard output and
+       files
+
+SYNOPSIS
+       tee [OPTION]... [FILE]...
+
+DESCRIPTION
+       Copy standard input to each FILE, and also to standard output.
+
+       -a, --append
+              append to the given FILEs, do not overwrite
+
+       -i, --ignore-interrupts
+              ignore interrupt signals
+
+       -p     diagnose errors writing to non pipes
+
+       --output-error[=MODE]
+              set behavior on write error.  See MODE below
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+   MODE determines behavior with write errors on the outputs:
+       'warn' diagnose errors writing to any output
+
+       'warn-nopipe'
+              diagnose errors writing to any output not a pipe
+
+       'exit' exit on error writing to any output
+
+       'exit-nopipe'
+              exit on error writing to any output not a pipe
+
+       The default MODE for the -p option is 'warn-nopipe'.  The  default
+       operation when --output-error is not specified, is to exit immedi‐
+       ately on error writing to a pipe, and diagnose errors  writing  to
+       non pipe outputs.
+
+AUTHOR
+       Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
+
+REPORTING BUGS
+       GNU  coreutils  online  help:  &lt;https://www.gnu.org/software/core‐
+       utils/&gt;
+       Report   any   translation   bugs   to    &lt;https://translationpro‐
+       ject.org/team/&gt;
+
+COPYRIGHT
+       Copyright  ©  2020 Free Software Foundation, Inc.  License GPLv3+:
+       GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       Full documentation &lt;https://www.gnu.org/software/coreutils/tee&gt;
+       or available locally via: info '(coreutils) tee invocation'
+
+GNU coreutils 8.32              April 2020                         TEE(1)
+</pre></body></html>

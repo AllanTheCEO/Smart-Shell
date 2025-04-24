@@ -1,0 +1,383 @@
+<code>alias vi=&#39;vim&#39;</code></pre>
+<p>Next, let’s create a minimal <code>.vimrc</code>, its main configuration file.</p>
+<pre><code>[me@linuxbox ~]$ vi ~/.vimrc</code></pre>
+<pre><code>set nocompatible
+filetype plugin on</code></pre>
+<pre><code>mV</code></pre>
+<p>Nothing will appear to happen, and that’s OK. We’ll come back to that later. Save the file and exit vim.</p>
+<pre><code>:wq</code></pre>
+<pre><code>[me@linuxbox ~]$ vi</code></pre>
+<p>and enter the command:</p>
+<pre><code>:help</code></pre>
+<pre><code>:split          Create a new window
+Ctrl-w Ctrl-w   Toogle between windows
+Ctrl-w _        Enlarge the active window
+Ctrl-w =        Make windows the same size
+:close          Close active window
+:only           Close all other windows</code></pre>
+<pre><code>:q</code></pre>
+<p>But enough about windows, let’s get back to help. If we scroll around the initial help file, we see it is a hypertext document full of links to various topics and it begins with the commands we need to navigate the help system. This is all well and good, but it’s not the most interesting way to use it.</p>
+<p>The best way is to type :h followed by the topic we are interested in. The fact we don’t have to type out “:help” reveals that most vim commands can be abbreviated. This saves a lot of work. In general, commands can be shortened to their smallest non-ambiguous form. Frequently used commands, like help, are often shortened to a single character but the system of abbreviations isn’t predictable, so we have to use help to find them. For the remainder of this adventure, we will try to use the shortest available form.</p>
+<p>There is an important table near the beginning of the initial help file:</p>
+<pre><code>    WHAT                  PREPEND    EXAMPLE
+Normal mode command      (nothing)   :help x
+Visual mode command         v_       :help v_u
+Insert mode command         i_       :help i_&lt;Esc&gt;
+Command-line command        :        :help :quit
+Command-line editing        c_       :help c_&lt;Del&gt;
+Vim command argument        -        :help -r
+Option                      &#39;        :help &#39;textwidth&#39;
+
+Search for help:  Type &quot;:help word&quot;, then hit CTRL-D to see
+                  matching help entries for &quot;word&quot;.</code></pre>
+<pre><code>:h i</code></pre>
+<p>to display its help page. For command mode commands, we precede the command with a ‘:’, for example:</p>
+<pre><code>:h :q</code></pre>
+<pre><code>[me@linuxbox ~]$ vi fooscript</code></pre>
+<p>and we will get our familiar “new file” window:</p>
+<figure>
+<img src="images/adventure_vimvigor_newfile.png" alt="New file" ><figcaption>New file</figcaption>
+</figure>
+<h3 id="setting-the-filetype">Setting the Filetype</h3>
+<p>At this point vim has no idea what kind of file we are creating. If we had named the file <code>fooscript.sh</code> the filetype plugin would have determined that we were editing a shell script. We can verify this by asking vim what the current filetype is:</p>
+<pre><code>:set ft?</code></pre>
+<pre><code>filetype=</code></pre>
+<p>For the curious, we can ask for help like this to get more information:</p>
+<pre><code>:h :set
+:h &#39;ft&#39;</code></pre>
+<pre><code>:set</code></pre>
+<p>Since we want our new file to be treated as a shell script, we can set the filetype manually:</p>
+<pre><code>:set ft=sh</code></pre>
+<pre><code>#!/bin/bash
+
+# Script to test editing with vim </code></pre>
+<pre><code>:w</code></pre>
+<p>Now that our file contains the shebang on the first line, the filetype plugin will recognize the file as a shell script whenever it is loaded.</p>
+<h2 id="using-the-shell">Using the Shell</h2>
+<p>One thing we can do with filetypes is create a configuration file for each of the supported types. Normally, these are placed in the <code>~/.vim/ftplugin</code> directory. To do this, we need to create the directory.</p>
+<p>We don’t have leave vim to do this; we can launch a shell from within vim. This is easily done by entering the command:</p>
+<pre><code>:sh</code></pre>
+<pre><code>[me@linuxbox ~]$ mkdir -p ~/.vim/ftplugin</code></pre>
+<p>When we’re done with the shell, we return to vim by exiting the shell:</p>
+<pre><code>[me@linuxbox ~]$ exit</code></pre>
+<pre><code>:e ~/.vim/ftplugin/sh.vim</code></pre>
+<p>The filename <code>sh.vim</code> is required.</p>
+<p><strong>Help topics:</strong> <code>:sh</code></p>
+<h2 id="buffers">Buffers</h2>
+<p>Before we start editing our new file, let’s look at what vim is doing. Each file that we edit is stored in a <em>buffer</em>. We can look the current list of buffers this way:</p>
+<pre><code>:ls</code></pre>
+<pre><code>:bn</code></pre>
+<p>This command (short for <code>:bnext</code>) cycles through the buffer list, wrapping around at the end. Likewise, there is a <code>:bp</code> (<code>:bprevious</code>) command which cycles through the buffer list backwards. We can also select a buffer by number:</p>
+<pre><code>:b 2</code></pre>
+<pre><code>:b fooscript</code></pre>
+<p>Let’s cycle back to our new buffer and add this line to our configuration file:</p>
+<pre><code>setlocal number</code></pre>
+<pre><code>syntax on</code></pre>
+<p>Or turn it off with:</p>
+<pre><code>syntax off</code></pre>
+<pre><code>:tabnew</code></pre>
+<p>This will open a new tab. Since we haven’t associated the tab with a buffer yet, the tab will be labeled “[No Name]”.</p>
+<figure>
+<img src="images/adventure_vimvigor_newtab.png" alt="New tab" ><figcaption>New tab</figcaption>
+</figure>
+<p>While we are in the newly created tab, we can switch to one of the existing buffers as before by typing:</p>
+<pre><code>:bn</code></pre>
+<pre><code>[me@linuxbox ~]$ vim -p file1 file2</code></pre>
+<p>To close tabs, we use <code>:q</code> command just like closing a vim window. When only one tab remains, vim leaves tabbed mode and the display returns to its usual state.</p>
+<p>There are a lot of tab-related features in vim. See the help topic for full details.</p>
+<p><strong>Help topics:</strong> <code>tabpage</code></p>
+<h2 id="color-schemes">Color Schemes</h2>
+<p>If we return to the buffer containing our shell script, we should see the effects of our <code>sh.vim</code> file. When syntax highlighting is turned on (<code>:syn on</code> will do the trick) it assumes the current color scheme. Vim ships with a bunch of different ones. To see the name of the current scheme, type this command:</p>
+<pre><code>:colo</code></pre>
+<pre><code>colorscheme desert</code></pre>
+<p>Notice that we used the long form of the <code>colorscheme</code> command. We could have used the abbreviated form <code>colo</code> but it’s a common custom to use the long names in configuration files for clarity.</p>
+<p>There are many additional color schemes for vim on the Internet. To use one, first create a <code>~/.vim/colors</code> directory and then download the new scheme into it. The new scheme will appear when we cycle through the list.</p>
+<p>Now, save the file and return to our shell script.</p>
+<p><strong>Help topics:</strong> <code>:colorscheme</code></p>
+<h2 id="marks-and-file-marks">Marks and File Marks</h2>
+<p>We know there are various ways of moving around within document in vim. For example, to get to the top, we can type:</p>
+<pre><code>gg</code></pre>
+<pre><code>G</code></pre>
+<p>Vim (and real vi for that matter) also allows us to <em>mark</em> an arbitrary location within a document that we can recall at will. To demonstrate this, go to the top of the script and type:</p>
+<pre><code>ma</code></pre>
+<pre><code>mb</code></pre>
+<p>We have just set two marks, the first called “a” and the second called “b”. To recall a mark, we precede the name of the mark with the ’ character, like so and we are taken to the top of the file again:</p>
+<pre><code>&#39;a</code></pre>
+<pre><code>&#39;V</code></pre>
+<p>vim will immediately take us to that mark even if vim has to load the file to do it. By doing this to <code>.vimrc</code> and <code>sh.vim</code>, we’re set up to edit our configuration files anytime we get another bright idea about customizing vim.</p>
+<p><strong>Help topics:</strong> <code>m '</code></p>
+<h2 id="visual-mode">Visual Mode</h2>
+<p>Among the best features that vim adds to ordinary vi is <em>visual mode</em>. This mode allows us to visually select text in our document. If we type:</p>
+<pre><code>v</code></pre>
+<pre><code>V</code></pre>
+<p>we again enter visual mode, but this time selection is done on a line-by-line basis rather than by individual characters. This is handy when cutting and copying blocks of code.</p>
+<p>There is a third way of using visual mode. If we type:</p>
+<pre><code>Ctrl-v</code></pre>
+<pre><code>There are four main ways to use tabs in Vim:
+
+1. Always keep &#39;tabstop&#39; at 8, set &#39;softtabstop&#39; and
+   &#39;shiftwidth&#39; to 4 (or 3 or whatever you prefer) and use
+   &#39;noexpandtab&#39;.  Then Vim will use a mix of tabs and
+   spaces, but typing &lt;Tab&gt; and &lt;BS&gt; will behave like a tab
+   appears every 4 (or 3) characters.
+
+2. Set &#39;tabstop&#39; and &#39;shiftwidth&#39; to whatever you prefer
+   and use &#39;expandtab&#39;.  This way you will always insert
+   spaces.  The formatting will never be messed up when
+   &#39;tabstop&#39; is changed.
+
+3. Set &#39;tabstop&#39; and &#39;shiftwidth&#39; to whatever you prefer and
+   use a |modeline| to set these values when editing the
+   file again.  Only works when using Vim to edit the file.
+
+4. Always set &#39;tabstop&#39; and &#39;shiftwidth&#39; to the same value,
+   and &#39;noexpandtab&#39;.  This should then work (for initial
+   indents only) for any tabstop setting that people use.
+   It might be nice to have tabs after the first non-blank
+   inserted as spaces if you do this though.  Otherwise,
+   aligned comments will be wrong when &#39;tabstop&#39; is
+   changed.</code></pre>
+<pre><code>setlocal tabstop=2
+setlocal shiftwidth=2
+setlocal expandtab
+setlocal softtabstop=2
+setlocal autoindent
+setlocal smartindent</code></pre>
+<pre><code>:retab</code></pre>
+<p>The file will have its tabs adjusted to match our current indentation style.</p>
+<p><strong>Help topics:</strong> <code>'tabstop' 'shiftwidth' 'expandtab' 'softtabstop' 'autoindent' 'smartindent'</code></p>
+<h2 id="power-moves">Power Moves</h2>
+<p>As we learned in TLCL, vim has lots of <em>movement commands</em> we can use to quickly navigate around our documents. These commands can be employed in many useful ways.</p>
+<p>Here is a list of the common movement commands. Some of this is review, some is new.</p>
+<pre><code>h       Move left (also left-arrow)
+l       Move right (also right-arrow)
+j       Move down (also down-arrow)
+k       Move up (also up-arrow)
+0       First character on the line (also the Home key)
+^       First non-whitespace character on the line
+$       Last character on the line (also the End key)
+f{char} Move right to the next occurrence of char on the current
+        line
+t{char} Move right till (i.e., just before) the next occurrence of
+        char on the current line
+;       Repeat last f or t command
+gg      Go to first line
+G       Go to last line. If a count is specified, go to that line.
+w       Move forward (right) to beginning of next word
+b       Move backward (left) to beginning of previous word
+e       Move forward to end of word
+)       Move forward to beginning of next sentence
+(       Move backward to beginning previous sentence
+}       Move forward to beginning of next paragraph
+{       Move backward to beginning of previous paragraph</code></pre>
+<pre><code>c   Change (i.e., delete then insert)
+d   Delete/cut
+y   Yank (i.e., copy)
+~   Toggle case
+gu  Make lowercase
+gU  Make uppercase
+gq  Format text (a topic we&#39;ll get to shortly)
+g?  ROT13 encoding (for obfiscating text)
+&gt;   Shift (i.e., indent) right
+&lt;   Shift left</code></pre>
+<pre><code>vf.</code></pre>
+<p>This will select the text from the beginning of the line to the end of the first sentence. Press <code>v</code> again to cancel visual mode. Next, return to the beginning line 3 and type:</p>
+<pre><code>v)</code></pre>
+<pre><code>v}</code></pre>
+<p>to select the entire paragraph (any block of text delimited by a blank line). Pressing } again extends the selection to the next paragraph.</p>
+<h3 id="text-object-selection">Text Object Selection</h3>
+<p>In addition to the traditional vi movement commands, vim adds a related feature called <em>text object selection</em>. These commands only work in conjunction with operators. These commands are:</p>
+<pre><code>a   Select entire (all) text object.
+i   Select interior (in) of text object.</code></pre>
+<pre><code>w   Word
+s   Sentence
+p   Paragraph
+t   Tag block (such as &lt;aaa&gt;...&lt;/aaa&gt; used in HTML)
+[   [ enclosed block
+(   ( enclosed block (b can also be used)
+{   { enclosed block (B can also be used)
+&quot;   &quot; quoted string
+&#39;   &#39; quoted string
+ </code></pre>
+<pre><code>caw</code></pre>
+<p>(short for “change all word”), vim selects the entire word, deletes it, and switches to insert mode. Text objects work with visual mode too. Try this: move to line 11 and place the cursor inside the quoted string and type:</p>
+<pre><code>vi&quot;</code></pre>
+<pre><code>va&quot;</code></pre>
+<p>the entire string including the quotes is selected.</p>
+<p><strong>Help topics:</strong> <code>motion.txt text-objects</code></p>
+<h2 id="text-formatting">Text Formatting</h2>
+<p>Let’s say we wanted to add a license header to the beginning of our script. This would consist of a comment block near the top of the file that includes the text of the copyright notice.</p>
+<p>We’ll move to line 3 of our script and add the text, but before we start, let’s tell vim how long we want the lines of text to be. First we’ll ask vim what the current setting is:</p>
+<pre><code>:set tw?</code></pre>
+<pre><code>textwidth=0</code></pre>
+<p>“tw” is short for <code>textwidth</code>, the length of lines setting. A value of zero means that vim is not enforcing a limit on line length. Let’s set textwidth to another value:</p>
+<pre><code>:set tw=75</code></pre>
+<pre><code># This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License at &lt;http://www.gnu.org/licenses/&gt; for more details.</code></pre>
+<pre><code>:set tw=65</code></pre>
+<p>Now place the cursor inside the comment block and type:</p>
+<pre><code>gqip</code></pre>
+<pre><code>Ctrl-v</code></pre>
+<p>Then, move the cursor right one column and then down to the bottom of the block.</p>
+<figure>
+<img src="images/adventure_vimvigor_block_select.png" alt="Visual block select" ><figcaption>Visual block select</figcaption>
+</figure>
+<p>Next, type:</p>
+<pre><code>d</code></pre>
+<pre><code>~       Toggle the case of the current character
+gU      Convert text to upper case
+gu      Convert text to lower case</code></pre>
+<pre><code>gUis    Convert the current sentence to upper case
+guf:    Convert text from the cursor position to the next &#39;:&#39;
+        character on the current line</code></pre>
+<pre><code>:set fileformat=unix
+:w</code></pre>
+<pre><code>qa^xxjq</code></pre>
+<p>Let’s break down what this sequence does:</p>
+<pre><code>qa      Start recording macro &quot;a&quot;
+^       Move to the first non-whitespace character in the line
+xx      Delete the first two characters under the cursor
+j       Move down one line
+q       End recording</code></pre>
+<pre><code>@a</code></pre>
+<p>The recorded sequence will be performed. To repeat the macro on succeeding lines, we can use the repeat last macro command which is:</p>
+<pre><code>@@</code></pre>
+<pre><code>5@a</code></pre>
+<p>the macro will be repeated 5 times.</p>
+<p>We can undo the effect of the macro by repeatedly typing:</p>
+<pre><code>u</code></pre>
+<pre><code>&quot;a</code></pre>
+<p>refers to the register named “a”. To place something in the register, we follow the register with an operation like “yank to end of the line”:</p>
+<pre><code>&quot;ay$</code></pre>
+<pre><code>&quot;ap</code></pre>
+<p>Using registers enables us to place many chunks of text into our clipboard at the same time. But even without consciously trying to use registers, vim is using them while we perform deletes and yanks.</p>
+<p>As we mentioned earlier, the registers named 0-9 have a special use. When we perform ordinary yanks and deletes, vim places our latest yank in register 0 and our last nine deletes in registers 1-9. As we continue to make deletions, vim moves the previous deletion to the next number, so register 1 will contain our most recent deletion and register 9 the oldest.</p>
+<p>Knowing this allows us to overcome the problem of performing a yank and then a delete and losing the text we yanked (a common hazard when using vim). We can always recall the latest yank by referencing register 0.</p>
+<p>To see the current contents of the registers we can use the command:</p>
+<pre><code>:reg</code></pre>
+<pre><code>afunction &amp;&amp; echo &quot;It worked.&quot;</code></pre>
+<p>We start to type the first few characters (“afun”) and press <code>Ctrl-n</code>. Vim should automatically complete the function name “afunction” after we press it. In those cases where vim presents us with more than one choice, use <code>Ctrl-n</code> and <code>Ctrl-p</code> to move up and down the list. Typing any another character, such as a space, to continue our typing will accept our selection and end the automatic completion. <code>Ctrl-e</code> can be use to exit the sub-mode immediately.</p>
+<h3 id="insert-register-contents---ctrl-r">Insert Register Contents - Ctrl-r</h3>
+<p>Typing <code>Ctrl-r</code> followed by a single character register name will insert the contents of that register. Unlike doing an ordinary paste using <code>p</code> or <code>P</code>, a register insert honors text formatting and indentation settings such as <code>textwidth</code> and <code>autoindent</code>.</p>
+<h3 id="automatically-complete-line---ctrl-x-ctrl-l">Automatically Complete Line - Ctrl-x Ctrl-l</h3>
+<p>Typing <code>Ctrl-x</code> while in insert mode launches a sub-mode of automatic completion features. A small menu will appear at the bottom of the display with a list of keys we can type to perform different completions.</p>
+<p>If we have typed the first few letters of a line found in this or any other file that vim has open, typing <code>Ctrl-x</code> <code>Ctrl-l</code> will attempt to automatically complete the line, copying the line to the current location.</p>
+<h3 id="automatically-complete-filename-ctrl-x-ctrl-f">Automatically Complete Filename Ctrl-x Ctrl-f</h3>
+<p>This will perform filename completion. If we start the name of an existing path/file, we can type <code>Ctrl-x</code> <code>Ctrl-f</code> and vim will attempt to complete the name.</p>
+<h3 id="dictionary-lookup---ctrl-x-ctrl-k">Dictionary Lookup - Ctrl-x Ctrl-k</h3>
+<p>If we define a dictionary (i.e., a sorted list of words), by adding this line to our configuration file:</p>
+<pre><code>setlocal dictionary=/usr/share/dict/words</code></pre>
+<pre><code>:nnoremap Q gqip</code></pre>
+<p>After executing this command, pressing the <code>Q</code> key in normal mode will cause the normal mode sequence <code>gqip</code> to be performed.</p>
+<p>The <code>nnoremap</code> command is one of the <code>noremap</code> commands, the safe version of <code>map</code> command. The members of this family include:</p>
+<pre><code>noremap     Map key regardless of mode
+nnoremap    Map normal mode key
+inoremap    Map insert mode key
+cnoremap    Map command mode key</code></pre>
+<pre><code>:nnoremap S :split&lt;Return&gt;</code></pre>
+<p>This command maps the <code>S</code> key to enter command mode, type the <code>split</code> command and a carriage return. The “&lt;Return&gt;” is called a <em>key notation</em>. For non-printable characters, vim has a representation that can be used to indicate the key when we specifying mapping. To see the entire list of possible codes, enter:</p>
+<pre><code>:h key-notation</code></pre>
+<pre><code>:h Q</code></pre>
+<p>to see how a key is being used before we apply our own mapping.</p>
+<p>To make mappings permanent, we can add these mapping commands to our <code>.vimrc</code> file:</p>
+<pre><code>nnoremap Q gqip
+nnoremap S :split&lt;Return&gt;</code></pre>
+<pre><code>:sh
+[me@linuxbox ~]$ mkdir ~/.vim/snippets
+[me@linuxbox ~]$ exit</code></pre>
+<pre><code>:e ~/.vim/snippets/gpl.sh</code></pre>
+<p>Thus creating a new file called gpl.sh. Finally, we’ll paste the copied text into our new file and save it:</p>
+<pre><code>p
+:w</code></pre>
+<pre><code>:nnoremap ,GPL :r ~/.vim/snippets/gpl.sh&lt;Return&gt;</code></pre>
+<p>We map “,GPL” to a command that will cause vim to read the snippet file into the current buffer. The leading comma is used as a <em>leader character</em>. The comma is a rarely used command that is usually safe to remap. Using a leader character will reduce the number of actual vim commands we have to remap if we create a lot of snippets.</p>
+<p>As we add mappings, it’s useful to know what they all are. To display a list of mappings, we use the <code>:map</code> command followed by no arguments:</p>
+<pre><code>:map</code></pre>
+<pre><code>nnoremap ,GPL :r ~/.vim/snippets/gpl.sh&lt;Return&gt;</code></pre>
+<p>If, on the other hand, we want it to be specific to a particular file type, we would put it in the appropriate file such as <code>~/.vim/ftplugin/sh.vim</code> like this:</p>
+<pre><code>nnoremap &lt;buffer&gt; ,GPL :r ~/.vim/snippets/gpl.sh&lt;Return&gt;</code></pre>
+<pre><code>:e dir-list.txt</code></pre>
+<p>Next, we’ll load the buffer with some appropriate text:</p>
+<pre><code>:r ! ls -l /usr/bin</code></pre>
+<pre><code>:w
+:! wc -l %</code></pre>
+<pre><code>ggVG</code></pre>
+<p>This will move the cursor to the beginning of the file and enter visual mode then move to the end of the file, thus selecting the entire buffer.</p>
+<p>We’ll filter the selection to remove everything except lines containing the string “zip”. When we start entering a command after performing a visual selection, the presence of the selection will be indicated this way:</p>
+<pre><code>:&#39;&lt;,&#39;&gt;</code></pre>
+<pre><code>:&#39;&lt;,&#39;&gt; ! grep zip</code></pre>
+<p>We are not limited to a single command. We can also specify pipelines, for example:</p>
+<pre><code>:&#39;&lt;,&#39;&gt; ! grep zip | sort</code></pre>
+<pre><code>:set path+=**</code></pre>
+<p>Adding this to the path allows <code>:find</code> to search directories recursively. For example, we could change the current working directory to the top of a project’s source file tree and use <code>:find</code> to load any file in the entire tree.</p>
+<h3 id="wildmenu">wildmenu</h3>
+<p>Another cool enhancement we can apply is the <em>wildmenu</em>. This is a highlighted bar that will appear above the command line when we are entering file names. The word “wild” in the name refers to use of the “wild” key, by default the Tab key. When the wild key is pressed, automatic completion is attempted with the list of possible matches displayed in the wildmenu. Using the left and right arrow keys (or <code>Ctrl-p</code> and <code>Ctrl-n</code>) allows us to choose one of the displayed items.</p>
+<figure>
+<img src="images/adventure_vimvigor_wildmenu.png" alt="The wildmenu" ><figcaption>The wildmenu</figcaption>
+</figure>
+<p>We can turn on the wildmenu with this command:</p>
+<pre><code>:set wildmenu</code></pre>
+<pre><code>gf      Open file name under cursor
+^w^f    Open file name under cursor in new window</code></pre>
+<pre><code>&quot;### ~/.vim/ftplugin/text.vim
+setlocal textwidth=75
+setlocal tabstop=4
+setlocal shiftwidth=4
+setlocal expandtab</code></pre>
+<pre><code>setlocal spelllang=en_us
+setlocal dictionary=/usr/share/dict/words
+setlocal spell</code></pre>
+<pre><code>]s                      Next misspelled word
+[s                      Previous misspelled word
+z=                      Display suggested corrections
+zg                      Add word to personal dictionary</code></pre>
+<pre><code>z=</code></pre>
+<p>Vim will display a list of suggested corrections and we choose from the list. It is also possible to maintain a personal dictionary of words not found in the main dictionary, for example specialized technical terms. Vim creates the personal dictionary automatically (in <code>~/.vim/spell</code>) and words are added to it when we place the cursor on the highlighted word and type:</p>
+<pre><code>zg</code></pre>
+<pre><code>set laststatus=2</code></pre>
+<p>This will cause vim to display a status bar near the bottom of the display. It will normally appear when more than one window is open (<code>lastatatus=1</code>), but changing this value to 2 causes it to always be displayed regardless of the number of windows. Next, we have:</p>
+<pre><code>set ruler</code></pre>
+<pre><code>if has(&#39;mouse&#39;)
+  set mouse=a
+endif</code></pre>
+<pre><code>&quot;### ~/.vimrc
+set nocompatible
+filetype plugin on
+nnoremap Q gqip
+nnoremap S :split&lt;Return&gt;
+set path+=**
+set wildmenu
+set spelllang=en_us
+if has(&#39;mouse&#39;)
+  set mouse=a
+endif
+set laststatus=2
+set ruler
+
+&quot;### ~/.vim/ftplugin/sh.vim
+setlocal number
+colorscheme desert
+syntax off
+setlocal tabstop=2
+setlocal shiftwidth=2
+setlocal expandtab
+setlocal softtabstop=2
+setlocal autoindent
+setlocal smartindent
+
+&quot;### ~/.vim/ftplugin/text.vim
+colorscheme desert
+setlocal textwidth=75
+setlocal tabstop=4
+setlocal shiftwidth=4
+setlocal expandtab
+setlocal complete=.,w,b,u,t,i
+setlocal dictionary=/usr/share/dict/words
+setlocal spell</code>

@@ -1,0 +1,174 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>LinuxCommand.org: Writing shell scripts.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash shell scripting tutorial: Introduction">
+    <meta name="keywords" content="shell scripting tutorial, bash scripting, bash shell">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="index.php.html">
+    <link rel="next" href="lc3_wss0010.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+      <img src="images/WritingShellScripts-5.png" width="792" height="115" alt="Title graphic">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="index.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0010.php.html">Next</a>
+    </div>
+<h1>Here is Where the Fun Begins</h1>
+
+<p>With the thousands of commands available to the command line user, how can
+we remember them all?  The answer is, we don't. The real power of the computer
+is its ability to do the work for us. To get it to do that, we use the power of
+the shell to automate things. We write <i>shell scripts</i>.</p>
+
+<h2>What are Shell Scripts?</h2>
+	
+<p>In the simplest terms, a shell script is a file containing a series of commands. The shell
+reads this file and carries out the commands as though they have been entered directly on
+the command line.</p>
+
+<p>The shell is somewhat unique, in that it is both a powerful command line interface to the
+system and a scripting language interpreter. As we will see, most of the things that can be
+done on the command line can be done in scripts, and most of the things that can be done
+in scripts can be done on the command line.</p>
+
+<p>We have already covered many shell features, but we have focused on those
+features most often used directly on the command line. The shell also provides
+a set of features usually (but not always) used when writing programs.</p>
+
+<p>Scripts unlock the power of our Linux machine. So let's have some fun!</p>
+
+<h2 id="contents">Contents</h2>
+
+	<ol style="line-height: 150%">
+	<li>
+		<a href="lc3_wss0010.php.html">Writing Our First
+		Script and Getting It to Work</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0020.php.html">Editing the Scripts We Already Have</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0030.php.html">Here Scripts</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0040.php.html">Variables</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0050.php.html">Command Substitution and Constants</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0060.php.html">Shell Functions</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0070.php.html">Some Real Work</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0080.php.html">Flow Control - Part
+		1</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0090.php.html">Stay Out of Trouble</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0100.php.html">Keyboard Input and
+		Arithmetic</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0110.php.html">Flow Control - Part
+		2</a>
+	</li>
+
+	<li>
+		<a href="lc3_wss0120.php.html">Positional
+		Parameters</a>
+	</li>
+
+	<li><a href="lc3_wss0130.php.html">Flow Control - Part 3</a>
+	</li>
+	
+	<li>
+		<a href="lc3_wss0140.php.html">Errors and Signals and Traps (Oh My!) - Part 1</a>
+	</li>
+	
+	<li>
+		<a href="lc3_wss0150.php.html">Errors and Signals and Traps (Oh My!) - Part 2</a>
+	</li>
+</ol>
+
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_writing_shell_scripts.php.html#top">Top</a> | <a
+      href="index.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0010.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

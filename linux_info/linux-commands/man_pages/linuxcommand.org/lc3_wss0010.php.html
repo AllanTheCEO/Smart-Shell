@@ -1,0 +1,288 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 1: Writing your first script and getting it to work</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Writing your first shell script">
+    <meta name="keywords" content="text editor for shell scripts, shell script permissions, directory for shell scripts">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_writing_shell_scripts.php.html">
+    <link rel="next" href="lc3_wss0020.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_writing_shell_scripts.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0020.php.html">Next</a>
+    </div>
+<h1>Writing Our First Script and Getting It to Work</h1>
+
+<p>To successfully write a shell script, we have to do three things:</p>
+
+<ol>
+  <li>Write a script</li>
+
+  <li>Give the shell permission to execute it</li>
+
+  <li>Put it somewhere the shell can find it</li>
+</ol>
+
+<h2>Writing a Script</h2>
+
+<p>A shell script is a file that contains ASCII text. To create a shell script,
+we use a <i>text editor</i>. A text editor is a program, like a word processor,
+that reads and writes ASCII text files.  There are many, many text editors
+available for Linux systems, both for the command line  and GUI environments.
+Here is a list of some common ones:<br><br></p>
+
+<div style="overflow-x: auto"><table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Interface</th>
+  </tr>
+
+  <tr>
+    <td>
+    <code class="user"><a href="lc3_man_pages/vim1.html">vi, vim</a></code>
+    </td>
+
+    <td> The granddaddy of Unix text editors, <code class="user">vi</code>, is
+    infamous for its obtuse user interface.  On the bright side, <code
+    class="user">vi</code> is powerful, lightweight, and fast. Learning <code
+    class="user">vi</code> is a Unix rite of passage, since it is universally
+    available on Unix-like systems.  On most Linux distributions, an enhanced
+    version of <code class="user">vi</code> called <code
+    class="user">vim</code> is provided in place of vi. <code
+    class="user">vim</code> is a remarkable editor and well worth taking the
+    time to learn it.</td>
+
+    <td>
+    command line
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+    <code class="user">Emacs</code>
+    </td>
+
+    <td> The true giant in the world of text editors is Emacs originally
+    written by <a href="https://en.wikipedia.org/wiki/Richard_Stallman">Richard
+    Stallman</a>. Emacs contains (or can be made to contain) every feature ever
+    conceived of for a text editor. It should be noted that <code
+    class="user">vi</code> and Emacs fans fight bitter religious wars over
+    which is better.</td>
+
+    <td>
+    command line
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+    <code class="user"><a href="lc3_man_pages/nano1.html">nano</a></code>
+    </td>
+
+    <td> <code class="user">nano</code> is a free clone of the text editor
+    supplied with the <code class="user">pine</code> email program. <code
+    class="user">nano</code> is very easy to use but is very short on features
+    compared to <code class= "user">vim</code> and <code class=
+    "user">emacs</code>. <code class= "user">nano</code> is recommended for
+    first-time users who need a command line editor.</td>
+
+    <td>
+    command line
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+    <code class="user"><a href="lc3_man_pages/gedit1.html">gedit</a></code>
+    </td>
+
+    <td> <code class="user">gedit</code> is the editor supplied with the GNOME
+    desktop environment. gedit is easy to use and contains enough features to
+    be a good beginners-level editor.  </td>
+
+    <td>
+    graphical
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+    <code class="user">kwrite</code>
+    </td>
+
+    <td> <code class="user">kwrite</code> is the "advanced editor" supplied
+    with KDE. It has syntax highlighting, a helpful feature for programmers and
+    script writers.  </td>
+
+    <td>
+    graphical
+    </td>
+  </tr>
+</table></div>
+
+<p>Let's fire up our text editor and type in our first script as follows:</p>
+
+<div class="codeexample">#!/bin/bash
+
+# My first script
+
+echo "Hello World!"</div>
+
+<p>Clever readers will have figured out how to copy and paste the text into the
+text editor ;-)</p>
+
+<p>This is a traditional "Hello World" program. Forms of this program appear in
+almost every introductory programming book. We'll save the file with some
+descriptive name. How about <code>hello_world</code>?</p>
+
+<p>The first line of the script is important. It is a special construct, called
+a <i>shebang</i>, given to the system indicating what program is to be used to
+interpret the script. In this case, <code>/bin/bash</code>. Other scripting
+languages such as <code>Perl, awk, tcl, Tk,</code> and <code>python</code> also
+use this mechanism.</p>
+
+<p>The second line is a <i>comment</i>. Everything that appears after a "#"
+symbol is ignored by <code class="user">bash</code>. As our scripts become
+bigger and more complicated, comments become vital.  They are used by
+programmers to explain what is going on so that others can figure it out. The
+last line is the <code class="user"><a href=
+"lc3_man_pages/echo1.html">echo</a></code> command. This command simply prints
+its arguments on the display.</p>
+
+<h2>Setting Permissions</h2>
+
+<p>The next thing we have to do is give the shell permission to execute our
+script. This is done with the <code class="user"><a href=
+"lc3_man_pages/chmod1.html">chmod</a></code> command as follows:</p>
+
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">chmod 755 hello_world</code></div>
+
+<p>The "755" will give us read, write, and execute permission. Everybody else
+will get only read and execute permission. To make the script private, (i.e.,
+only we can read and execute), use "700" instead.</p>
+
+<h2>Putting It in Our Path</h2>
+
+<p>At this point, our script will run. Try this:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">./hello_world</code></div>
+
+<p>We should see "Hello World!" displayed.</p>
+
+<p>Before we go any further, we need to talk about paths. When we type the
+name of a command, the system does not search the entire computer to find where
+the program is located. That would take a long time. We see that we don't
+usually have to specify a complete path name to the program we want to run, the
+shell just seems to know.</p>
+
+<p>Well, that's correct. The shell does know. Here's how: the shell maintains a
+list of directories where executable files (programs) are kept, and only
+searches the directories on that list. If it does not find the program after
+searching each directory on the list, it will issue the famous <code>command
+not found</code> error message.</p>
+
+<p>This list of directories is called our <i>path</i>. We can view the list of
+directories with the following command:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">echo $PATH</code></div>
+
+<p>This will return a colon separated list of directories that will be searched
+if a specific path name is not given when a command is entered.  In our first
+attempt to execute our new script, we specified a pathname ("./") to the file.</p>
+
+<p>We can add directories to our path with the following command, where
+<i>directory</i> is the name of the directory we want to add:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">export PATH=$PATH:<i>directory</i></code></div>
+
+<p>A better way would be to edit our <code>.bash_profile</code> file to include
+the above command. That way, it would be done automatically every time we log
+in.</p>
+
+<p>Most Linux distributions encourage a practice in which each user has a
+specific directory for the programs they personally use.  This directory is
+called <code>bin</code> and is a subdirectory of our home directory. If we do
+not already have one, we can create it with the following command:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">mkdir ~/bin</code></div>
+
+<p>If we move or copy our script into our new <code>bin</code> directory we'll
+be all set. Now we just have to type:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">hello_world</code></div>
+
+<p>and our script will run. Most distributions will have the <code>~/bin</code>
+directory already in the PATH, but on some distributions, most notably Ubuntu
+(and other Debian-based distributions), we may need to restart our terminal
+session before our newly created <code>bin</code> directory is added to
+our PATH.</p>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0010.php.html#top">Top</a> | <a
+      href="lc3_writing_shell_scripts.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0020.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

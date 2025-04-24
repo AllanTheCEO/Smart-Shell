@@ -1,0 +1,25 @@
+  
+NAME
+    case - Execute commands based on pattern matching.
+
+SYNOPSIS
+    case WORD in [PATTERN [| PATTERN]...) COMMANDS ;;]... esac
+
+DESCRIPTION
+    Execute commands based on pattern matching.
+    
+    Selectively execute COMMANDS based upon WORD matching PATTERN.  The
+    `|' is used to separate multiple patterns.
+    
+    Exit Status:
+    Returns the status of the last command executed.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

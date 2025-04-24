@@ -1,0 +1,978 @@
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Command Documentation</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Manual pages for bash builtins, GNU coreutils, and other commands">
+    <meta name="keywords" content="bash, shell, builtins, coreutils, documentation, man pages">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_resources.php.html">
+    <link rel="next" href="tlcl.php.html">
+    <link rel="contents" href="lc3_resources.php.html">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_resources.php.html">Previous</a> | <a
+      href="lc3_resources.php.html">Contents</a> | <a
+      href="tlcl.php.html">Next</a>
+    </div><h1>Manual Pages</h1>
+<h3 id="builtins">Bash Builtins</h3>
+<div style="overflow-x: auto"><table>
+  <caption>List of bash shell builtins</caption>
+  <tr>
+    <th><strong>Command</strong></th>
+    <th><strong>Description</strong></th>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/dbl_parensh.html">((&nbsp;...&nbsp;))</a></code></td>
+    <td>Evaluate arithmetic expression </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/doth.html">.</a></code></td>
+    <td>Execute commands from a file in the current shell </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/colonh.html">:</a></code></td>
+    <td>Null command </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/bracketh.html">[</a></code></td>
+    <td>Evaluate conditional expression </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/dbl_bracketh.html">[[&nbsp;...&nbsp;]]</a></code></td>
+    <td>Execute conditional command </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/aliash.html">alias</a></code></td>
+    <td>Define or display aliases </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/bgh.html">bg</a></code></td>
+    <td>Move jobs to the background </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/bindh.html">bind</a></code></td>
+    <td>Set Readline key bindings and variables </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/breakh.html">break</a></code></td>
+    <td>Exit for, while, or until loops </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/builtinh.html">builtin</a></code></td>
+    <td>Execute shell builtins </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/callerh.html">caller</a></code></td>
+    <td>Return the context of the current subroutine call </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/caseh.html">case</a></code></td>
+    <td>Execute commands based on pattern matching </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/cdh.html">cd</a></code></td>
+    <td>Change the shell working directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/commandh.html">command</a></code></td>
+    <td>Execute a simple command or display information about commands </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/compgenh.html">compgen</a></code></td>
+    <td>Display possible completions depending on the options </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/completeh.html">complete</a></code></td>
+    <td>Specify how arguments are to be completed by Readline </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/compopth.html">compopt</a></code></td>
+    <td>Modify or display completion options </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/continueh.html">continue</a></code></td>
+    <td>Resume for, while, or until loops </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/coproch.html">coproc</a></code></td>
+    <td>Create a coprocess named NAME </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/declareh.html">declare</a></code></td>
+    <td>Set variable values and attributes </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/dirsh.html">dirs</a></code></td>
+    <td>Display directory stack </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/disownh.html">disown</a></code></td>
+    <td>Remove jobs from current shell </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/echoh.html">echo</a></code></td>
+    <td>Write arguments to the standard output </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/enableh.html">enable</a></code></td>
+    <td>Enable and disable shell builtins </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/evalh.html">eval</a></code></td>
+    <td>Execute arguments as a shell command </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/exech.html">exec</a></code></td>
+    <td>Replace the shell with the given command </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/exith.html">exit</a></code></td>
+    <td>Exit the shell </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/exporth.html">export</a></code></td>
+    <td>Set export attribute for shell variables </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/falseh.html">false</a></code></td>
+    <td>Return an unsuccessful result </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/fch.html">fc</a></code></td>
+    <td>Display or execute commands from the history list </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/fgh.html">fg</a></code></td>
+    <td>Move job to the foreground </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/forh.html">for</a></code></td>
+    <td>Execute commands for each member in a list </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/functionh.html">function</a></code></td>
+    <td>Define shell function </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/getoptsh.html">getopts</a></code></td>
+    <td>Parse option arguments </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/hashh.html">hash</a></code></td>
+    <td>Remember or display program locations </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/helph.html">help</a></code></td>
+    <td>Display information about builtin commands </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/historyh.html">history</a></code></td>
+    <td>Display or manipulate the history list </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ifh.html">if</a></code></td>
+    <td>Execute commands based on conditional </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/jobsh.html">jobs</a></code></td>
+    <td>Display status of jobs </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/killh.html">kill</a></code></td>
+    <td>Send a signal to a job </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/leth.html">let</a></code></td>
+    <td>Evaluate arithmetic expressions </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/localh.html">local</a></code></td>
+    <td>Define local variables </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/logouth.html">logout</a></code></td>
+    <td>Exit a login shell </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/mapfileh.html">mapfile</a></code></td>
+    <td>Read lines from the standard input into an indexed array variable </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/popdh.html">popd</a></code></td>
+    <td>Remove directories from stack </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/printfh.html">printf</a></code></td>
+    <td>Formats and prints ARGUMENTS under control of the FORMAT </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/pushdh.html">pushd</a></code></td>
+    <td>Add directories to stack </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/pwdh.html">pwd</a></code></td>
+    <td>Print the name of the current working directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/readh.html">read</a></code></td>
+    <td>Read a line from the standard input and split it into fields </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/readarrayh.html">readarray</a></code></td>
+    <td>Read lines from a file into an array variable </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/readonlyh.html">readonly</a></code></td>
+    <td>Mark shell variables as unchangeable </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/returnh.html">return</a></code></td>
+    <td>Return from a shell function </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/selecth.html">select</a></code></td>
+    <td>Select words from a list and execute commands </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/seth.html">set</a></code></td>
+    <td>Set or unset values of shell options and positional parameters </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/shifth.html">shift</a></code></td>
+    <td>Shift positional parameters </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/shopth.html">shopt</a></code></td>
+    <td>Set and unset shell options </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sourceh.html">source</a></code></td>
+    <td>Execute commands from a file in the current shell </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/suspendh.html">suspend</a></code></td>
+    <td>Suspend shell execution </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/testh.html">test</a></code></td>
+    <td>Evaluate conditional expression </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/timeh.html">time</a></code></td>
+    <td>Report time consumed by pipeline's execution </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/timesh.html">times</a></code></td>
+    <td>Display process times </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/traph.html">trap</a></code></td>
+    <td>Trap signals and other events </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/trueh.html">true</a></code></td>
+    <td>Return a successful result </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/typeh.html">type</a></code></td>
+    <td>Display information about command type </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/typeseth.html">typeset</a></code></td>
+    <td>Set variable values and attributes </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ulimith.html">ulimit</a></code></td>
+    <td>Modify shell resource limits </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/umaskh.html">umask</a></code></td>
+    <td>Display or set file mode mask </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/unaliash.html">unalias</a></code></td>
+    <td>Remove each NAME from the list of defined aliases </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/unseth.html">unset</a></code></td>
+    <td>Unset values and attributes of shell variables and functions </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/untilh.html">until</a></code></td>
+    <td>Execute commands as long as a test does not succeed </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/variablesh.html">variables</a></code></td>
+    <td>Common shell variable names and usage </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/waith.html">wait</a></code></td>
+    <td>Wait for job completion and return exit status </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/whileh.html">while</a></code></td>
+    <td>Execute commands as long as a test succeeds </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/braceh.html">{&nbsp;...&nbsp;}</a></code></td>
+    <td>Group commands as a unit </td>
+  </tr>
+</table></div>
+<h3 id="file">Coreutils - File Utilities</h3>
+<div style="overflow-x: auto"><table>
+  <caption>List of coreutils file utilities</caption>
+  <tr>
+    <th><strong>Command</strong></th>
+    <th><strong>Description</strong></th>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/chcon1.html">chcon</a></code></td>
+    <td>Changes file security context (SELinux) </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/chgrp1.html">chgrp</a></code></td>
+    <td>Changes file group ownership </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/chown1.html">chown</a></code></td>
+    <td>Changes file ownership </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/chmod1.html">chmod</a></code></td>
+    <td>Changes the permissions of a file or directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/cp1.html">cp</a></code></td>
+    <td>Copies a file or directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/dd1.html">dd</a></code></td>
+    <td>Copies and converts a file </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/df1.html">df</a></code></td>
+    <td>Shows disk free space on file systems </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/dir1.html">dir</a></code></td>
+    <td>Is exactly like "ls -C -b". (Files are by default listed in columns and sorted vertically.) </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/dircolors1.html">dircolors</a></code></td>
+    <td>Set up color for ls </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/install1.html">install</a></code></td>
+    <td>Copies files and set attributes </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ln1.html">ln</a></code></td>
+    <td>Creates a link to a file </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ls1.html">ls</a></code></td>
+    <td>Lists the files in a directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/mkdir1.html">mkdir</a></code></td>
+    <td>Creates a directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/mkfifo1.html">mkfifo</a></code></td>
+    <td>Makes named pipes (FIFOs) </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/mknod1.html">mknod</a></code></td>
+    <td>Makes block or character special files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/mktemp1.html">mktemp</a></code></td>
+    <td>Creates a temporary file or directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/mv1.html">mv</a></code></td>
+    <td>Moves files or rename files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/realpath1.html">realpath</a></code></td>
+    <td>Returns the resolved absolute or relative path for a file </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/rm1.html">rm</a></code></td>
+    <td>Removes (deletes) files, directories, device nodes and symbolic links </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/rmdir1.html">rmdir</a></code></td>
+    <td>Removes empty directories </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/shred1.html">shred</a></code></td>
+    <td>Overwrites a file to hide its contents, and optionally deletes it </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sync1.html">sync</a></code></td>
+    <td>Flushes file system buffers </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/touch1.html">touch</a></code></td>
+    <td>Changes file timestamps </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/truncate1.html">truncate</a></code></td>
+    <td>Shrink or extend the size of a file to the specified size </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/vdir1.html">vdir</a></code></td>
+    <td>Is exactly like "ls -l -b". (Files are by default listed in long format.) </td>
+  </tr>
+</table></div>
+<h3 id="text">Coreutils - Text Utilities</h3>
+<div style="overflow-x: auto"><table>
+  <caption>List of coreutils text utilities</caption>
+  <tr>
+    <th><strong>Command</strong></th>
+    <th><strong>Description</strong></th>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/b2sum1.html">b2sum</a></code></td>
+    <td>Computes and checks BLAKE2b message digest </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/base321.html">base32</a></code></td>
+    <td>Encodes or decodes Base32, and prints result to standard output </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/base641.html">base64</a></code></td>
+    <td>Encodes or decodes Base64, and prints result to standard output </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/cat1.html">cat</a></code></td>
+    <td>Concatenates and prints files on the standard output </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/cksum1.html">cksum</a></code></td>
+    <td>Checksums and count the bytes in a file </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/comm1.html">comm</a></code></td>
+    <td>Compares two sorted files line by line </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/csplit1.html">csplit</a></code></td>
+    <td>Splits a file into sections determined by context lines </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/cut1.html">cut</a></code></td>
+    <td>Removes sections from each line of files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/expand1.html">expand</a></code></td>
+    <td>Converts tabs to spaces </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/fmt1.html">fmt</a></code></td>
+    <td>Simple optimal text formatter </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/fold1.html">fold</a></code></td>
+    <td>Wraps each input line to fit in specified width </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/head1.html">head</a></code></td>
+    <td>Outputs the first part of files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/join1.html">join</a></code></td>
+    <td>Joins lines of two files on a common field </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/md5sum1.html">md5sum</a></code></td>
+    <td>Computes and checks MD5 message digest </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/nl1.html">nl</a></code></td>
+    <td>Numbers lines of files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/numfmt1.html">numfmt</a></code></td>
+    <td>Reformat numbers </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/od1.html">od</a></code></td>
+    <td>Dumps files in octal and other formats </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/paste1.html">paste</a></code></td>
+    <td>Merges lines of files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ptx1.html">ptx</a></code></td>
+    <td>Produces a permuted index of file contents </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/pr1.html">pr</a></code></td>
+    <td>Converts text files for printing </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sha512sum1.html">sha512sum</a></code></td>
+    <td>Computes and checks SHA-1/SHA-2 message digests </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/shuf1.html">shuf</a></code></td>
+    <td>generate random permutations </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sort1.html">sort</a></code></td>
+    <td>sort lines of text files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/split1.html">split</a></code></td>
+    <td>Splits a file into pieces </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sum1.html">sum</a></code></td>
+    <td>Checksums and counts the blocks in a file </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tac1.html">tac</a></code></td>
+    <td>Concatenates and prints files in reverse order line by line </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tail1.html">tail</a></code></td>
+    <td>Outputs the last part of files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tr1.html">tr</a></code></td>
+    <td>Translates or deletes characters </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tsort1.html">tsort</a></code></td>
+    <td>Performs a topological sort </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/unexpand1.html">unexpand</a></code></td>
+    <td>Converts spaces to tabs </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/uniq1.html">uniq</a></code></td>
+    <td>Removes duplicate lines from a sorted file </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/wc1.html">wc</a></code></td>
+    <td>Prints the number of bytes, words, and lines in files </td>
+  </tr>
+</table></div>
+<h3 id="shell">Coreutils - Shell Utilities</h3>
+<div style="overflow-x: auto"><table>
+  <caption>List of coreutils shell utilities</caption>
+  <tr>
+    <th><strong>Command</strong></th>
+    <th><strong>Description</strong></th>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/arch1.html">arch</a></code></td>
+    <td>Prints machine hardware name (same as uname -m) </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/basename1.html">basename</a></code></td>
+    <td>Removes the path prefix from a given pathname </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/chroot1.html">chroot</a></code></td>
+    <td>Changes the root directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/date1.html">date</a></code></td>
+    <td>Prints or sets the system date and time </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/dirname1.html">dirname</a></code></td>
+    <td>Strips non-directory suffix from file name </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/du1.html">du</a></code></td>
+    <td>Shows disk usage on file systems </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/echo1.html">echo</a></code></td>
+    <td>Displays a specified line of text </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/env1.html">env</a></code></td>
+    <td>Displays and modifies environment variables </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/expr1.html">expr</a></code></td>
+    <td>Evaluates expressions </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/factor1.html">factor</a></code></td>
+    <td>Factors numbers </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/false1.html">false</a></code></td>
+    <td>Does nothing, but exits unsuccessfully </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/groups1.html">groups</a></code></td>
+    <td>Prints the groups of which the user is a member </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/hostid1.html">hostid</a></code></td>
+    <td>Prints the numeric identifier for the current host </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/id1.html">id</a></code></td>
+    <td>Prints real or effective UID and GID </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/link1.html">link</a></code></td>
+    <td>Creates a link to a file </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/logname1.html">logname</a></code></td>
+    <td>Print the user's login name </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/nice1.html">nice</a></code></td>
+    <td>Modifies scheduling priority </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/nohup1.html">nohup</a></code></td>
+    <td>Allows a command to continue running after logging out </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/nproc1.html">nproc</a></code></td>
+    <td>Queries the number of (active) processors </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/pathchk1.html">pathchk</a></code></td>
+    <td>Checks whether file names are valid or portable </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/pinky1.html">pinky</a></code></td>
+    <td>A lightweight version of finger </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/printenv1.html">printenv</a></code></td>
+    <td>Prints environment variables </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/printf1.html">printf</a></code></td>
+    <td>Formats and prints data </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/pwd1.html">pwd</a></code></td>
+    <td>Prints the current working directory </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/readlink1.html">readlink</a></code></td>
+    <td>Displays value of a symbolic link </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/runcon1.html">runcon</a></code></td>
+    <td>Run command with specified security context </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/seq1.html">seq</a></code></td>
+    <td>Prints a sequence of numbers </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sleep1.html">sleep</a></code></td>
+    <td>Delays for a specified amount of time </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/stat1.html">stat</a></code></td>
+    <td>Returns data about an inode </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/stdbuf1.html">stdbuf</a></code></td>
+    <td>Controls buffering for commands that use stdio </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/stty1.html">stty</a></code></td>
+    <td>Changes and prints terminal line settings </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tee1.html">tee</a></code></td>
+    <td>Sends output to multiple files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/test1.html">test</a></code></td>
+    <td>Evaluates an expression </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/timeout1.html">timeout</a></code></td>
+    <td>Run a command with a time limit </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/true1.html">true</a></code></td>
+    <td>Does nothing, but exits successfully </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tty1.html">tty</a></code></td>
+    <td>Prints terminal name </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/uname1.html">uname</a></code></td>
+    <td>Prints system information </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/unlink1.html">unlink</a></code></td>
+    <td>Removes the specified file using the unlink function </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/uptime1.html">uptime</a></code></td>
+    <td>Tells how long the system has been running </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/users1.html">users</a></code></td>
+    <td>Prints the user names of users currently logged into the current host </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/who1.html">who</a></code></td>
+    <td>Prints a list of all users currently logged in </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/whoami1.html">whoami</a></code></td>
+    <td>Prints the effective userid </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/yes1.html">yes</a></code></td>
+    <td>Prints a string repeatedly </td>
+  </tr>
+</table></div>
+<h3 id="other">Other Commands</h3>
+<div style="overflow-x: auto"><table>
+  <caption>List of other common commands</caption>
+  <tr>
+    <th><strong>Command</strong></th>
+    <th><strong>Description</strong></th>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ascii7.html">ascii</a></code></td>
+    <td>ASCII character set encoded in octal, decimal, and hexadecimal </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/aspell1.html">aspell</a></code></td>
+    <td>Interactive spell checker </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/awk1.html">awk</a></code></td>
+    <td>Pattern scanning and processing language </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/bash1.html">bash</a></code></td>
+    <td>GNU Bourne-Again SHell </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/bc1.html">bc</a></code></td>
+    <td>An arbitrary precision calculator language </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/cal1.html">cal</a></code></td>
+    <td>Display a calendar </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/curl1.html">curl</a></code></td>
+    <td>Transfer a URL </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/file1.html">file</a></code></td>
+    <td>Determine file type </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/find1.html">find</a></code></td>
+    <td>Search for files in a directory hierarchy </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/gedit1.html">gedit</a></code></td>
+    <td>Text editor for the GNOME Desktop </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/grep1.html">grep</a></code></td>
+    <td>Print lines matching a pattern </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/gunzip1.html">gunzip</a></code></td>
+    <td>Compress or expand files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/gzip1.html">gzip</a></code></td>
+    <td>Compress or expand files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/less1.html">less</a></code></td>
+    <td>Opposite of more </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/locate1.html">locate</a></code></td>
+    <td>Find files by name </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/look1.html">look</a></code></td>
+    <td>Display lines beginning with a given string </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/lpr1.html">lpr</a></code></td>
+    <td>Print files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/man1.html">man</a></code></td>
+    <td>Interface to the system reference manuals </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/mc1.html">mc</a></code></td>
+    <td>Visual shell for Unix-like systems. </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/mcedit1.html">mcedit</a></code></td>
+    <td>Internal file editor of GNU Midnight Commander. </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/more1.html">more</a></code></td>
+    <td>File perusal filter for crt viewing </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/mount8.html">mount</a></code></td>
+    <td>Mount a filesystem </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/nano1.html">nano</a></code></td>
+    <td>Nano's ANOther editor, inspired by Pico </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ps1.html">ps</a></code></td>
+    <td>Report a snapshot of the current processes. </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/scp1.html">scp</a></code></td>
+    <td>OpenSSH secure file copy </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sed1.html">sed</a></code></td>
+    <td>Stream editor for filtering and transforming text </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sftp1.html">sftp</a></code></td>
+    <td>OpenSSH secure file transfer </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/ssh1.html">ssh</a></code></td>
+    <td>OpenSSH remote login client </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sqlite31.html">sqlite3</a></code></td>
+    <td>Command line interface for SQLite version 3 </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/su1.html">su</a></code></td>
+    <td>Run a command with substitute user and group ID </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/sudo8.html">sudo</a></code></td>
+    <td>Execute a command as another user </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tar1.html">tar</a></code></td>
+    <td>An archiving utility </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tmux1.html">tmux</a></code></td>
+    <td>Terminal multiplexer </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/top1.html">top</a></code></td>
+    <td>Display Linux processes </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/tput1.html">tput</a></code></td>
+    <td>Initialize a terminal or query terminfo database </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="https://linuxcommand.org/lc3_man_pages/uptime1.html">uptime</a></code></td>
+    <td>Tell how long the system has been running. </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/vim1.html">vim</a></code></td>
+    <td>Vi IMproved, a programmer's text editor </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/wget1.html">wget</a></code></td>
+    <td>Non-interactive network downloader. </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/which1.html">which</a></code></td>
+    <td>Shows the full path of (shell) commands </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/zcat1.html">zcat</a></code></td>
+    <td>Compress or expand files </td>
+  </tr>
+  <tr>
+    <td><code class="user"><a href="lc3_man_pages/zless1.html">zless</a></code></td>
+    <td>File perusal filter for crt viewing of compressed text </td>
+  </tr>
+</table></div>
+
+    <div class="pagenav">
+      <a
+      href="lc3_man_page_index.php.html#top">Top</a> | <a
+      href="lc3_resources.php.html">Previous</a> | <a
+      href="lc3_resources.php.html">Contents</a> | <a
+      href="tlcl.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

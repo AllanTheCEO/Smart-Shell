@@ -1,0 +1,490 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Linux Command Line Adventure: Coding Standards</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash Coding Standards">
+    <meta name="keywords" content="bash, coding style, coding standard, best practice, technique">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_adv_source.php.html">
+    <link rel="next" href="lc3_adv_new_script.php.html">
+    <link rel="contents" href="lc3_adventures.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_adv_source.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_new_script.php.html">Next</a>
+    </div>
+<h1 id="coding-standards-part-1-our-own">Coding Standards Part 1: Our Own</h1>
+<p>Most computer programming is done by organizations and teams. Some programs are developed by lone individuals within a team and others by collaborative groups. In order to promote program quality, many organizations develop formal programming guidelines called <em>coding standards</em> that define specific technical and stylistic coding practices to help ensure code quality and consistency.</p>
+<p>In this adventure, we’re going to develop our own shell script coding standard to be known henceforth as the <em>LinuxCommand Bash Script Coding Style Guide</em>. The Source adventure is a suggested prerequisite for this adventure.</p>
+<p>Roaming around the Internet, we can find lots of articles about “proper” shell script standards and practices. Some are listed in the “Further Reading” section at the end of this adventure. While the scripts presented in TLCL do not follow any particular standard (instead, they present common practice from different historical perspectives), their design promotes several important ideas:</p>
+<ol type="1">
+<li><p><strong>Write cleanly and simply.</strong> Look for the simplest and most easily understood solutions to problems.</p></li>
+<li><p><strong>Use modern idioms, but be aware of the old ones.</strong> It’s important that scripts fit within common practice so that experienced people can easily understand them.</p></li>
+<li><p><strong>Be careful and defensive.</strong> Follow Murphy’s Law: anything that can go wrong eventually will.</p></li>
+<li><p><strong>Document your work.</strong></p></li>
+<li><p><strong>There are lots of ways to do things, but some ways are better than others.</strong></p></li>
+</ol>
+<p>Coding standards generally support the same goals, but with more specificity.</p>
+<p>In reviewing the Internet’s take on shell scripting standards, one might notice a certain undercurrent of hostility towards using the shell as a programming medium at all. Why is this?</p>
+<p>Most programmers don’t learn the shell at the beginning of their programming careers; instead, they learn it (haphazardly) after they have learned one or more traditional programming languages. Compared to most programming languages, the shell is an odd beast that seems, to many, a chaotic mess. This is largely due to the shell’s unique role as both a command line interpreter and a scripting language.</p>
+<p>As with all programming languages, the shell has its particular strengths and weaknesses. The shell is good at solving certain kinds of problems, and not so good at others. Like all good artists, we need to understand the bounds of our medium.</p>
+<h3 id="what-the-shell-is-good-at">What the Shell is Good At</h3>
+<ul>
+<li><p>The shell is a powerful glue for connecting thousands of command line programs together into solutions to a variety of data processing and system administration problems.</p></li>
+<li><p>The shell is adept at <em>batch processing</em>. In the early days of computing, programs were not interactive; that is, they started, they carried out their tasks, and they ended. This style of programming dominated computing until the early 1960s when disk storage and virtual memory made timesharing and interactive programs possible. Those of us who remember MS-DOS will recall that it had a limp substitute for shell scripts called batch files.</p></li>
+</ul>
+<h3 id="what-the-shell-is-not-so-good-at">What the Shell is Not So Good At</h3>
+<ul>
+<li><p>The shell does not excel with programs requiring a lot of user interaction. Yes, the shell does have the <code>read</code> command and we could use <code>dialog</code>, but let’s face it, the shell is not very good at this.</p></li>
+<li><p>The shell is not suitable for implementing algorithms requiring complex data structures. While the shell does have integers, strings, and one dimensional arrays (which can be associative), it doesn’t support anything beyond that. For example, it doesn’t have structures, enumerated or Boolean types, or even floating point numbers.</p></li>
+</ul>
+<h2 id="a-coding-standard-of-our-own">A Coding Standard of Our Own</h2>
+<p>Keeping the points above in mind, let’s make our own shell script coding standard. It will be an amalgam of various published standards, along with a dash of the author’s own humble wisdom on the subject. As the name implies, the <em>LinuxCommand Bash Script Coding Style Guide</em> coding standard will be very <code>bash</code> specific and as such, it will use some features that are not found in strictly POSIX complaint shells.</p>
+<h3 id="script-naming-location-and-permissions">Script Naming, Location, and Permissions</h3>
+<p>Like other executables, shell script file names should not include an extension. Shared libraries of shell code which are not standalone executables should have the extension <code>.sh</code> if the code is portable across multiple shells (for example <code>bash</code> and <code>zsh</code>) or <code>.bash</code> if the code is bash-specific.</p>
+<p>For ease of execution, scripts should be placed in a directory listed in the user’s <code>PATH</code>. The <code>~/bin</code> directory is a good location for personal scripts as most Linux distributions support this out of the box. Scripts intended for use by all users should be located in the <code>/usr/local/bin</code> directory. System administration scripts (ones intended for the superuser) should be placed in <code>/usr/local/sbin</code>. Shared code can be located in any subdirectory of the user’s home directory. Shared code intended for use system wide should be placed in <code>/usr/local/lib</code> unless the shared code specifies only configuration settings, in which case it should be located in <code>/usr/local/etc</code>.</p>
+<p>Executable code must be both readable and executable to be used, thus the permission setting for shell scripts should be 755, 750 or 700 depending on security requirements. Shared code need only be readable, thus the permissions for shared code should be 644, 640, or 600.</p>
+<h3 id="structure">Structure</h3>
+<p>A shell script is divided into five sections. They are:</p>
+<ol type="1">
+<li>The shebang</li>
+<li>The comment block</li>
+<li>Constants</li>
+<li>Functions</li>
+<li>Program body</li>
+</ol>
+<h4 id="the-shebang">The Shebang</h4>
+<p>The first line of a script should be a shebang in either of the following forms:</p>
+<pre><code>#!/bin/bash</code></pre>
+<p>Or</p>
+<pre><code>#!/usr/bin/env bash</code></pre>
+<p>The second form is used in cases where the script is intended for use on a non-Linux system (such as macOS). The <code>env</code> command will search the user’s <code>PATH</code> for a <code>bash</code> executable and launch the first instance it finds. Of the two forms, the first is preferred, as its results are less ambiguous.</p>
+<h4 id="the-comment-block">The Comment Block</h4>
+<p>The first bit of documentation to appear in the script is the comment block. This set of comments should include the name of the script and its author, any necessary copyright and licensing information, a brief description of the script’s purpose, and its command line options and arguments.</p>
+<p>It is also useful to include version information and a revision history. Here is an example of a fully populated comment block. The exact visual style of the block is undefined and is left to the programmer’s discretion.</p>
+<pre><code># ---------------------------------------------------------------------------
+# new_script - Bash shell script template generator
+
+# Copyright 2012-2021, William Shotts &lt;bshotts@users.sourceforge.net&gt;
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License at &lt;http://www.gnu.org/licenses/&gt; for
+# more details.
+
+# Usage: new_script [[-h|--help]
+#        new_script [-q|--quiet] [-s|--root] [script]]
+
+# Revision history:
+# 2021-04-02  Updated to new coding standard (3.5)
+# 2019-05-09  Added support for shell scripting libraries (3.4)
+# 2015-09-14  Minor cleanups suggested by Shellcheck (3.3)
+# 2014-01-21  Minor formatting corrections (3.2)
+# 2014-01-12  Various cleanups (3.1)
+# 2012-05-14  Created
+# ---------------------------------------------------------------------------</code></pre>
+<h4 id="constants">Constants</h4>
+<p>After the comment block, we define the constants used by the script. As we recall, constants are variables that have a fixed value. They are used to define values that are used in various locations in the script. Constants simplify script maintenance by eliminating hard coded values scattered throughout the code. By placing this section at the top, changes to the script can be made more easily.</p>
+<p>There are two constants that every script should include. First, a constant that contains the name of the program, for example:</p>
+<pre><code>PROGNAME=${0##*/}</code></pre>
+<p>This value is useful for such things as help and error messages. In the example above, the name of the program is calculated from the first word on the command line that invoked the script (<code>$0</code>) with any leading path name stripped off. By calculating it this way, if the name of the script file ever changes, the constant will automatically contain the new name.</p>
+<p>The second constant that should be included contains the script’s version number. Like the <code>PROGNAME</code> constant, this value is useful in help and error messages.</p>
+<pre><code>VERSION=&quot;3.5&quot;</code></pre>
+<p>Constants should also be defined for numerical values such as maximum or minimum limits used in calculations, as well as for the names of files or directories used by, or acted upon, by the script.</p>
+<h4 id="functions">Functions</h4>
+<p>Function definitions should appear next in the script. They should follow an order that indicates their hierarchy; that is, functions should be ordered so they are defined before they are called. For example, if <code>funct_b</code> calls <code>funct_a</code>, function <code>funct_a</code> should be defined ahead of <code>func_b</code>.</p>
+<p>Functions should have the following form:</p>
+<pre><code>func_b {
+
+  local v1=&quot;$1&quot;
+  local v2=&quot;$2&quot;
+
+  command1
+  command2
+  return
+}</code></pre>
+<p>Positional parameters passed to a function should be assigned to local variables with descriptive names to clarify how the parameters are used. Unless there is a good reason, all functions should end with a <code>return</code> statement with an exit status as required.</p>
+<p>Each function defined in a code library should be preceded by a short comment block that lists the function’s name, purpose, and positional parameters.</p>
+<h4 id="program-body">Program Body</h4>
+<p>The final section of a script is the program body, where we get to do what we came here to do. In this section we handle such things as positional parameter processing, acquisition and validation of required input, processing, and output.</p>
+<p>A common practice is to write the program body as a very simple abstraction of the program, so that the basic program flow is easy to understand and most of the fussy bits are placed in functions defined above the program body.</p>
+<p>The end of the program body should include some means of housekeeping, to do such things as removing temporary files. All scripts should return a useful exit status.</p>
+<h3 id="formatting-and-visual-style">Formatting and Visual Style</h3>
+<p>Good visual layout makes scripts easier to read and understand. It’s important to make formatting consistent so it creates a reliable visual language for the code.</p>
+<h4 id="line-length">Line Length</h4>
+<p>In order to improve readability and to display properly in small terminal windows, line length should be limited to 80 characters. Line continuation characters should be used to break long lines, with each subsequent line indented one level from the first. For example:</p>
+<pre><code>printf &quot;A really long string follows here: %s\n&quot; \
+  &quot;Some really, really, really long string.&quot;</code></pre>
+<h4 id="indentation">Indentation</h4>
+<p>Indention should be done with spaces and never with tab characters. Most text editors can be set to use spaces for tabbing. In order for the maximum number of characters to be included on each line, each level of indentation should be 2 spaces.</p>
+<h4 id="constant-variable-and-function-names">Constant, Variable and Function Names</h4>
+<p>Constant names should be written in all caps. Variable and function names should be written in all lowercase. When a constant or variable name consists of multiple words, underscore characters should be used as the separator. Camel case (“camelCase”) should be avoided as it makes people think we’re one of those snooty Java programmers just learning to write shell scripts ;-)</p>
+<h4 id="long-command-option-names">Long Command Option Names</h4>
+<p>When using less common commands with multiple options (or more common commands with less common options), it is sometimes best to use the long form option names and split the option list across multiple lines.</p>
+<pre><code># Use long option names to improve readability
+
+rsync \
+  --archive \
+  --delete-excluded \
+  --rsh=ssh \
+  --one-file-system \
+  --relative \
+  --include-from=&quot;$INCLUDE_FILE&quot; \
+  --exclude-from=&quot;$EXCLUDE_FILE&quot; \
+  &quot;$SOURCE&quot; &quot;$DESTINATION&quot;</code></pre>
+<h4 id="pipelines">Pipelines</h4>
+<p>Pipelines should be formatted for maximum clarity. If a pipeline will fit on one line cleanly, it should be written that way. Otherwise, pipelines should be broken into multiple lines with one pipeline element per line.</p>
+<pre><code># Short pipeline on one line
+
+command1 | command2
+
+# Long pipeline on multiple lines
+
+command1 \
+  | command2 \
+  | command3 \
+  | command4</code></pre>
+<h4 id="compound-commands">Compound Commands</h4>
+<p>Here are the recommended formatting styles for compound commands;</p>
+<pre><code># &#39;then&#39; should appear on the same line as &#39;if&#39;
+
+if [[ -r ~/.bashrc ]]; then
+  echo &quot;.bashrc is readable.&quot;
+else
+  echo &quot;.bashrc is not readable.&quot; &gt;&amp;2
+  exit 1
+fi
+
+# Likewise, &#39;do&#39; should appear on the same line as
+# the &#39;while&#39;, &#39;until&#39;, and &#39;for&#39; commands
+
+while [[ -z &quot;$str&quot; ]]; do
+  command1
+  command2
+done
+
+for i in 1 2 3 4 5; do
+  command1
+  command2
+done
+
+# In a case statement, simple one-line commands can be
+# formatted this way:
+
+case s in
+  1|one)
+    command1 ;;
+  2|two)
+    command2 ;;
+  3|three)
+    command3 ;;
+  *)
+    command4 ;;
+esac
+
+# Multiple commands should be formatted this way
+
+case s in
+  1|one)
+    command1
+    command2
+    ;;
+  2|two)
+    command3
+    command4
+    ;;
+  3|three)
+    command5
+    command6
+    ;;
+  *)
+    command7
+    ;;
+esac
+
+# Logical compound commands using &amp;&amp; and ||
+
+command1 &amp;&amp; short_command
+command2 \
+  || long_command &quot;$param1&quot; &quot;$param2&quot; &quot;$param3&quot;</code></pre>
+<h3 id="coding-practices">Coding Practices</h3>
+<p>In order to achieve our goal of writing robust, easily maintained scripts, our coding standard recommends the following coding practices.</p>
+<h4 id="commenting">Commenting</h4>
+<p>Good code commenting is vital for script maintenance. The purpose of commenting to is to explain vital facts about a program. If a script is to have any durability, we must anticipate that someone (even if it’s just the author) will revisit the script at a later date and will need a refresher on how the script works. Do not comment code that is obvious and easily understood; rather, explain the difficult to understand parts. Rule of thumb: the more time a chunk of code takes to design and write, the more commenting it will likely need to explain it.</p>
+<p>Function libraries are a special case. Each function in a library should be preceded by a comment block that documents its purpose and its positional parameters.</p>
+<p>A common type of comment points to where future additions and changes are needed. These are called “todo” comments and are typically written like this:</p>
+<pre><code># TODO Fix this routine so it can do this better</code></pre>
+<p>These comments begin with the string <code>TODO</code> so they can be found easily using a text editor’s search feature.</p>
+<h4 id="shell-builtins-vs.external-programs">Shell Builtins vs. External Programs</h4>
+<p>Where possible, use bash builtins rather than external commands. For example, the <code>basename</code> and <code>dirname</code> programs can be replaced by parameter expansions to strip leading or trailing strings from pathnames. Compared to external programs, shell builtins use fewer resources and execute much faster.</p>
+<h4 id="variable-expansion-and-quoting">Variable Expansion and Quoting</h4>
+<p>Double quotes must be used to manage word splitting during parameter expansion. This is particularly important when working with filenames. Assume that every variable, parameter expansion, and command substitution may contain embedded spaces, newlines, etc. There are situations where quoting is not needed (for example, within <code>[[ ... ]]</code>) but we use double quotes anyway, because it doesn’t hurt anything and it’s easier to always quote variables than remembering all the special cases where it is not required.</p>
+<pre><code>a=&quot;$var&quot;
+b=&quot;$1&quot;
+c=&quot;$(command1)&quot;
+command2 &quot;$file1&quot; &quot;$file2&quot;
+[[ -z &quot;$str&quot; ]] || exit 1</code></pre>
+<p>Contrary to some other coding standards, brace delimiting variables is required only when needed to prevent ambiguity during expansion:</p>
+<pre><code>a=&quot;Compat&quot;
+port=&quot;bably condit&quot;
+echo &quot;${a}bility is pro${port}ional to desire.&quot;</code></pre>
+<h4 id="pathname-expansion-and-wildcards">Pathname Expansion and Wildcards</h4>
+<p>Since pathnames in Unix-like systems can contain any character except <code>/</code> and <code>NULL</code>, we need to take special precautions during expansion.</p>
+<pre><code># To prevent filesnames beginning with `-` from being interpreted
+# as command options, always do this:
+command1 ./*.txt
+
+# Not this:
+command1 *.txt</code></pre>
+<p>Here is a snippet of code that will prepend <code>./</code> to a pathname when needed.</p>
+<pre><code># This will sanitize &#39;$pathname&#39;
+[[ &quot;$pathname&quot; =~ ^[./].*$ ]] || pathname=&quot;./$pathname&quot;</code></pre>
+<h4 id="vs.">[[ … ]] vs. [ … ]</h4>
+<p>Unless a script must run in a POSIX-compatible environment, use <code>[[ ... ]]</code> rather than <code>[ ... ]</code> when performing conditional tests. Unlike the <code>[</code> and <code>test</code> bash builtins, <code>[[ ... ]]</code> is part of shell syntax, not a command. This means it can handle its internal elements (test conditions) in a more robust fashion, as pathname expansion and word splitting do not occur. Also, <code>[[ ... ]]</code> adds some additional capabilities such as <code>=~</code> to perform regular expression tests.</p>
+<h4 id="use-for-integer-arithmetic">Use (( … )) for Integer Arithmetic</h4>
+<p>Use <code>(( ... ))</code> in place of <code>let</code> or <code>exper</code> when performing integer arithmetic. The bash <code>let</code> builtin works in a similar way as <code>(( ...))</code> but its arguments often require careful quoting. <code>exper</code> is an external program and many times slower than the shell.</p>
+<pre><code># Use (( ... )) rather than [[ ... ]] when evaluating integers
+if (( i &gt; 1 )); then
+  ...
+fi
+
+while (( y == 5 )); do
+  ...
+done
+
+# Perform arithmetic assignment
+(( y = x * 2 ))
+
+# Perform expansion on an arithmetic calculation
+echo $(( i * 7 ))</code></pre>
+<h4 id="printf-vs.echo">printf vs. echo</h4>
+<p>In some cases, it is preferable to use <code>printf</code> over <code>echo</code> when parameter expansions are being output. This is particularly true when expanding pathnames. Since pathnames can contain nearly any character, expansions could result in command options, command sequences, etc.</p>
+<h4 id="error-handling">Error Handling</h4>
+<p>The most important thing for a script to do, besides getting its work done, is making sure it’s getting its work done successfully. To do this, we have to handle errors.</p>
+<ol type="1">
+<li><p><strong>Anticipate errors.</strong> When designing a script, it is important to consider possible points of failure. Before the script starts, are all the necessary external programs actually installed on the system? Do the expected files and directories exist and have the required permissions for the script to operate? What happens the first time a script runs versus later invocations? The beginning of the program should include tests to ensure that all necessary resources are available.</p></li>
+<li><p><strong>Do no harm.</strong> If the script must do anything destructive, for example, deleting files, we must make sure that the script does only the things it is supposed to do. Test for all required conditions prior to doing anything destructive.</p></li>
+<li><p><strong>Report errors and provide some clues.</strong> When an error is detected, we must report the error and terminate the script if necessary. All error messages must be sent to standard error and should include useful information to aid debugging. A good way to do this is to use an error message function such as the one below:</p>
+<pre><code> error_exit() {
+
+   local error_message=&quot;$1&quot;
+
+   printf &quot;%s\n&quot; &quot;${PROGNAME}: ${error_message:-&quot;Unknown Error&quot;}&quot; &gt;&amp;2
+   exit 1
+ }</code></pre>
+<p>We can call the error message function to report an error like this:</p>
+<pre><code> command1 || error_exit &quot;command1 failed in line $LINENO&quot;</code></pre>
+<p>The shell variable <code>LINENO</code> is included in the error message passed to the function. This will contain the line number where the error occurred.</p></li>
+<li><p><strong>Clean up the mess.</strong> When we handle an error we need to make sure that we leave the system in good shape. If the script creates temporary files or performs some operation that could leave the system in an undesirable state, provide a way to return the system to useful condition before the script exits.</p></li>
+</ol>
+<p>Bash offers a setting that will to attempt handle errors automatically, which simply means that with this setting enabled, a script will terminate if any command (with some necessary exceptions) returns a non-zero exit status. To invoke this setting, we place the command <code>set -e</code> near the beginning of the script. Several bash coding standards insist on using this feature along with a couple of related settings, <code>set -u</code> which terminates a script if there is an uninitialized variable, and <code>set -o PIPEFAIL</code> which causes script termination if any element in a pipeline fails.</p>
+<p>Using these features is not recommended. It is better to design proper error handling and not rely on <code>set -e</code> as a substitute for good coding practices.</p>
+<p>The <em>Bash FAQ #105</em> provides the following opinion on this:</p>
+<blockquote>
+<p><code>set -e</code> was an attempt to add “automatic error detection” to the shell. Its goal was to cause the shell to abort any time an error occurred, so you don’t have to put <code>|| exit 1</code> after each important command.</p>
+</blockquote>
+<blockquote>
+<p>That goal is non-trivial, because many commands intentionally return non-zero. For example,</p>
+</blockquote>
+<blockquote>
+<p><code>if [ -d /foo ]; then ...; else ...; fi</code></p>
+</blockquote>
+<blockquote>
+<p>Clearly we don’t want to abort when the <code>[ -d /foo ]</code> command returns non-zero (because the directory does not exist) – our script wants to handle that in the else part. So the implementors decided to make a bunch of special rules, like “commands that are part of an if test are immune”, or “commands in a pipeline, other than the last one, are immune.”</p>
+</blockquote>
+<blockquote>
+<p>These rules are extremely convoluted, and they still fail to catch even some remarkably simple cases. Even worse, the rules change from one Bash version to another, as bash attempts to track the extremely slippery POSIX definition of this “feature.” When a subshell is involved, it gets worse still – the behavior changes depending on whether bash is invoked in POSIX mode.</p>
+</blockquote>
+<h4 id="command-line-options-and-arguments">Command Line Options and Arguments</h4>
+<p>When possible, scripts should support both short and long option names. For example, a “help” feature should be supported by both the <code>-h</code> and <code>--help</code> options. Dual options can be implemented with code such as this:</p>
+<pre><code># Parse command line
+while [[ -n &quot;$1&quot; ]]; do
+  case $1 in
+    -h | --help)
+      help_message
+      graceful_exit
+      ;;
+    -q | --quiet)
+      quiet_mode=yes
+      ;;
+    -s | --root)
+      root_mode=yes
+      ;;
+    --* | -*)
+      usage &gt; &amp;2; error_exit &quot;Unknown option $1&quot;
+      ;;
+    *)
+      tmp_script=&quot;$1&quot;
+      break
+      ;;
+  esac
+  shift
+done</code></pre>
+<h4 id="assist-the-user">Assist the User</h4>
+<p>Speaking of “help” options, all scripts should include one, even if the script supports no other options or arguments. A help message should include the script name and version number, a brief description of the script’s purpose (as it might appear on a man page), and a usage message that describes the supported options and arguments. A separate usage function can be used for both the help message and as part of an error message when the script is invoked incorrectly. Here are some example usage and help functions:</p>
+<pre><code># Usage message - separate lines for mutually exclusive options
+# the way many man pages do it.
+usage() {
+  printf &quot;%s\n&quot; \
+    &quot;Usage: ${PROGNAME} [-h|--help ]&quot;
+  printf &quot;%s\n&quot; \
+    &quot;       ${PROGNAME} [-q|--quiet] [-s|--root] [script]&quot;
+}
+
+help_message() {
+  cat &lt;&lt;- _EOF_
+  ${PROGNAME} ${VERSION}
+  Bash shell script template generator.
+
+  $(usage)
+
+  Options:
+
+  -h, --help    Display this help message and exit.
+  -q, --quiet   Quiet mode. No prompting. Outputs default script.
+  -s, --root    Output script requires root privileges to run.
+
+_EOF_
+}</code></pre>
+<h4 id="traps">Traps</h4>
+<p>In addition to a normal exit and an error exit, a script can also terminate when it receives a signal. For some scripts, this is an important issue because if they exit in an unexpected manner, they may leave the system in an undesirable state. To avoid this problem, we include traps to intercept signals and perform cleanup procedures before the scripts exits. The three signals of greatest importance are SIGINT (which occurs when Ctrl-c is typed) and SIGTERM (which occurs when the system is shut down or rebooted) and SIGHUP (when a terminal connection is terminated). Below is a set of traps to manage the SIGINT, SIGTERM, and SIGHUP signals.</p>
+<pre><code># Trap signals
+trap &quot;signal_exit TERM&quot; TERM HUP
+trap &quot;signal_exit INT&quot;  INT</code></pre>
+<p>Due to the syntactic limitations of the <code>trap</code> builtin, it is best to use a separate function to act on the trapped signal. Below is a function that handles the signal exit.</p>
+<pre><code>signal_exit() { # Handle trapped signals
+
+  local signal=&quot;$1&quot;
+
+  case &quot;$signal&quot; in
+    INT)
+      error_exit &quot;Program interrupted by user&quot;
+      ;;
+    TERM)
+      printf &quot;\n%s\n&quot; &quot;$PROGNAME: Program terminated&quot; &gt;&amp;2
+      graceful_exit
+      ;;
+    *)
+      error_exit &quot;$PROGNAME: Terminating on unknown signal&quot;
+      ;;
+  esac
+}</code></pre>
+<p>We use a <code>case</code> statement to provide different outcomes depending on the signal received. In this example, we also see a call to a <code>graceful_exit</code> function that could provide needed cleanup before the script terminates.</p>
+<h4 id="temporary-files">Temporary Files</h4>
+<p>Wherever possible, temporary files should be avoided. In many cases, process substitution can be used instead. Doing it this way will reduce file clutter, run faster, and in some cases be more secure.</p>
+<pre><code># Rather than this:
+command1 &gt; &quot;$TEMPFILE&quot;
+.
+.
+.
+command2 &lt; &quot;$TEMPFILE&quot;
+
+# Consider this:
+command2 &lt; &lt;(command1)</code></pre>
+<p>If temporary files cannot be avoided, care must be taken to create them safely. We must consider, for example, what happens if there is more than one instance of the script running at the same time. For security reasons, if a temporary file is placed in a world-writable directory (such as <code>/tmp</code>) we must ensure the file name is unpredictable. A good way to create temporary file is by using the <code>mktemp</code> command as follows:</p>
+<pre><code>TEMPFILE=&quot;$(mktemp /tmp/&quot;$PROGNAME&quot;.$$.XXXXXXXXX)&quot;</code></pre>
+<p>In this example, a temporary file will be created in the <code>/tmp</code> directory with the name consisting of the script’s name followed by its process ID (PID) and 10 random characters.</p>
+<p>For temporary files belonging to a regular user, the <code>/tmp</code> directory should be avoided in favor of the user’s home directory.</p>
+<h4 id="shellcheck-is-your-friend">ShellCheck is Your Friend</h4>
+<p>There is a program available in most distribution repositories called <code>shellcheck</code> that performs analysis of shell scripts and will detect many kinds of faults and poor scripting practices. It is well worth using it to check the quality of scripts. To use it with a script that has a shebang, we simply do this:</p>
+<pre><code>shellcheck my_script</code></pre>
+<p>ShellCheck will automatically detect which shell dialect to use based on the shebang. For shell script code that does not contain a shebang, such as function libraries, we use ShellCheck this way:</p>
+<pre><code>shellcheck -s bash my_library</code></pre>
+<p>Use the <code>-s</code> option to specify the desired shell dialect. More information about ShellCheck can be found at its website <a href="http://www.shellcheck.net" class="uri">http://www.shellcheck.net</a>.</p>
+<h2 id="summing-up">Summing Up</h2>
+<p>We covered a lot of ground in this adventure, specifying a complete set of technical and stylistic features. Using this coding standard, we can now write some serious production-quality scripts. However, the complexity of this standard does impose some cost in terms of development time and effort.</p>
+<p>In Part 2, we will examine a program from LinuxCommand.org called <code>new_script</code>, a bash script template generator that will greatly facilitate writing scripts that conform to our new coding standard.</p>
+<h2 id="further-reading">Further Reading</h2>
+<p>Here are some links to shell scripting coding standards. They range from the lax to the obsessive. Reading them all is a good idea in order to get a sense of the community’s collective wisdom. Many are not bash-specific and some emphasize multi-shell portability, not necessarily a useful goal.</p>
+<ul>
+<li><p><em>The Google Shell Style Guide</em> The coding standard for scripts developed at Google. It’s among the most sensible standards. <a href="https://google.github.io/styleguide/shellguide.html" class="uri">https://google.github.io/styleguide/shellguide.html</a></p></li>
+<li><p><em>Anyone Can Write Good Bash (with a little effort)</em> <a href="https://blog.yossarian.net/2020/01/23/Anybody-can-write-good-bash-with-a-little-effort" class="uri">https://blog.yossarian.net/2020/01/23/Anybody-can-write-good-bash-with-a-little-effort</a></p></li>
+<li><p><em>Some Bash coding conventions and good practices</em> <a href="https://github.com/icy/bash-coding-style" class="uri">https://github.com/icy/bash-coding-style</a></p></li>
+<li><p><em>Bash Style Guide and Coding Standard</em> <a href="https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.en.pdf" class="uri">https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.en.pdf</a></p></li>
+<li><p><em>Shell Script Standards</em> <a href="https://engineering.vokal.io/Systems/sh.md.html" class="uri">https://engineering.vokal.io/Systems/sh.md.html</a></p></li>
+<li><p><em>Unix/Linux Shell Script Programming Conventions and Style</em> <a href="http://teaching.idallen.com/cst8177/13w/notes/000_script_style.html" class="uri">http://teaching.idallen.com/cst8177/13w/notes/000_script_style.html</a></p></li>
+<li><p><em>Scripting Standards</em> <a href="http://ronaldbradford.com/blog/scripting-standards/" class="uri">http://ronaldbradford.com/blog/scripting-standards/</a></p></li>
+</ul>
+<p>Pages with advice on coding practices. Some have conflicting advice so <em>caveat emptor</em>.</p>
+<ul>
+<li><p><em>Make Linux/Unix Script Portable With <code>#!/usr/bin/env</code> As a Shebang</em> <a href="https://www.cyberciti.biz/tips/finding-bash-perl-python-portably-using-env.html" class="uri">https://www.cyberciti.biz/tips/finding-bash-perl-python-portably-using-env.html</a></p></li>
+<li><p><em>Good practices for writing shell scripts</em> <a href="http://www.yoone.eu/articles/2-good-practices-for-writing-shell-scripts.html" class="uri">http://www.yoone.eu/articles/2-good-practices-for-writing-shell-scripts.html</a></p></li>
+<li><p><em>Why is <code>printf</code> better than <code>echo</code>?</em> <a href="https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo" class="uri">https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo</a></p></li>
+<li><p><em>Why doesn’t <code>set -e</code> (or <code>set -o errexit</code>, or <code>trap ERR</code>) do what I expected?</em> <a href="http://mywiki.wooledge.org/BashFAQ/105" class="uri">http://mywiki.wooledge.org/BashFAQ/105</a></p></li>
+<li><p><em>Bash: Error handling</em> <a href="https://fvue.nl/wiki/Bash:_Error_handling" class="uri">https://fvue.nl/wiki/Bash:_Error_handling</a></p></li>
+<li><p><em>Writing Robust Bash Shell Scripts</em> <a href="https://www.davidpashley.com/articles/writing-robust-shell-scripts/" class="uri">https://www.davidpashley.com/articles/writing-robust-shell-scripts/</a></p></li>
+<li><p><em>Filenames and Pathnames in Shell: How to do it Correctly</em> A good page full of cautionary tales and advice on dealing with “funny” file and path names. A serious problem in Unix-like systems. Highly recommended. <a href="https://dwheeler.com/essays/filenames-in-shell.html" class="uri">https://dwheeler.com/essays/filenames-in-shell.html</a></p></li>
+<li><p><em>1963 Timesharing: A Solution to Computer Bottlenecks</em> This YouTube video from MIT provides some historical perspective on the invention of interactive systems and the transition away from batch processing. The concepts presented here are still the basis of all modern computing. <a href="https://youtu.be/Q07PhW5sCEk" class="uri">https://youtu.be/Q07PhW5sCEk</a></p></li>
+</ul>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_adv_standards.php.html#top">Top</a> | <a
+      href="lc3_adv_source.php.html">Previous</a> | <a
+      href="lc3_adventures.php.html#contents">Contents</a> | <a
+      href="lc3_adv_new_script.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<code>me@linuxbox: ~ $ alias
+alias egrep=&#39;egrep --color=auto&#39;
+alias fgrep=&#39;fgrep --color=auto&#39;
+alias grep=&#39;grep --color=auto&#39;
+alias ls=&#39;ls --color=auto    </code></pre>
+<pre><code>alias ll=&#39;ls -l&#39;
+alias la=&#39;ls -A&#39;
+alias l=&#39;ls -CF&#39;
+alias l.=&#39;ls -d .*&#39;
+alias lm=&#39;ls -l | less&#39;</code></pre>
+<pre><code>alias update=&#39;sudo apt-get update &amp;&amp; sudo apt-get upgrade&#39;</code></pre>
+<p>Aliases are easy to create. It’s usually just a matter of appending them to our <code>.bashrc</code> file. Before creating a new alias, it’s a good idea to first test the proposed name of the alias with the <code>type</code> command to check if the name is already being used by another program or alias.</p>
+<p>While being easy, aliases are somewhat limited. In particular, aliases can’t handle complex logic or accept positional parameters. For that we need to use shell functions.</p>
+<p>As we recall from TLCL, shell functions are miniature shell scripts that we can add to our <code>.bashrc</code> file to perform anything that we may otherwise do with a shell script. Here is an example function that displays a quick snapshot of a system’s health:</p>
+<div class="sourceCode" id="status"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="status-1" title="1">    <span class="fu">status()</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="status-2" title="2">      <span class="kw">{</span> <span class="bu">echo</span> -e <span class="st">&quot;\nuptime:&quot;</span></a>
+<a class="sourceLine" id="status-3" title="3">        <span class="fu">uptime</span></a>
+<a class="sourceLine" id="status-4" title="4">        <span class="bu">echo</span> -e <span class="st">&quot;\ndisk space:&quot;</span></a>
+<a class="sourceLine" id="status-5" title="5">        <span class="fu">df</span> -h <span class="op">2&gt;</span> /dev/null</a>
+<a class="sourceLine" id="status-6" title="6">        <span class="bu">echo</span> -e <span class="st">&quot;\ninodes:&quot;</span></a>
+<a class="sourceLine" id="status-7" title="7">        <span class="fu">df</span> -i <span class="op">2&gt;</span> /dev/null</a>
+<a class="sourceLine" id="status-8" title="8">        <span class="bu">echo</span> -e <span class="st">&quot;\nblock devices:&quot;</span></a>
+<a class="sourceLine" id="status-9" title="9">        <span class="ex">blkid</span></a>
+<a class="sourceLine" id="status-10" title="10">        <span class="bu">echo</span> -e <span class="st">&quot;\nmemory:&quot;</span></a>
+<a class="sourceLine" id="status-11" title="11">        <span class="fu">free</span> -m</a>
+<a class="sourceLine" id="status-12" title="12">        <span class="kw">if [[</span> <span class="ot">-r</span> /var/log/syslog<span class="kw"> ]]</span>; <span class="kw">then</span></a>
+<a class="sourceLine" id="status-13" title="13">          <span class="bu">echo</span> -e <span class="st">&quot;\nsyslog:&quot;</span></a>
+<a class="sourceLine" id="status-14" title="14">          <span class="fu">tail</span> /var/log/syslog</a>
+<a class="sourceLine" id="status-15" title="15">        <span class="kw">fi</span></a>
+<a class="sourceLine" id="status-16" title="16">        <span class="kw">if [[</span> <span class="ot">-r</span> /var/log/messages<span class="kw"> ]]</span>; <span class="kw">then</span></a>
+<a class="sourceLine" id="status-17" title="17">          <span class="bu">echo</span> -e <span class="st">&quot;\nmessages:&quot;</span></a>
+<a class="sourceLine" id="status-18" title="18">          <span class="fu">tail</span> /var/log/messages</a>
+<a class="sourceLine" id="status-19" title="19">        <span class="kw">fi</span></a>
+<a class="sourceLine" id="status-20" title="20">      <span class="kw">}</span> <span class="kw">|</span> <span class="fu">less</span></a>
+<a class="sourceLine" id="status-21" title="21">    <span class="kw">}</span></a></code></pre></div>
+<pre><code>me@linuxbox: ~ $ ls --
+--all                                      --ignore=
+--almost-all                               --ignore-backups
+--author                                   --indicator-style=
+--block-size=                              --inode
+--classify                                 --literal
+--color                                    --no-group
+--color=                                   --numeric-uid-gid
+--context                                  --quote-name
+--dereference                              --quoting-style=
+--dereference-command-line                 --recursive
+--dereference-command-line-symlink-to-dir  --reverse
+--directory                                --show-control-chars
+--dired                                    --si
+--escape                                   --size
+--file-type                                --sort
+--format=                                  --sort=
+--group-directories-first                  --tabsize=
+--help                                     --time=
+--hide=                                    --time-style=
+--hide-control-chars                       --version
+--human-readable                           --width=</code>

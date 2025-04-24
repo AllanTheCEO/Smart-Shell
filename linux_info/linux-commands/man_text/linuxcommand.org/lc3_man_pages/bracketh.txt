@@ -1,0 +1,22 @@
+  
+NAME
+    [ - Evaluate conditional expression.
+
+SYNOPSIS
+    [ arg... ]
+
+DESCRIPTION
+    Evaluate conditional expression.
+    
+    This is a synonym for the "test" builtin, but the last argument must
+    be a literal `]', to match the opening `['.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

@@ -1,0 +1,27 @@
+  
+NAME
+    coproc - Create a coprocess named NAME.
+
+SYNOPSIS
+    coproc [NAME] command [redirections]
+
+DESCRIPTION
+    Create a coprocess named NAME.
+    
+    Execute COMMAND asynchronously, with the standard output and standard
+    input of the command connected via a pipe to file descriptors assigned
+    to indices 0 and 1 of an array variable NAME in the executing shell.
+    The default NAME is "COPROC".
+    
+    Exit Status:
+    The coproc command returns an exit status of 0.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

@@ -1,0 +1,37 @@
+  
+NAME
+    hash - Remember or display program locations.
+
+SYNOPSIS
+    hash [-lr] [-p pathname] [-dt] [name ...]
+
+DESCRIPTION
+    Remember or display program locations.
+    
+    Determine and remember the full pathname of each command NAME.  If
+    no arguments are given, information about remembered commands is displayed.
+    
+    Options:
+      -d	forget the remembered location of each NAME
+      -l	display in a format that may be reused as input
+      -p pathname	use PATHNAME as the full pathname of NAME
+      -r	forget all remembered locations
+      -t	print the remembered location of each NAME, preceding
+    		each location with the corresponding NAME if multiple
+    		NAMEs are given
+    Arguments:
+      NAME	Each NAME is searched for in $PATH and added to the list
+    		of remembered commands.
+    
+    Exit Status:
+    Returns success unless NAME is not found or an invalid option is given.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

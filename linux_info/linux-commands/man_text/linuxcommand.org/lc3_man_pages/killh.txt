@@ -1,0 +1,37 @@
+  
+NAME
+    kill - Send a signal to a job.
+
+SYNOPSIS
+    kill [-s sigspec | -n signum | -sigspec] pid | jobspec ... or kill -l [sigspec]
+
+DESCRIPTION
+    Send a signal to a job.
+    
+    Send the processes identified by PID or JOBSPEC the signal named by
+    SIGSPEC or SIGNUM.  If neither SIGSPEC nor SIGNUM is present, then
+    SIGTERM is assumed.
+    
+    Options:
+      -s sig	SIG is a signal name
+      -n sig	SIG is a signal number
+      -l	list the signal names; if arguments follow `-l' they are
+    		assumed to be signal numbers for which names should be listed
+      -L	synonym for -l
+    
+    Kill is a shell builtin for two reasons: it allows job IDs to be used
+    instead of process IDs, and allows processes to be killed if the limit
+    on processes that you can create is reached.
+    
+    Exit Status:
+    Returns success unless an invalid option is given or an error occurs.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

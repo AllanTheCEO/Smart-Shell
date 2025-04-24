@@ -1,0 +1,58 @@
+  <!DOCTYPE HTML>
+  <html lang="en">
+
+  <head>
+
+  <title>enable man page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="description" content="Manual Page for enable">
+  <meta name="keywords" content="Manual page, enable command">
+  <meta name="author" content="linuxcommand.org and original man page author">
+  <meta name="generator" content="mk_man_pages">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" type="text/css" href="../linuxcommand5.css">
+  </head>
+  <body>
+  <a href="../lc3_man_page_index.php.html#builtins" style="color: white;">Back to Contents</a>
+  <pre>
+NAME
+    enable - Enable and disable shell builtins.
+
+SYNOPSIS
+    enable [-a] [-dnps] [-f filename] [name ...]
+
+DESCRIPTION
+    Enable and disable shell builtins.
+    
+    Enables and disables builtin shell commands.  Disabling allows you to
+    execute a disk command which has the same name as a shell builtin
+    without using a full pathname.
+    
+    Options:
+      -a	print a list of builtins showing whether or not each is enabled
+      -n	disable each NAME or display a list of disabled builtins
+      -p	print the list of builtins in a reusable format
+      -s	print only the names of Posix `special' builtins
+    
+    Options controlling dynamic loading:
+      -f	Load builtin NAME from shared object FILENAME
+      -d	Remove a builtin loaded with -f
+    
+    Without options, each NAME is enabled.
+    
+    To use the `test' found in $PATH instead of the shell builtin
+    version, type `enable -n test'.
+    
+    Exit Status:
+    Returns success unless NAME is not a shell builtin or an error occurs.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</pre></body></html>

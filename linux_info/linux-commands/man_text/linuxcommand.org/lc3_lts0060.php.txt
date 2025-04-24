@@ -1,0 +1,138 @@
+type <i>command</i></pre>
+
+<p>where “command” is the name of the command we want to examine. Here are some
+examples:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">type type</code>
+type is a shell builtin
+[me@linuxbox me]$ <code class="cmd">type ls</code>
+s is aliased to `ls --color=auto'
+[me@linuxbox me]$ <code class="cmd">type cp</code>
+cp is /bin/cp</div>
+
+<p>Here we see the results for three different commands. Notice that the one
+for <code class="user">ls</code> and how the ls command is actually an alias
+for the <code class="user">ls</code> command with the “-- color=auto” option
+added. Now we know why the output from <code class="user">ls</code> is
+displayed in color!</p>
+
+<h3>which</h3>
+
+<p>Sometimes there is more than one version of an executable program installed
+on a system. While this is not very common on desktop systems, it's not unusual
+on large servers. To determine the exact location of a given executable, the
+<code class="user">which</code> command is used:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">which ls</code>
+/bin/ls</div>
+
+<p><code class="user">which</code> only works for executable programs, not
+builtins nor aliases that are substitutes for actual executable programs.</p>
+
+<h2>Getting Command Documentation</h2>
+
+<p>With this knowledge of what a command is, we can now search for the
+documentation available for each kind of command.</p>
+
+<h3>help</h3>
+
+<p><code class="user">bash</code> has a built-in help facility available for
+each of the shell builtins. To use it, type “help” followed by the name of the
+shell builtin.  Optionally, we can add the -m option to change the format of
+the output. For example:</p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">help -m cd</code>
+NAME
+    cd - Change the shell working directory.
+
+SYNOPSIS
+    cd [-L|-P] [dir]
+
+DESCRIPTION
+    Change the shell working directory.
+    
+    Change the current directory to DIR.  The default DIR is the value of the
+    HOME shell variable.
+    
+    The variable CDPATH defines the search path for the directory containing
+    DIR.  Alternative directory names in CDPATH are separated by a colon (:).
+    A null directory name is the same as the current directory.  If DIR begins
+    with a slash (/), then CDPATH is not used.
+    
+    If the directory is not found, and the shell option `cdable_vars' is set,
+    the word is assumed to be  a variable name.  If that variable has a value,
+    its value is used for DIR.
+    
+    Options:
+        -L  force symbolic links to be followed
+        -P  use the physical directory structure without following symbolic
+      links
+    
+    The default is to follow symbolic links, as if `-L' were specified.
+    
+    Exit Status:
+    Returns 0 if the directory is changed; non-zero otherwise.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 4.1.5(1)-release (i486-pc-linux-gnu)
+    Copyright (C) 2009 Free Software Foundation, Inc.
+</div>
+
+<p><b>A note on notation:</b> When square brackets appear in the description of a command's
+syntax, they indicate optional items. A vertical bar character indicates mutually exclusive
+items. In the case of the <code class="user">cd</code> command above:</p>
+
+<pre>cd [-L|-P] [dir]</pre>
+<pre>man <i>program</i></pre>
+
+<p>where “program” is the name of the command to view.  Man pages vary somewhat
+in format but generally contain a title, a synopsis of the command's syntax, a
+description of the command's purpose, and a listing and description of each of
+the command's options. Man pages, however, do not usually include examples, and
+are intended as a reference, not a tutorial. Let's try viewing the man page for
+the <code class="user">ls</code> command: </p>
+
+<div class="display">[me@linuxbox me]$ <code class="cmd">man ls</code></div>
+
+<p>On most Linux systems, <code class="user">man</code> uses <code
+class="user">less</code> to display the manual page, so all of the familiar
+<code class="user">less</code> commands work while displaying the page.</p>
+
+<h3>README and Other Documentation Files</h3>
+
+<p>Many software packages installed on your system have documentation files
+residing in the <code>/usr/share/doc</code> directory.  Most of these are
+stored in plain text format and can be viewed with <code
+class="user">less</code>. Some of the files are in HTML format and can be
+viewed with a web browser. We may encounter some files ending with a “.gz”
+extension. This indicates that they have been compressed with the <code
+class="user">gzip</code> compression program. The gzip package includes a
+special version of <code class="user">less</code> called <code
+class="user">zless</code> that will display the contents of gzip-compressed
+text files.</p>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_lts0060.php.html#top">Top</a> | <a
+      href="https://linuxcommand.org/lc3_lts0050.php">Previous</a> | <a
+      href="lc3_learning_the_shell.php.html#contents">Contents</a> | <a
+      href="lc3_lts0070.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>

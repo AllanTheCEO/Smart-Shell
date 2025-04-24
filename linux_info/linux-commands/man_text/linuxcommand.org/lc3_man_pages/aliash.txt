@@ -1,0 +1,33 @@
+  
+NAME
+    alias - Define or display aliases.
+
+SYNOPSIS
+    alias [-p] [name[=value] ... ]
+
+DESCRIPTION
+    Define or display aliases.
+    
+    Without arguments, `alias' prints the list of aliases in the reusable
+    form `alias NAME=VALUE' on standard output.
+    
+    Otherwise, an alias is defined for each NAME whose VALUE is given.
+    A trailing space in VALUE causes the next word to be checked for
+    alias substitution when the alias is expanded.
+    
+    Options:
+      -p	print all defined aliases in a reusable format
+    
+    Exit Status:
+    alias returns true unless a NAME is supplied for which no alias has been
+    defined.
+
+SEE ALSO
+    bash(1)
+
+IMPLEMENTATION
+    GNU bash, version 5.0.17(1)-release (x86_64-redhat-linux-gnu)
+    Copyright (C) 2019 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+
+</body></html>

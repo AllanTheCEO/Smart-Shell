@@ -1,0 +1,330 @@
+
+
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+
+    <head>
+
+    <title>Writing shell scripts - Lesson 11: Flow Control - Part 2</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="Bash shell: while/until loops and advanced branching with case">
+    <meta name="keywords" content="shell script branching with case, bash while loop, bash until loop, bash case statement, flow control">
+    <meta name="author" content="William Shotts, Jr.">
+    <meta name="copyright" content="Copyright 2000-2025, William Shotts, Jr.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="linuxcommand5.css">
+    <link rel="prev" href="lc3_wss0100.php.html">
+    <link rel="next" href="lc3_wss0120.php.html">
+    <link rel="contents" href="lc3_writing_shell_scripts.php.html#contents">
+    </head>
+
+    <body>
+
+    <div class="grid-container">
+    <div class="colorblock-red">
+    </div><!-- colorblock-red -->
+    <div class="title-img">
+    </div><!-- title-img -->
+    <div class="colorblock-white">
+    <div class="navbar">
+      <ul style="line-height: 150%;">
+        <li><a href="index.php.html">Home</a></li>
+        <li><a href="lc3_learning_the_shell.php.html">Learning&nbsp;the&nbsp;Shell</a></li>
+        <li><a href="lc3_writing_shell_scripts.php.html">Writing&nbsp;Shell&nbsp;Scripts</a></li>
+        <li><a href="lc3_resources.php.html">Resources</a></li>
+        <li><a href="tlcl.php.html">Books</a></li>
+        <li><a href="lc3_adventures.php.html">Adventures</a></li>
+      </ul>
+      <hr>
+      <ul>
+        <li><a href="https://lcorg.blogspot.com">Blog</a></li>
+      </ul>
+    </div><!-- navbar -->
+  
+    </div><!-- colorblock-white -->
+
+    <div id="top" class="main">
+    <div class="pagenav">
+      <div class="homebutton">
+      <a
+      href="index.php.html">Home</a> |
+      </div>
+      <a
+      href="lc3_wss0100.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0120.php.html">Next</a>
+    </div>
+<h1>Flow Control - Part 2</h1>
+
+<p>Hold on to your hats. This lesson is going to be a big one!</p>
+
+<h2>More Branching</h2>
+
+<p>In the <a href="lc3_wss0080.php.html">previous lesson on flow control</a> we
+learned about the <code class= "user">if</code> command and how it is used to
+alter program flow based on a command's exit status. In programming terms, this
+type of program flow is called <i>branching</i> because it is like traversing a
+tree. We come to a fork in the tree and the evaluation of a condition
+determines which branch we take.</p>
+
+<p>There is a second and more complex kind of branching called a <i>case</i>. A
+case is multiple-choice branch. Unlike the simple branch, where we take one of
+two possible paths, a case supports several possible outcomes based on the
+evaluation of a value.</p>
+
+<p>We can construct this type of branch with multiple <code
+class="user">if</code> statements. In the example below, we evaluate some input
+from the user:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">read</code> -p "Enter a number between 1 and 3 inclusive &gt; " character
+<code class="user">if [</code> "$character" = "1" <code class="user">]; then</code>
+    <code class="user">echo</code> "You entered one."
+<code class="user">elif [</code> "$character" = "2" <code class="user">]; then</code>
+    <code class="user">echo</code> "You entered two."
+<code class="user">elif [</code> "$character" = "3" <code class="user">]; then</code>
+    <code class="user">echo</code> "You entered three."
+<code class="user">else
+    echo</code> "You did not enter a number between 1 and 3."
+<code class="user">fi</code></div>
+
+<p>Not very pretty.</p>
+
+<p>Fortunately, the shell provides a more elegant solution to this problem. It
+provides a built-in command called <code class="user"><a
+href="lc3_man_pages/caseh.html">case</a></code>, which can be used to construct
+an equivalent program:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">read</code> -p "Enter a number between 1 and 3 inclusive &gt; " character
+<code class="user">case</code> $character <code class="user">in</code>
+    1 ) <code class="user">echo</code> "You entered one."
+        ;;
+    2 ) <code class="user">echo</code> "You entered two."
+        ;;
+    3 ) <code class="user">echo</code> "You entered three."
+        ;;
+    * ) <code class="user">echo</code> "You did not enter a number between 1 and 3."
+<code class="user">esac</code></div>
+
+<p>The <code class="user">case</code> command has the following form:</p>
+
+<div class="codeexample"><code class="user">case</code> word <code class="user">in</code>
+    patterns <code class="user">)</code> commands <code class="user">;;</code>
+<code class="user">esac</code></div>
+
+<p><code class="user">case</code> selectively executes statements if
+<code>word</code> matches a pattern. We can have any number of patterns and
+statements. Patterns can be literal text or wildcards. We can have multiple
+patterns separated by the "<code>|</code>" character.  Here is a more advanced
+example to show how this works:</p>
+
+<div class="codeexample">#!/bin/bash
+
+<code class="user">read</code> -p "Type a digit or a letter &gt; " character
+<code class="user">case</code> $character <code class="user">in</code>
+                                # Check for letters
+    [[:lower:]] | [[:upper:]] ) <code class="user">echo</code> "You typed the letter $character"
+                                ;;
+
+                                # Check for digits
+    [0-9] )                     <code class="user">echo</code> "You typed the digit $character"
+                                ;;
+
+                                # Check for anything else
+    * )                         <code class="user">echo</code> "You did not type a letter or a digit"
+<code class="user">esac</code></div>
+
+<p>Notice the special pattern "<code>*</code>". This pattern will match
+anything, so it is used to catch cases that did not match previous patterns.
+Inclusion of this pattern at the end is wise, as it can be used to detect
+invalid input.</p>
+
+<h2>Loops</h2>
+
+<p>The final type of program flow control we will discuss is called
+<i>looping</i>. Looping is repeatedly executing a section of a program based on
+the exit status of a command. The shell provides three commands for looping:
+<code class="user">while</code>, <code class="user">until</code> and <code
+class= "user">for</code>. We are going to cover <code class=
+"user">while</code> and <code class="user">until</code> in this lesson and
+<code class="user">for</code> in a upcoming lesson.</p>
+
+<p>The <code class="user">while</code> command causes a block of code to be
+executed over and over, as long as the exit status of a specified command is
+true. Here is a simple example of a program that counts from zero to nine:</p>
+
+<div class="codeexample">#!/bin/bash
+
+number=0
+<code class="user">while</code> <code class="user">[</code> "$number" -lt 10 <code class="user">]; do</code>
+    <code class="user">echo</code> "Number = $number"
+    number=$((number + 1))
+<code class="user">done</code></div>
+
+<p>On line 3, we create a variable called <code>number</code> and initialize
+its value to 0.  Next, we start the <code class="user">while</code> loop. As we
+can see, we have specified a command that tests the value of
+<code>number</code>. In our example, we test to see if <code>number</code> has
+a value less than 10.</p>
+
+<p>Notice the word <code>do</code> on line 4 and the word <code>done</code> on
+line 7. These enclose the block of code that will be repeated as long as the
+exit status remains zero.</p>
+
+<p>In most cases, the block of code that repeats must do something that will
+eventually change the exit status, otherwise we will have what is called an
+<i>endless loop</i>; that is, a loop that never ends.</p>
+
+<p>In the example, the repeating block of code outputs the value of
+<code>number</code> (the <code class="user">echo</code> command on line 5) and
+increments <code>number</code> by one on line 6. Each time the block of code is
+completed, the test command's exit status is evaluated again. After the tenth
+iteration of the loop, <code>number</code> has been incremented ten times and
+the <code class="user">test</code> command will terminate with a non-zero exit
+status. At that point, the program flow resumes with the statement following
+the word <code>done</code>. Since <code>done</code> is the last line of our
+example, the program ends.</p>
+
+<p>The <code class="user">until</code> command works exactly the same way,
+except the block of code is repeated as long as the specified command's exit
+status is false. In the example below, notice how the expression given to the
+<code class="user">test</code> command has been changed from the <code
+class="user">while</code> example to achieve the same result:</p>
+
+<div class="codeexample">#!/bin/bash
+
+number=0
+<code class="user">until [</code> "$number" -ge 10 <code class="user">]; do</code>
+    <code class="user">echo</code> "Number = $number"
+    number=$((number + 1))
+<code class="user">done</code></div>
+
+<h2>Building a Menu</h2>
+
+<p>A common user interface for text-based programs is a <i>menu</i>.  A menu is
+a list of choices from which the user can pick.</p>
+
+<p>In the example below, we use our new knowledge of loops and cases to build a
+simple menu driven application:</p>
+
+<div class="codeexample">#!/bin/bash
+
+selection=
+<code class="user">until [</code> "$selection" = "0" <code class="user">]; do</code>
+    <code class="user">echo</code> "
+    PROGRAM MENU
+    1 - Display free disk space
+    2 - Display free memory
+
+    0 - exit program
+"
+    <code class="user">echo</code> -n "Enter selection: "
+    <code class="user">read</code> selection
+    <code class="user">echo</code> ""
+    <code class="user">case</code> $selection <code class="user">in</code>
+        1 ) df ;;
+        2 ) free ;;
+        0 ) <code class="user">exit</code> ;;
+        * ) <code class="user">echo</code> "Please enter 1, 2, or 0"
+    <code class="user">esac
+done</code></div>
+
+<p>The purpose of the <code class="user">until</code> loop in this program is
+to re-display the menu each time a selection has been completed. The loop will
+continue until selection is equal to 0, the "exit" choice. Notice how we defend
+against entries from the user that are not valid choices.</p>
+
+<p>To make this program better looking when it runs, we can enhance it by
+adding a function that asks the user to press the Enter key after each
+selection has been completed, and clears the screen before the menu is
+displayed again. Here is the enhanced example:</p>
+
+<div class="codeexample">#!/bin/bash
+
+press_enter()
+{
+    <code class="user">echo</code> -en "\nPress Enter to continue"
+    <code class="user">read</code>
+    clear
+}
+
+selection=
+<code class="user">until [</code> "$selection" = "0" <code class="user">]; do</code>
+    <code class="user">echo</code> "
+    PROGRAM MENU
+    1 - display free disk space
+    2 - display free memory
+
+    0 - exit program
+"
+    <code class="user">echo</code> -n "Enter selection: "
+    <code class="user">read</code> selection
+    <code class="user">echo</code> ""
+    <code class="user">case</code> $selection <code class="user">in</code>
+        1 ) df <code class="user">;</code> press_enter ;;
+        2 ) free <code class="user">;</code> press_enter ;;
+        0 ) <code class="user">exit</code> ;;
+        * ) <code class="user">echo</code> "Please enter 1, 2, or 0"; press_enter
+    <code class="user">esac
+done</code></div><br>
+
+<div class="sidebar">
+<h2>When your computer hangs...</h2>
+
+<p>We have all had the experience of an application <i>hanging</i>. Hanging is
+when a program suddenly seems to stop and become unresponsive.  While you might
+think that the program has stopped, in most cases, the program is still running
+but its program logic is stuck in an endless loop.</p>
+
+<p>Imagine this situation: you have an external device attached to your
+computer, such as a USB disk drive but you forgot to turn it on. You try and
+use the device but the application hangs instead. When this happens, you could
+picture the following dialog going on between the application and the interface
+for the device:</p>
+
+<pre>
+Application:    Are you ready?
+Interface:  Device not ready.
+
+Application:    Are you ready?
+Interface:  Device not ready.
+
+Application:    Are you ready?
+Interface:  Device not ready.
+</pre>
+
+<p>and so on, forever.</p>
+
+<p>Well-written software tries to avoid this situation by instituting a
+<i>timeout</i>. This means that the loop is also counting the number of
+attempts or calculating the amount of time it has waited for something to
+happen. If the number of tries or the amount of time allowed is exceeded, the
+loop exits and the program generates an error and exits.</p> </div>
+
+
+    <div class="pagenav">
+      <a
+      href="lc3_wss0110.php.html#top">Top</a> | <a
+      href="lc3_wss0100.php.html">Previous</a> | <a
+      href="lc3_writing_shell_scripts.php.html#contents">Contents</a> | <a
+      href="lc3_wss0120.php.html">Next</a>
+    </div>
+<div class="footer">
+<hr>
+<p class="fineprint">
+&copy; 2000-2025,
+<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this copyright notice is preserved.</p>
+<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+</div><!-- footer -->
+</div><!-- main -->
+</div><!-- grid-container -->
+</body>
+
+</html>
