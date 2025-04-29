@@ -34,15 +34,6 @@ int main(int argc, char **argv)
         fclose(fp);
     }
 
-    Py_Initialize(); //initialize python interpreter
-
-    
-    PyRun_SimpleString(
-        "import sys\n"
-        "sys.path.insert(0, '.')\n"
-    ); //import sys module
-    
-
     signal(SIGINT, SIG_IGN); /* ignore SIGINT=^C */
 
     bool interactive = isatty(STDIN_FILENO); /* see: man 3 isatty */
@@ -122,7 +113,6 @@ int main(int argc, char **argv)
         }
 
         //Find number of tokens that aren't null and set n_tokens to this number
-        //Set
         int index = 0;
         for (int i = 0; i < n_tokens; i++) {
             if (tokens[i] != NULL) {
@@ -133,6 +123,80 @@ int main(int argc, char **argv)
         tokens[index] = NULL;
         n_tokens = index;
 
+        //pipeline support
+        //Count number of pipes, then add each command to an array of commands 
+        int num_pipes = 0;
+        for(int i = 0; i < n_tokens; i++) {
+            if (strcmp(tokens[i], "|") == 0 && tokens[i] != NULL) {
+                num_pipes++;
+            }
+        }
+        
+        char **commands = calloc(num_pipes + 1, sizeof(char*));
+        if(commands == NULL) {
+            perror("calloc");
+            exit(1);
+        }
+
+        int temp = 0;
+        int count = 0;
+        int count_pipes = 0;
+        //Tells program not to execute at all if there is an error
+        //Loop through tokens and add each command to the commands array
+        //Count the number of pipes
+        
+        //If there are no tokens, just behave normally
+        if (num_pipes > 0) {
+            for(int i = 0; i <= n_tokens; i++) {
+
+                if(i == 0 && strcmp(tokens[i], "|") == 0) {
+                    fprintf(stderr, "Error: Bad Pipe Syntax\n");
+                    last_status = 1;
+                    break;
+                }
+                    
+                    
+                if (i == n_tokens || strcmp(tokens[i], "|") == 0) {
+    
+                    
+                    //Error for bad pipe syntax if if a token == null and it's not the last token
+                    if (tokens[i + 1] == NULL && i != n_tokens) {  
+                        fprintf(stderr, "Error: Bad Pipe Syntax\n");
+                        break;
+                        
+                    } 
+                    //Error if "||" or "| |" is found. 
+                    if (i != n_tokens && strcmp(tokens[i + 1], "|") == 0) {
+                        fprintf(stderr, "Error: Bad Pipe Syntax\n");
+                        break;
+                    } 
+    
+                    size_t len = 0;
+                    count_pipes++;
+                    for(int j = temp; j < i; j++) {
+                        len += strlen(tokens[j]) + 1;
+                    }
+                    char *cmd = malloc(len);
+                    if (cmd == NULL) {
+                        perror("malloc");
+                        exit(1);
+                    }
+                    cmd[0] = '\0';
+                    for (int j = temp; j < i; j++) {
+                        strcat(cmd, tokens[j]);
+                        if(j < i - 1) {
+                            strcat(cmd, " ");
+                        }
+                    }
+    
+                    commands[count] = cmd;
+                    count++;
+                    temp = i + 1;
+    
+                }
+            }
+        }
+        
 
         //step 4 Special $? variable
         char qbuf[16];
@@ -193,11 +257,38 @@ int main(int argc, char **argv)
 
         //?? sends a prompt to the LLM and prints a response
         else if (strcmp("??", tokens[0]) == 0) {
+
+            Py_Initialize(); //initialize python interpreter
+
+            PyRun_SimpleString(
+                "import sys\n"
+                "sys.path.insert(0, '.')\n"
+            ); //import sys module
+
             char *text;
             if (n_tokens < 2) {
                 fprintf(stderr, "%s: need a prompt\n", argv[0]);
                 last_status = 1;
             } else {
+
+                PyObject *name = PyUnicode_FromString("chat");
+                PyObject *load_module = PyImport_Import(name);
+                
+                if (!load_module) {
+                    PyErr_Print();
+                    fprintf(stderr, "Error: could not import chat.py\n");
+                }
+
+                //Give current working directory to LLM
+                char cwd[PATH_MAX];
+                if(getcwd(cwd, sizeof(cwd)) == NULL ) {
+                    perror("getcwd() error");
+                } else {
+                    printf("Current working dir: %s\n", cwd);
+                    PyObject *cwd_obj = PyUnicode_FromString(cwd);
+                    PyObject *d = PyModule_GetDict(load_module);
+                    PyDict_SetItemString(d, "CURRENT_DIR", cwd_obj);
+                }
 
                 //Read tokens into prompt string
                 char prompt[1024] = "";
@@ -214,14 +305,6 @@ int main(int argc, char **argv)
                 fflush(history);
 
                 //Call ask_bot function from chat.py
-                PyObject *name = PyUnicode_FromString("chat");
-                PyObject *load_module = PyImport_Import(name);
-                
-                if (!load_module) {
-                    PyErr_Print();
-                    fprintf(stderr, "Error: could not import chat.py\n");
-                }
-
                 PyObject *func = PyObject_GetAttrString(load_module, "ask_bot");
 
                 if (!func || !PyCallable_Check(func)) { /* handle error */
@@ -229,7 +312,6 @@ int main(int argc, char **argv)
                     fprintf(stderr,"Error: ask_bot not found or not callable\n");
                 }
                 PyObject *args = PyTuple_Pack(1, PyUnicode_FromString(prompt));
-                
                 PyObject *callfunc = PyObject_CallObject(func, args);
 
                 if (callfunc == NULL) { //handle error
@@ -261,6 +343,8 @@ int main(int argc, char **argv)
 
         
         //step 3 external commands
+        //General fork for handling commands
+        //Other forks are created if there are pipes
         pid_t pids = fork();
 
         if (pids < 0) {
@@ -284,9 +368,89 @@ int main(int argc, char **argv)
                 close(fd_out);
             }
 
-            execvp(tokens[0], tokens);
-            fprintf(stderr, "%s: %s\n", tokens[0], strerror(errno));
-            exit(EXIT_FAILURE);
+            //If there are pipes, create a pipe for each command and fork a child process for each command
+            if (num_pipes + 1 > 1) { 
+                int fds[num_pipes][2];
+
+                
+                for (int i = 0; i < num_pipes; i++) {
+                    if (pipe(fds[i]) == -1) {
+                        perror("pipe");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+
+                // Debug statements to view the commands and num_pipes
+                //fprintf(stderr, "Number of pipes: %d\n", num_pipes);
+                //for (int i = 0; i < num_pipes + 1; i++) {
+                    //fprintf(stderr, "Command %d: %s\n", i, commands[i]);
+                //}
+
+                for (int i = 0; i < num_pipes + 1; i++) {
+                    pid_t pipeline_pid;
+
+                    pipeline_pid = fork();
+
+                    if (pipeline_pid < 0) {
+                        perror("fork");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    if (pipeline_pid == 0) {
+
+                        if (i > 0) {
+                            dup2(fds[i - 1][0], STDIN_FILENO);
+                            //close(fds[i - 1][0]);
+                        }
+                        if (i < num_pipes) {
+                            dup2(fds[i][1], STDOUT_FILENO); 
+                            //close(fds[i][1]);
+                        } 
+                        
+
+                        for (int j = 0; j < num_pipes; j++) {
+                            close(fds[j][0]);
+                            close(fds[j][1]);
+                        }
+
+                        char *argv[max_tokens + 1];
+                        char buf[1024];
+                        parse(commands[i], max_tokens, argv, buf, sizeof(buf));
+
+                        
+                        execvp(argv[0], argv);
+                        fprintf(stderr, "%s: %s\n", tokens[0], strerror(errno));
+                        exit(EXIT_FAILURE);
+
+                    }
+
+                }
+
+                for (int i = 0; i < num_pipes; i++) {
+                    close(fds[i][0]);
+                    close(fds[i][1]);
+                }
+
+                
+                for (int i = 0; i < num_pipes + 1; i++) {
+                    int status;
+                    wait(&status);
+                    if (WIFEXITED(status)) {
+                        last_status = WEXITSTATUS(status);
+                    }
+                    else {                    
+                        last_status = 1;
+                    }
+                    exit(last_status);
+                }
+  
+            //If there are no pipes, just execute the command
+            } else {
+                execvp(tokens[0], tokens);
+                fprintf(stderr, "%s: %s\n", tokens[0], strerror(errno));
+                exit(EXIT_FAILURE);
+            }
+
         }
         else {
             int status;

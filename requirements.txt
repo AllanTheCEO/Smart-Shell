@@ -1,3 +1,2 @@
-sudo apt update
 sudo apt install python3-dev
-pip install ollama
+pip install ollama  --break-system-packages
