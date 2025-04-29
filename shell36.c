@@ -260,6 +260,7 @@ int main(int argc, char **argv)
         //?? sends a prompt to the LLM and prints a response
         else if (strcmp("??", tokens[0]) == 0) {
 
+            //Want to run the LLM in a child process so we can cancel it
             pid_t pid = fork();
             if(pid < 0) {
                 perror("fork");
