@@ -34,8 +34,7 @@ int main(int argc, char **argv)
         fclose(fp);
     }
 
-    signal(SIGINT, SIG_IGN); /* ignore SIGINT=^C */
-
+    
     bool interactive = isatty(STDIN_FILENO); /* see: man 3 isatty */
     FILE *fp = stdin;
 
@@ -67,6 +66,9 @@ int main(int argc, char **argv)
     int last_status = 0;
 
     while (true) {
+
+        signal(SIGINT, SIG_IGN); /* ignore SIGINT=^C */
+
         if (interactive) {
             /* print prompt. flush stdout, since normally the tty driver doesn't
              * do this until it sees '\n'
@@ -258,72 +260,92 @@ int main(int argc, char **argv)
         //?? sends a prompt to the LLM and prints a response
         else if (strcmp("??", tokens[0]) == 0) {
 
-            Py_Initialize(); //initialize python interpreter
-
-            PyRun_SimpleString(
-                "import sys\n"
-                "sys.path.insert(0, '.')\n"
-            ); //import sys module
-
-            char *text;
-            if (n_tokens < 2) {
-                fprintf(stderr, "%s: need a prompt\n", argv[0]);
+            pid_t pid = fork();
+            if(pid < 0) {
+                perror("fork");
                 last_status = 1;
-            } else {
+            } else if (pid == 0) {
+                Py_Initialize(); //initialize python interpreter
 
-                PyObject *name = PyUnicode_FromString("chat");
-                PyObject *load_module = PyImport_Import(name);
-                
-                if (!load_module) {
-                    PyErr_Print();
-                    fprintf(stderr, "Error: could not import chat.py\n");
-                }
-
-                //Give current working directory to LLM
-                char cwd[PATH_MAX];
-                if(getcwd(cwd, sizeof(cwd)) == NULL ) {
-                    perror("getcwd() error");
+                signal(SIGINT, SIG_DFL);
+    
+                PyRun_SimpleString(
+                    "import sys\n"
+                    "sys.path.insert(0, '.')\n"
+                ); //import sys module
+    
+                char *text;
+                if (n_tokens < 2) {
+                    fprintf(stderr, "%s: need a prompt\n", argv[0]);
+                    last_status = 1;
                 } else {
-                    printf("Current working dir: %s\n", cwd);
-                    PyObject *cwd_obj = PyUnicode_FromString(cwd);
-                    PyObject *d = PyModule_GetDict(load_module);
-                    PyDict_SetItemString(d, "CURRENT_DIR", cwd_obj);
-                }
-
-                //Read tokens into prompt string
-                char prompt[1024] = "";
-                for (int i = 1; i < n_tokens; i++) {
-                    strncat(prompt, tokens[i], sizeof(prompt) - strlen(prompt) - 1);
-
-                    if(i < n_tokens - 1) {
-                        strncat(prompt, " ", sizeof(prompt) - strlen(prompt) - 1);
+    
+                    PyObject *name = PyUnicode_FromString("chat");
+                    PyObject *load_module = PyImport_Import(name);
+                    
+                    if (!load_module) {
+                        PyErr_Print();
+                        fprintf(stderr, "Error: could not import chat.py\n");
                     }
-                }
-
-                //print prompt to history file
-                fprintf(history, "%s\n", prompt); 
-                fflush(history);
-
-                //Call ask_bot function from chat.py
-                PyObject *func = PyObject_GetAttrString(load_module, "ask_bot");
-
-                if (!func || !PyCallable_Check(func)) { /* handle error */
-                    PyErr_Print();
-                    fprintf(stderr,"Error: ask_bot not found or not callable\n");
-                }
-                PyObject *args = PyTuple_Pack(1, PyUnicode_FromString(prompt));
-                PyObject *callfunc = PyObject_CallObject(func, args);
-
-                if (callfunc == NULL) { //handle error
-                    PyErr_Print();
-                    printf(stderr, "Error: LLM failed\n");
-                } else { //write to history file
-                    const char *reply = PyUnicode_AsUTF8(callfunc);
-                    fprintf(history, "%s\n", reply); 
+    
+                    //Give current working directory to LLM
+                    char cwd[PATH_MAX];
+                    if(getcwd(cwd, sizeof(cwd)) == NULL ) {
+                        perror("getcwd() error");
+                    } else {
+                        printf("Current working dir: %s\n", cwd);
+                        PyObject *cwd_obj = PyUnicode_FromString(cwd);
+                        PyObject *d = PyModule_GetDict(load_module);
+                        PyDict_SetItemString(d, "CURRENT_DIR", cwd_obj);
+                    }
+    
+                    //Read tokens into prompt string
+                    char prompt[1024] = "";
+                    for (int i = 1; i < n_tokens; i++) {
+                        strncat(prompt, tokens[i], sizeof(prompt) - strlen(prompt) - 1);
+    
+                        if(i < n_tokens - 1) {
+                            strncat(prompt, " ", sizeof(prompt) - strlen(prompt) - 1);
+                        }
+                    }
+    
+                    //print prompt to history file
+                    fprintf(history, "%s\n", prompt); 
                     fflush(history);
+    
+                    //Call ask_bot function from chat.py
+                    PyObject *func = PyObject_GetAttrString(load_module, "ask_bot");
+    
+                    if (!func || !PyCallable_Check(func)) { /* handle error */
+                        PyErr_Print();
+                        fprintf(stderr,"Error: ask_bot not found or not callable\n");
+                    }
+                    PyObject *args = PyTuple_Pack(1, PyUnicode_FromString(prompt));
+                    PyObject *callfunc = PyObject_CallObject(func, args);
+    
+                    if (callfunc == NULL) { //handle error
+                        PyErr_Print();
+                        printf(stderr, "Error: LLM failed\n");
+                    } else { //write to history file
+                        const char *reply = PyUnicode_AsUTF8(callfunc);
+                        fprintf(history, "%s\n", reply); 
+                        fflush(history);
+                    }
+                    last_status = 0;
                 }
-                last_status = 0;
+
+            } else {
+                int status;
+                waitpid(pid, &status, 0);
+                if (WIFSIGNALED(status)) {
+                    last_status = 130;
+                    fprintf(stderr, "\nLLM cancelled\n");
+                }
+                else if (WIFEXITED(status)) {
+                    last_status = WEXITSTATUS(status);
+                }
             }
+
             continue;
         }
 
